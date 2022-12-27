@@ -2,11 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   signBoard: {
-    width: null,
-    height: null,
-    background: null,
-    border: null,
-    material: null,
+    width: 600,
+    height: 200,
+    background: "#fff",
+    border: "#000",
+    material: "aluminium",
   },
 };
 
@@ -17,11 +17,14 @@ export const signBoardSlice = createSlice({
     setSignboard: (state, action) => {
       state.signBoard = action.payload;
     },
+    setSignboardColor: (state, action) => {
+      state.signBoard.background = action.payload.color;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setSignboard } = signBoardSlice.actions;
+export const { setSignboard, setSignboardColor } = signBoardSlice.actions;
 
 export const selectSignboard = (state) => state.signBoard.signBoard;
 
