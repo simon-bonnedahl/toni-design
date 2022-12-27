@@ -18,8 +18,10 @@ const Signboard: React.FC<SignboardProps> = ({ width, height, color, text }) => 
      context.fillRect(0, 0, width, height)
      console.log(text.string)
      context.fillStyle = text.color
+     context.textAlign = 'center';
+     context.textBaseline = 'middle'; 
      context.font = `${text.fontSize}px sans-serif`
-     context.fillText(text.string, 0, 0 + text.fontSize)
+     context.fillText(text.string, width/2, height/2)
   }
   
  

@@ -51,7 +51,7 @@ const TextModal: React.FC = () => {
                 value={text.fontSize}
                 onChange={handleFontSizeChange}
                 min={10}
-                max={40}
+                max={200}
                 step={2}
               />
             </label>
