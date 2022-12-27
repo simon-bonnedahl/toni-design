@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { FontAwesomeIcon, FontAwesomeIconProps } from '@fortawesome/react-fontawesome'
 import { faClose, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch } from 'react-redux';
-import { setSignboardColor } from '../../reducers/signBoardSlice';
+import { setSignboardColor } from '../../reducers/signboardSlice';
 import { setSelectedOption } from '../../reducers/toolbarSlice';
 
 

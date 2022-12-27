@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import { useSelector } from 'react-redux';
-import { selectSignboard } from '../reducers/signBoardSlice';
+import { selectSignboard } from '../reducers/signboardSlice';
 var FileSaver = require('file-saver');
 var PostScriptDocument = require("../PostScriptMaker");
 
@@ -39,8 +39,8 @@ const Bottombar: React.FC = () => {
             console.log(text)
 
             var doc = new PostScriptDocument({
-            author: "John Doe",
-            title: "My Report",
+            author: "Simon Bonnedahl",
+            title: "Test Signboard",
             borderWidth: 3,
             widthInches: signBoard.width,
             heightInches: signBoard.height,
