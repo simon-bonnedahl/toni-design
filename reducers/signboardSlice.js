@@ -4,9 +4,10 @@ const initialState = {
   signBoard: {
     width: 600,
     height: 200,
-    background: "#fff",
+    color: "#fff",
     border: "#000",
     material: "aluminium",
+    pixelData: null,
   },
 };
 
@@ -18,13 +19,17 @@ export const signBoardSlice = createSlice({
       state.signBoard = action.payload;
     },
     setSignboardColor: (state, action) => {
-      state.signBoard.background = action.payload.color;
+      state.signBoard.color = action.payload.color;
+    },
+    setSignboardPixelData: (state, action) => {
+      state.signBoard.pixelData = action.payload.pixelData;
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setSignboard, setSignboardColor } = signBoardSlice.actions;
+export const { setSignboard, setSignboardColor, setSignboardPixelData } =
+  signBoardSlice.actions;
 
 export const selectSignboard = (state) => state.signBoard.signBoard;
 

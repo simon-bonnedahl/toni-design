@@ -6,7 +6,6 @@ import Signboard from "./Signboard";
 
 
 const Canvas: React.FC = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const signBoard = useSelector(selectSignboard)
   useEffect(() => {
@@ -17,8 +16,7 @@ const Canvas: React.FC = () => {
   return (
    
     <div className="flex flex-1 bg-white justify-center items-center">
-        Canvas
-        <Signboard width={signBoard.width} height={signBoard.height} color={signBoard.background}/>
+        <Signboard width={signBoard.width} height={signBoard.height} color={signBoard.color}/>
     </div>
   );
 };
