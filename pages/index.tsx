@@ -12,6 +12,7 @@ const shapes = ['rectangle', 'circle', 'triangle', 'text', 'image']
 const modes = ['fill', 'stroke']
 
 function Home () {
+  /*
   const [selectedShape, setSelectedShape] = useState(shapes[0])
   const [selectedColor, setSelectedColor] = useState('#000000')
   const [shapeSize, setShapeSize] = useState(100)
@@ -242,7 +243,7 @@ function Home () {
         ctx.fillText(shape.text, shape.x, shape.y + shape.fontSize)
       }
     }})
-  }
+  }*/
   return (
          <div>
       <Head>
