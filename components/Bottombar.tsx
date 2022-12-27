@@ -1,8 +1,6 @@
 import React, { useRef } from 'react'
 import { useSelector } from 'react-redux';
 import { selectSignboard } from '../reducers/signboardSlice';
-var FileSaver = require('file-saver');
-var PostScriptDocument = require("../PostScriptMaker");
 const { jsPDF } = require("jspdf")
 
 const Bottombar: React.FC = () => {

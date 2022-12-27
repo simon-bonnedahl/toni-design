@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { faDroplet, faExpand, faImage, faQuestion, faShapes, faT} from '@fortawesome/free-solid-svg-icons'
 import ToolBarOption from './ToolbarOption';
 import SizeModal from './modals/SizeModal';

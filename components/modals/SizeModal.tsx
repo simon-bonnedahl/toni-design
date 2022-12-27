@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { FontAwesomeIcon, FontAwesomeIconProps } from '@fortawesome/react-fontawesome'
-import { faClose, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import { faClose} from '@fortawesome/free-solid-svg-icons';
 import { useDispatch } from 'react-redux';
 import { setSignboardHeight, setSignboardWidth } from '../../reducers/signboardSlice';
 import { setSelectedOption } from '../../reducers/toolbarSlice';

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { selectSignboard } from "../reducers/signboardSlice";
 import Signboard from "./Signboard";
