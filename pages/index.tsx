@@ -3,7 +3,7 @@ import Head from 'next/head'
 var FileSaver = require('file-saver');
 var PostScriptDocument = require("../PostScriptMaker");
 
-const shapes = ['rectangle', 'circle', 'triangle', 'text']
+const shapes = ['rectangle', 'circle', 'triangle', 'text', 'image']
 const modes = ['fill', 'stroke']
 
 const Home: React.FC = () => {
@@ -14,28 +14,33 @@ const Home: React.FC = () => {
   const [fontSize, setFontSize] = useState(20)
   const [xCoordinate, setXCoordinate] = useState(0)
   const [yCoordinate, setYCoordinate] = useState(0)
-  const [canvasWidth, setCanvasWidth] = useState(250)
-  const [canvasHeight, setCanvasHeight] = useState(250)
+  const [canvasWidth, setCanvasWidth] = useState(1000)
+  const [canvasHeight, setCanvasHeight] = useState(600)
+  const [image, setImage] = useState<HTMLImageElement | null>(null)
   const [selectedMode, setSelectedMode] = useState(modes[0])
   let background = {
     shape: "rectangle",
     color: "#ffffff",
-    size: canvasHeight,
+    width: canvasWidth,
+    height: canvasHeight,    // Bakgrunded täcker inte hela canvasen
     mode: "fill",
     x: 0,
     y: 0,
     text: "",
     fontSize: 0,
+    image: null,
   }
   const [shapesList, setShapesList] = useState<{
     shape: string
     color: string
-    size: number
-    mode: string,
+    width: number
+    height: number
+    mode: string
     x: number
     y: number
     text: string
     fontSize: number
+    image: HTMLImageElement | null
   }[]>([background])
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -75,6 +80,23 @@ const Home: React.FC = () => {
   const handleModeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedMode(event.target.value)
   }
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0]
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        if (event.target) {
+          const image = new Image()
+          image.onload = () => {
+            setImage(image)
+            }
+          image.src = event.target.result as string
+        }
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   const handleSave = () => {
     const ctx = canvasRef.current?.getContext('2d')
       if (ctx) {
@@ -129,79 +151,102 @@ const Home: React.FC = () => {
 }
 
   const addShape = () => {
+  if (selectedShape === 'image') {
+    const newShape = {
+      shape: 'image',
+      color: selectedColor,
+      width: shapeSize,
+      height: shapeSize,
+      image: image,
+      x: xCoordinate,
+      y: yCoordinate,
+      mode: selectedMode,
+      text: "",
+      fontSize: 0,
+
+    }
+    setShapesList([...shapesList, newShape])
+  } else {
     const newShape = {
       shape: selectedShape,
       color: selectedColor,
-      size: shapeSize,
-      mode: selectedMode,
+      width: shapeSize,
+      height: shapeSize,
+      image: null,
       x: xCoordinate,
       y: yCoordinate,
+      mode: selectedMode,
       text: "",
-      fontSize: 0
+      fontSize: 0,
     }
-
+    
     if (selectedShape === 'text') {
       newShape.text = text
       newShape.fontSize = fontSize
     }
-
-    setShapesList([...shapesList, newShape])
     
-   
+    setShapesList([...shapesList, newShape])
   }
+}
 
     const drawShapes = (ctx: CanvasRenderingContext2D) => {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight)
 
     shapesList.forEach((shape) => {
-      console.log(shape)
+      if (shape.shape === 'image') {
+      // shape is an image
+      if(shape.image)
+        ctx.drawImage(shape.image, shape.x, shape.y)
+    } else {
+      ctx.fillStyle = shape.color
+
       ctx.fillStyle = shape.color
 
       if (shape.shape === 'rectangle') {
         if (shape.mode === 'fill') {
-          ctx.fillRect(shape.x, shape.y, shape.size, shape.size)
+          ctx.fillRect(shape.x, shape.y, shape.width, shape.height)
         } else if (shape.mode === 'stroke') {
-          ctx.strokeRect(shape.x, shape.y, shape.size, shape.size)
+          ctx.strokeRect(shape.x, shape.y, shape.width, shape.height)
         }
       } else if (shape.shape === 'circle') {
         if (shape.mode === 'fill') {
           ctx.beginPath()
-          ctx.arc(shape.x + shape.size / 2, shape.y + shape.size / 2, shape.size / 2, 0, 2 * Math.PI)
+          ctx.arc(shape.x + shape.width / 2, shape.y + shape.width / 2, shape.width / 2, 0, 2 * Math.PI)
           ctx.fill()
         } else if (shape.mode === 'stroke') {
           ctx.beginPath()
-          ctx.arc(shape.x + shape.size / 2, shape.y + shape.size / 2, shape.size / 2, 0, 2 * Math.PI)
+          ctx.arc(shape.x + shape.width / 2, shape.y + shape.width / 2, shape.width / 2, 0, 2 * Math.PI)
           ctx.stroke()
         }
       } else if (shape.shape === 'triangle') {
         if (shape.mode === 'fill') {
           ctx.beginPath()
-          ctx.moveTo(shape.x + shape.size / 2, shape.y)
-          ctx.lineTo(shape.x + shape.size, shape.y + shape.size)
-          ctx.lineTo(shape.x, shape.y + shape.size)
+          ctx.moveTo(shape.x + shape.width / 2, shape.y)
+          ctx.lineTo(shape.x + shape.width, shape.y + shape.width)
+          ctx.lineTo(shape.x, shape.y + shape.width)
           ctx.fill()
         } else if (shape.mode === 'stroke') {
           ctx.beginPath()
-          ctx.moveTo(shape.x + shape.size / 2, shape.y)
-          ctx.lineTo(shape.x + shape.size, shape.y + shape.size)
-          ctx.lineTo(shape.x, shape.y + shape.size)
+          ctx.moveTo(shape.x + shape.width / 2, shape.y)
+          ctx.lineTo(shape.x + shape.width, shape.y + shape.width)
+          ctx.lineTo(shape.x, shape.y + shape.width)
           ctx.stroke()
         }
       } else if (shape.shape === 'text') {
         ctx.font = `${shape.fontSize}px sans-serif`
         ctx.fillText(shape.text, shape.x, shape.y + shape.fontSize)
       }
-    })
+    }})
   }
   return (
          <div>
       <Head>
-        <title>Shape Canvas</title>
+        <title>Skyltmax-clone</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
-        <h1>Shape Canvas</h1>
+        <h1>Skyltmax-clone</h1>
 
         <label>
           Choose a shape:
@@ -295,6 +340,11 @@ const Home: React.FC = () => {
             step={10}
           />
         </label>
+        <br />
+         <label htmlFor="image-input">Upload Image:</label>
+        <br />
+        <input type="file" id="image-input" accept="image/*" onChange={handleImageChange} />
+        <br />
         <br />
 
         <button onClick={addShape}>Add Shape</button>
