@@ -7,6 +7,7 @@ const initialState = {
     color: "#fff",
     border: "#000",
     material: "aluminium",
+    shape: "rectangle",
     text: {
       string: "Hello World!",
       font: "Helvetica",

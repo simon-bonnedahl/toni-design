@@ -6,13 +6,15 @@ import ColorModal from './modals/ColorModal';
 import TextModal from './modals/TextModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedOption, selectToolbar } from '../reducers/toolbarSlice';
+import MaterialModal from './modals/MaterialModal';
+import ShapeModal from './modals/ShapeModal';
 
 const Toolbar: React.FC = () => {
     const options = [
                     {
                     title: "Material",
                     icon: faQuestion,
-                    modal: <SizeModal/>,
+                    modal: <MaterialModal/>,
                     key: 0
                     },
                     {
@@ -24,7 +26,7 @@ const Toolbar: React.FC = () => {
                     {
                     title: "Shape",
                     icon: faShapes,
-                    modal: <ColorModal/>,
+                    modal: <ShapeModal/>,
                     key: 2
                     },
                     {
