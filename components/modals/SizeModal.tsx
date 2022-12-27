@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import { FontAwesomeIcon, FontAwesomeIconProps } from '@fortawesome/react-fontawesome'
-import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { faClose, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch } from 'react-redux';
-import { setSignboard, setSignboardHeight, setSignboardWidth } from '../../reducers/signBoardSlice';
+import { setSignboardHeight, setSignboardWidth } from '../../reducers/signBoardSlice';
+import { setSelectedOption } from '../../reducers/toolbarSlice';
 
 
 
@@ -24,8 +25,16 @@ const SizeModal: React.FC = () => {
     dispatch(setSignboardHeight({height}))
 
   }
+  const handleClose = () => {
+    let selectedOption = null
+    dispatch(setSelectedOption({selectedOption}))
+  }
+
   return (
-   <div className='absolute top-40 z-50 left-40 w-96 h-64 bg-white shadow-lg flex rounded-lg'>
+    <div className='absolute top-40 z-50 left-40 w-96 h-64 bg-white shadow-lg flex rounded-lg'>
+     <div onClick={() => handleClose()} >
+     <FontAwesomeIcon className="w-8 h-8" icon={faClose}/>
+     </div>
      <label>
           Choose a width:
           <input
