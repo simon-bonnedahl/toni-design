@@ -11,7 +11,7 @@ const TextModal: React.FC = () => {
   const [text, setText] = useState({
       string: "Hello World!",
       font: "Helvetica",
-      fontSize: 12,
+      fontSize: 40,
       color: "#000"
     })
 

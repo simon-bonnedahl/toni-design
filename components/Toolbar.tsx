@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { faDroplet, faExpand, faImage, faQuestion, faT} from '@fortawesome/free-solid-svg-icons'
+import { faDroplet, faExpand, faImage, faQuestion, faShapes, faT} from '@fortawesome/free-solid-svg-icons'
 import ToolBarOption from './ToolbarOption';
 import SizeModal from './modals/SizeModal';
 import ColorModal from './modals/ColorModal';
@@ -22,20 +22,20 @@ const Toolbar: React.FC = () => {
                     key: 1
                     },
                     {
-                    title: "Color",
-                    icon: faDroplet,
+                    title: "Shape",
+                    icon: faShapes,
                     modal: <ColorModal/>,
                     key: 2
                     },
                     {
-                    title: "Text",
-                    icon: faT,
-                    modal: <TextModal/>,
+                    title: "Color",
+                    icon: faDroplet,
+                    modal: <ColorModal/>,
                     key: 3
                     },
                     {
-                    title: "Image",
-                    icon: faImage,
+                    title: "Text",
+                    icon: faT,
                     modal: <TextModal/>,
                     key: 4
                     },
@@ -44,6 +44,12 @@ const Toolbar: React.FC = () => {
                     icon: faImage,
                     modal: <TextModal/>,
                     key: 5
+                    },
+                    {
+                    title: "Application",
+                    icon: faQuestion,
+                    modal: <TextModal/>,
+                    key: 6
                     },
                     ]
     const dispatch = useDispatch()
