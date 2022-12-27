@@ -10,7 +10,7 @@ const initialState = {
   },
 };
 
-export const signBoard = createSlice({
+export const signBoardSlice = createSlice({
   name: "signBoard",
   initialState,
   reducers: {
