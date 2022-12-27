@@ -1,9 +1,12 @@
 import React from 'react'
 
-function Toolbar() {
-  return (
-    <div>Toolbar</div>
-  )
-}
 
-export default Toolbar
+const Toolbar: React.FC = () => {
+
+  return (
+   
+    <div className='w-44 h-auto border '>Toolbar</div>
+  );
+};
+
+export default Toolbar;

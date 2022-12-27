@@ -1,5 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Head from 'next/head'
+import Topbar from '../components/Topbar';
+import Bottombar from '../components/Bottombar';
+import Toolbar from '../components/Toolbar';
+import Canvas from '../components/Canvas';
+import Navbar from '../components/Navbar';
 var FileSaver = require('file-saver');
 var PostScriptDocument = require("../PostScriptMaker");
 
@@ -244,11 +249,18 @@ function Home () {
         <title>Skyltmax-clone</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <main>
-        <h1 className="text-3xl font-bold ">Skyltmax-clone</h1>
-
-        <label>
+      
+      <main className='flex flex-col bg-slate-500 w-screen h-screen'>
+        
+        <Navbar/>
+        <Topbar/>
+        {/*Middel section*/}
+        <div className='flex w-screen flex-1'>
+          <Toolbar/>
+          <Canvas/>
+        </div>
+        <Bottombar/>
+        {/*<label>
           Choose a shape:
           <select value={selectedShape} onChange={handleShapeChange}>
             {shapes.map((shape) => (
@@ -349,35 +361,13 @@ function Home () {
 
         <button onClick={addShape}>Add Shape</button>
         <br />
+        
+         <button onClick={() => handleSave()}>Save canvas to eps</button>*/}
+        
 
 
-        <canvas
-          ref={canvasRef}
-          width={canvasWidth}
-          height={canvasHeight}
-          onClick={(event) => {
-            if (canvasRef.current) {
-              const ctx = canvasRef.current.getContext('2d')
-              if(ctx)
-                drawShapes(ctx)
-            }}}
-        />
-        <button onClick={() => handleSave()}>Save canvas to eps</button>
+       
       </main>
-
-      <style jsx>{`
-        main {
-          width: 100%;
-          max-width: 600px;
-          margin: 0 auto;
-          text-align: center;
-        }
-
-        canvas {
-          border: 1px solid #ccc;
-          margin: 20px 0;
-        }
-      `}</style>
     </div>
   )
 }

@@ -1,9 +1,19 @@
-import React from 'react'
+import React, { useRef } from "react";
+import Signboard from "./Signboard";
 
-function Canvas() {
+
+
+const Canvas: React.FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const signBoardWidth = 600
+  const signBoardHeight = 200
   return (
-    <div>Canvas</div>
-  )
-}
+   
+    <div className="flex flex-1 bg-white justify-center items-center">
+        Canvas
+        <Signboard width={signBoardWidth} height={signBoardHeight}/>
+    </div>
+  );
+};
 
-export default Canvas
+export default Canvas;
