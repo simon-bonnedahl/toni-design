@@ -1,18 +1,43 @@
-import React from 'react'
-
+import React, { useState } from 'react'
+import { faDroplet, faExpand, faT} from '@fortawesome/free-solid-svg-icons'
+import ToolBarOption from './ToolbarOption';
+import SizeModal from './modals/SizeModal';
+import ColorModal from './modals/ColorModal';
+import TextModal from './modals/TextModal';
 
 const Toolbar: React.FC = () => {
+    const [currentOption, setCurrentOption] = useState<JSX.Element>();
 
-const options = ["Size", "Color", "Text"]
+const options = [
+                {
+                title: "Size",
+                icon: faExpand,
+                modal: <SizeModal/>,
+                key: 1
+                },
+                {
+                title: "Color",
+                icon: faDroplet,
+                modal: <ColorModal/>,
+                key: 2
+                },
+                {
+                title: "Text",
+                icon: faT,
+                modal: <TextModal/>,
+                key: 3
+                },]
   return (
-   
-    <div className='flex flex-col w-44 space-y-4 items-center mt-4'>
-        {options.map(option =>(
-            <div className='text-center font-light text-lg'>
-                <div className='w-28 h-28 bg-white rounded-full shadow-2xl hover:scale-110 ease-in-out duration-300'></div>
-                {option}
-            </div>
-        ))}
+   <div>
+        <div className='flex flex-col w-44 space-y-4 items-center mt-4' >
+            {options.map(option =>(
+                <div key={option.key} onClick={() => setCurrentOption(option.modal)}>
+                    <ToolBarOption title={option.title} icon={option.icon}/>
+                </div>
+            ))}
+            
+        </div>
+        {currentOption}
     </div>
   );
 };
