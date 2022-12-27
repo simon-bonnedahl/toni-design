@@ -1,15 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React from 'react'
 import Head from 'next/head'
 import Topbar from '../components/Topbar';
 import Bottombar from '../components/Bottombar';
 import Toolbar from '../components/Toolbar';
 import Canvas from '../components/Canvas';
 import Navbar from '../components/Navbar';
-var FileSaver = require('file-saver');
-var PostScriptDocument = require("../PostScriptMaker");
-
-const shapes = ['rectangle', 'circle', 'triangle', 'text', 'image']
-const modes = ['fill', 'stroke']
 
 function Home () {
   /*
@@ -256,7 +251,7 @@ function Home () {
         <Navbar/>
         <Topbar/>
         {/*Middel section*/}
-        <div className='flex w-screen flex-1'>
+        <div className='flex flex-1 max-h-[80%] border'>
           <Toolbar/>
           <Canvas/>
         </div>

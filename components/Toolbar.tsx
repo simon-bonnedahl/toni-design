@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { faDroplet, faExpand, faT} from '@fortawesome/free-solid-svg-icons'
+import { faDroplet, faExpand, faImage, faQuestion, faT} from '@fortawesome/free-solid-svg-icons'
 import ToolBarOption from './ToolbarOption';
 import SizeModal from './modals/SizeModal';
 import ColorModal from './modals/ColorModal';
@@ -10,23 +10,42 @@ import { setSelectedOption, selectToolbar } from '../reducers/toolbarSlice';
 const Toolbar: React.FC = () => {
     const options = [
                     {
+                    title: "Material",
+                    icon: faQuestion,
+                    modal: <SizeModal/>,
+                    key: 0
+                    },
+                    {
                     title: "Size",
                     icon: faExpand,
                     modal: <SizeModal/>,
-                    key: 0
+                    key: 1
                     },
                     {
                     title: "Color",
                     icon: faDroplet,
                     modal: <ColorModal/>,
-                    key: 1
+                    key: 2
                     },
                     {
                     title: "Text",
                     icon: faT,
                     modal: <TextModal/>,
-                    key: 2
-                    },]
+                    key: 3
+                    },
+                    {
+                    title: "Image",
+                    icon: faImage,
+                    modal: <TextModal/>,
+                    key: 4
+                    },
+                    {
+                    title: "Image",
+                    icon: faImage,
+                    modal: <TextModal/>,
+                    key: 5
+                    },
+                    ]
     const dispatch = useDispatch()
     const handleSelectOption = (index: number) => {
         let selectedOption = index;
@@ -35,7 +54,7 @@ const Toolbar: React.FC = () => {
     const toolbar = useSelector(selectToolbar)
   return (
    <div>
-        <div className='flex flex-col w-44 space-y-4 items-center mt-4' >
+        <div className='flex flex-col h-full w-44 items-center overflow-y-scroll' >
             {options.map(option =>(
                 <div key={option.key} onClick={() => handleSelectOption(option.key)}>
                     <ToolBarOption title={option.title} icon={option.icon}/>
