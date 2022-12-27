@@ -6,7 +6,7 @@ var PostScriptDocument = require("../PostScriptMaker");
 const shapes = ['rectangle', 'circle', 'triangle', 'text', 'image']
 const modes = ['fill', 'stroke']
 
-const Home: React.FC = () => {
+function Home () {
   const [selectedShape, setSelectedShape] = useState(shapes[0])
   const [selectedColor, setSelectedColor] = useState('#000000')
   const [shapeSize, setShapeSize] = useState(100)
@@ -246,7 +246,7 @@ const Home: React.FC = () => {
       </Head>
 
       <main>
-        <h1>Skyltmax-clone</h1>
+        <h1 className="text-3xl font-bold ">Skyltmax-clone</h1>
 
         <label>
           Choose a shape:
@@ -381,5 +381,4 @@ const Home: React.FC = () => {
     </div>
   )
 }
-
 export default Home
