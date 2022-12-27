@@ -1,14 +1,14 @@
 import React, { useRef } from "react";
 import { useDispatch } from "react-redux";
-import { setSignboardPixelData } from "../reducers/signBoardSlice";
 
 interface SignboardProps {
   width: number;
   height: number;
   color: string;
+  text: {string: string, font: string, fontSize: number, color: string};
 }
 
-const Signboard: React.FC<SignboardProps> = ({ width, height, color }) => {
+const Signboard: React.FC<SignboardProps> = ({ width, height, color, text }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dispatch = useDispatch()
   // Draw the background
@@ -16,8 +16,10 @@ const Signboard: React.FC<SignboardProps> = ({ width, height, color }) => {
   if(context){
      context.fillStyle = color
      context.fillRect(0, 0, width, height)
-     const pixelData = context.getImageData(0, 0, width, height, {colorSpace: "srgb" }).data;
-     //dispatch(setSignboardPixelData({pixelData}))
+     console.log(text.string)
+     context.fillStyle = text.color
+     context.font = `${text.fontSize}px sans-serif`
+     context.fillText(text.string, 0, 0 + text.fontSize)
   }
   
  

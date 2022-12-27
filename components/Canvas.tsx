@@ -16,7 +16,7 @@ const Canvas: React.FC = () => {
   return (
    
     <div className="flex flex-1 bg-white justify-center items-center">
-        <Signboard width={signBoard.width} height={signBoard.height} color={signBoard.color}/>
+        <Signboard width={signBoard.width} height={signBoard.height} color={signBoard.color} text={signBoard.text}/>
     </div>
   );
 };

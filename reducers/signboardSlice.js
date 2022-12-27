@@ -7,7 +7,12 @@ const initialState = {
     color: "#fff",
     border: "#000",
     material: "aluminium",
-    pixelData: null,
+    text: {
+      string: "Hello World!",
+      font: "Helvetica",
+      fontSize: 12,
+      color: "#000",
+    },
   },
 };
 
@@ -21,15 +26,26 @@ export const signBoardSlice = createSlice({
     setSignboardColor: (state, action) => {
       state.signBoard.color = action.payload.color;
     },
-    setSignboardPixelData: (state, action) => {
-      state.signBoard.pixelData = action.payload.pixelData;
+    setSignboardWidth: (state, action) => {
+      state.signBoard.width = action.payload.width;
+    },
+    setSignboardHeight: (state, action) => {
+      state.signBoard.height = action.payload.height;
+    },
+    setSignboardText: (state, action) => {
+      state.signBoard.text = action.payload.text;
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setSignboard, setSignboardColor, setSignboardPixelData } =
-  signBoardSlice.actions;
+export const {
+  setSignboard,
+  setSignboardColor,
+  setSignboardWidth,
+  setSignboardHeight,
+  setSignboardText,
+} = signBoardSlice.actions;
 
 export const selectSignboard = (state) => state.signBoard.signBoard;
 

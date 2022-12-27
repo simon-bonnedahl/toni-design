@@ -14,14 +14,12 @@ const ColorModal: React.FC = () => {
   const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let color = event.target.value    
     setSelectedColor(color)
-    console.log(color)
     dispatch(setSignboardColor({color}))
 
   }
 
   return (
     <div className='absolute top-40 z-50 left-40 w-96 h-64 bg-white shadow-lg flex rounded-lg'>
-     ColorModal
      <label>
               Choose a color:
               <input
