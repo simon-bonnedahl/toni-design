@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 
 interface SignboardProps {
@@ -10,8 +10,6 @@ interface SignboardProps {
 
 const Signboard: React.FC<SignboardProps> = ({ width, height, color, text }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const dispatch = useDispatch()
-  // Draw the background
   const context = canvasRef.current?.getContext('2d')
   if(context){
      context.fillStyle = color
@@ -25,7 +23,9 @@ const Signboard: React.FC<SignboardProps> = ({ width, height, color, text }) => 
   }
   
  
-  
+  useEffect(() =>{
+
+  }, [])
  
 
   return (
