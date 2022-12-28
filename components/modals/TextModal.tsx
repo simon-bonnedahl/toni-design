@@ -10,7 +10,7 @@ import { setSelectedOption } from '../../reducers/toolbarSlice';
 const TextModal: React.FC = () => {
   const [text, setText] = useState({
       string: "Hello World!",
-      font: "Helvetica",
+      font: "Arial",
       fontSize: 40,
       color: "#000"
     })
@@ -21,6 +21,7 @@ const TextModal: React.FC = () => {
     let string = event.target.value 
     setText({string: string, font: text.font, fontSize: text.fontSize, color: text.color})
     dispatch(setSignboardText({text}))
+    
 
   }
   const handleFontSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import { faClose} from '@fortawesome/free-solid-svg-icons';
-import { useDispatch } from 'react-redux';
-import { setSignboardColor } from '../../reducers/signboardSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectSignboard, setSignboardColor } from '../../reducers/signboardSlice';
 import { setSelectedOption } from '../../reducers/toolbarSlice';
 
 
 
 const ColorModal: React.FC = () => {
-   const [selectedColor, setSelectedColor] = useState('#000000')
+   const [selectedColor, setSelectedColor] = useState(useSelector(selectSignboard).color)
 
    const dispatch = useDispatch()
 
@@ -23,6 +23,8 @@ const ColorModal: React.FC = () => {
     let selectedOption = null
     dispatch(setSelectedOption({selectedOption}))
   }
+
+  
 
   return (
     <div className='absolute top-40 z-50 left-40 w-96 h-64 bg-white shadow-lg flex rounded-lg'>

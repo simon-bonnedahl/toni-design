@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import { faClose} from '@fortawesome/free-solid-svg-icons';
 import { useDispatch } from 'react-redux';
-import { setSignboardColor } from '../../reducers/signboardSlice';
+import { setSignboardColor, setSignboardShape } from '../../reducers/signboardSlice';
 import { setSelectedOption } from '../../reducers/toolbarSlice';
 
 
@@ -25,10 +25,9 @@ const ShapeModal: React.FC = () => {
     ]
    const dispatch = useDispatch()
 
-  const handleShapeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let shape = event.target.value    
+  const handleShapeChange = (shape:string) => {
     setSelectedShape(shape)
-    dispatch(setSignboardColor({shape}))
+    dispatch(setSignboardShape({shape}))
 
   }
 
@@ -42,14 +41,15 @@ const ShapeModal: React.FC = () => {
      <div onClick={() => handleClose()} >
      <FontAwesomeIcon className="w-8 h-8" icon={faClose}/>
      </div>
-     <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an option</label>
-        <select multiple id="countries_multiple" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-            {shapes.map(shape => (
-                <option key={shape.key}>{shape.name}</option>
-            ))}
-            
-        </select>
-     
+     <div className='flex flex-col w-full'>
+        {shapes.map(shape => {
+          if(shape.name === selectedShape){
+            return(<div className='w-full bg-slate-400'>{shape.name}</div>)
+          }else{
+            return(<div onClick={() => handleShapeChange(shape.name)} className='w-full bg-white'>{shape.name}</div>)
+          }
+        })}
+     </div>
    </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useRef } from 'react'
 import { useSelector } from 'react-redux';
 import { selectSignboard } from '../reducers/signboardSlice';
+const fabric = require("fabric").fabric;
 const { jsPDF } = require("jspdf")
 
 const Bottombar: React.FC = () => {
@@ -9,15 +10,22 @@ const Bottombar: React.FC = () => {
 
 
     const handleSave = () => {
-            const canvas = document.querySelector("canvas")
-            if (canvas) {
-                const context = canvas.getContext("2d")
+            if(signBoard.svg){
+              const blob = new Blob([signBoard.svg], { type: 'text/plain' });
+              var url = window.URL.createObjectURL(blob);
+              var a = document.createElement("a");
+              a.href = url;
+              a.download = "download.svg";
+              a.click();
+              }
+                /*const context = canvas.getContext("2d")
                 if(context){
                   const imgData = context.getImageData(0, 0, signBoard.width, signBoard.height, {colorSpace: "srgb" });
                   
                   var pdf = new jsPDF();
                   pdf.addImage(imgData, 'JPEG', 0, 0);
-                  pdf.save("download.pdf");
+                  pdf.save("download.pdf");*/
+                
             
                 /*
                 const pixelData = imgData.data
@@ -65,7 +73,7 @@ const Bottombar: React.FC = () => {
             
             FileSaver.saveAs(blob, 'outputs/output1.eps');
             */
-        }}
+        
     }
 
   return (

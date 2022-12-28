@@ -6,14 +6,15 @@ const initialState = {
     height: 200,
     color: "#fff",
     border: "#000",
-    material: "aluminium",
-    shape: "rectangle",
+    material: "Aluminium",
+    shape: "Rectangle",
     text: {
       string: "Hello World!",
       font: "Helvetica",
       fontSize: 40,
       color: "#000",
     },
+    svg: "",
   },
 };
 
@@ -33,8 +34,17 @@ export const signBoardSlice = createSlice({
     setSignboardHeight: (state, action) => {
       state.signBoard.height = action.payload.height;
     },
+    setSignboardMaterial: (state, action) => {
+      state.signBoard.material = action.payload.material;
+    },
+    setSignboardShape: (state, action) => {
+      state.signBoard.shape = action.payload.shape;
+    },
     setSignboardText: (state, action) => {
       state.signBoard.text = action.payload.text;
+    },
+    setSignboardSvg: (state, action) => {
+      state.signBoard.svg = action.payload.svg;
     },
   },
 });
@@ -45,7 +55,10 @@ export const {
   setSignboardColor,
   setSignboardWidth,
   setSignboardHeight,
+  setSignboardMaterial,
   setSignboardText,
+  setSignboardSvg,
+  setSignboardShape,
 } = signBoardSlice.actions;
 
 export const selectSignboard = (state) => state.signBoard.signBoard;
