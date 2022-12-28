@@ -49,7 +49,7 @@ const Signboard: React.FC = () => {
         let svg = editor?.canvas.toSVG()
         dispatch(setSignboardSvg({svg}))
         
-      },[editor])
+      },[editor, dispatch])
 
       useEffect(() => {
       
@@ -66,7 +66,7 @@ const Signboard: React.FC = () => {
 
         
         
-      },[signBoard])
+      },[signBoard, dispatch])
   
  
 

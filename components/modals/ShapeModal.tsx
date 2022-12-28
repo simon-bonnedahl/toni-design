@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import { faClose} from '@fortawesome/free-solid-svg-icons';
-import { useDispatch } from 'react-redux';
-import { setSignboardColor, setSignboardShape } from '../../reducers/signboardSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectSignboard, setSignboardColor, setSignboardShape } from '../../reducers/signboardSlice';
 import { setSelectedOption } from '../../reducers/toolbarSlice';
 
 
 
 const ShapeModal: React.FC = () => {
-   const [selectedShape, setSelectedShape] = useState('Rectangle')
+   const [selectedShape, setSelectedShape] = useState(useSelector(selectSignboard).shape)
     const shapes = [
         {
         name: "Rectangle",
@@ -44,9 +44,9 @@ const ShapeModal: React.FC = () => {
      <div className='flex flex-col w-full'>
         {shapes.map(shape => {
           if(shape.name === selectedShape){
-            return(<div className='w-full bg-slate-400'>{shape.name}</div>)
+            return(<div key={shape.key} className='w-full bg-slate-400'>{shape.name}</div>)
           }else{
-            return(<div onClick={() => handleShapeChange(shape.name)} className='w-full bg-white'>{shape.name}</div>)
+            return(<div key={shape.key} onClick={() => handleShapeChange(shape.name)} className='w-full bg-white'>{shape.name}</div>)
           }
         })}
      </div>

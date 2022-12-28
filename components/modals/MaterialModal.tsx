@@ -46,9 +46,9 @@ const MaterialModal: React.FC = () => {
      <div className='flex flex-col w-full'>
         {materials.map(material => {
           if(material.name === selectedMaterial){
-            return(<div className='w-full bg-slate-400'>{material.name}</div>)
+            return(<div key={material.key} className='w-full bg-slate-400'>{material.name}</div>)
           }else{
-            return(<div onClick={() => handleMaterialChange(material.name)} className='w-full bg-white'>{material.name}</div>)
+            return(<div key={material.key}  onClick={() => handleMaterialChange(material.name)} className='w-full bg-white'>{material.name}</div>)
           }
         })}
      </div>
