@@ -1,4 +1,4 @@
-import React, { useEffect} from "react";
+import React, { useCallback, useEffect} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
 import { selectSignboard, setImageRendered, setSignboardPixelData, setSignboardSvg, setTextRendered } from "../reducers/signboardSlice";
@@ -9,7 +9,7 @@ const fabric = require("fabric").fabric;
 
 const Signboard: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor()
-  
+  const signBoard = useSelector(selectSignboard)
   const dispatch = useDispatch()
 
   //canvas.setActiveObject(rect);
@@ -39,10 +39,32 @@ const Signboard: React.FC = () => {
 
     t.left = canvas.width/2 - t.width/2
     canvas.add(t)
+    canvas.setActiveObject(t)
   }
 
-  const addImage = (canvas:any, imageUrl:string) => {
-      var imgElement = document.createElement('img');
+  const addImage = (canvas:any, imageUrl:string, imageType:string) => {
+    if(imageType === "image/svg+xml"){
+      var group: any[] = [];
+
+        fabric.loadSVGFromURL(imageUrl, function(objects: any, options: any) {
+
+            var loadedObjects = new fabric.Group(group);
+
+            loadedObjects.set({
+                    left: 0,
+                    top: 0,
+                    width:50,
+                    height:50
+            });
+
+            canvas.add(loadedObjects);
+
+        },function(item: { getAttribute: (arg0: string) => any; }, object: { set: (arg0: string, arg1: any) => void; }) {
+                object.set('id',item.getAttribute('id'));
+                group.push(object);
+        });
+    }else{
+      let imgElement = document.createElement('img');
       imgElement.src = imageUrl
       //Create the image to gain the width and height
       let img = new Image()
@@ -56,20 +78,29 @@ const Signboard: React.FC = () => {
         height: Math.min(img.height, signBoard.height),
       });
       canvas.add(imgInstance);
+      canvas.setActiveObject(imgInstance)
       };
       img.src = imageUrl
-      
-      
+    }
+    /*
+    });*/
       };
       
 
-      const signBoard = useSelector(selectSignboard)
+      const keyHandler = useCallback((event: { key: string; }) => {
+        let targetObject = editor?.canvas.getActiveObject()
+        if (event.key === "Backspace") {   
+          editor?.canvas.remove(targetObject)
+        }
+      }, [editor?.canvas]);
+        
       
 
       useEffect(() => {
         let canvas = editor?.canvas
-        console.log(signBoard.texts)
+        
         if(canvas){
+
           let index = 0
           for(let t of signBoard.texts){
             if(!t.rendered){
@@ -78,12 +109,11 @@ const Signboard: React.FC = () => {
             }
             index += 1
           }
+
           index = 0
-          console.log(signBoard.images)
-          for(let i of signBoard.images){
-            
+          for(let i of signBoard.images){      
             if(!i.rendered){
-              addImage(canvas, i.url)
+              addImage(canvas, i.url, i.type)
               dispatch(setImageRendered({index})) 
             }
             index += 1
@@ -91,8 +121,10 @@ const Signboard: React.FC = () => {
      
           setSize(canvas, signBoard.width, signBoard.height)
           setBackgroundColor(canvas, signBoard.color)
+          document.addEventListener("keydown", keyHandler, false);
         }
-      },[signBoard])
+        
+      },[signBoard, editor?.canvas])
   
 
 
