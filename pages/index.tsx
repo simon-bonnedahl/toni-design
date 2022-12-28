@@ -81,22 +81,7 @@ function Home () {
   const handleModeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedMode(event.target.value)
   }
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0]
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        if (event.target) {
-          const image = new Image()
-          image.onload = () => {
-            setImage(image)
-            }
-          image.src = event.target.result as string
-        }
-      }
-      reader.readAsDataURL(file)
-    }
-  }
+ 
 
   const handleSave = () => {
     const ctx = canvasRef.current?.getContext('2d')

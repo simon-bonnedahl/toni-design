@@ -8,12 +8,14 @@ const initialState = {
     border: "#000",
     material: "Aluminium",
     shape: "Rectangle",
-    text: {
-      string: "Hello World!",
-      font: "Helvetica",
-      fontSize: 40,
-      color: "#000",
-    },
+    texts: [],
+    images: [
+      {
+        src: "https://picsum.photos/200/301",
+        rendered: false,
+      },
+    ],
+    saved: false,
     svg: "",
   },
 };
@@ -24,27 +26,47 @@ export const signBoardSlice = createSlice({
   reducers: {
     setSignboard: (state, action) => {
       state.signBoard = action.payload;
+      state.signBoard.saved = false;
     },
     setSignboardColor: (state, action) => {
       state.signBoard.color = action.payload.color;
+      state.signBoard.saved = false;
     },
     setSignboardWidth: (state, action) => {
       state.signBoard.width = action.payload.width;
+      state.signBoard.saved = false;
     },
     setSignboardHeight: (state, action) => {
       state.signBoard.height = action.payload.height;
+      state.signBoard.saved = false;
     },
     setSignboardMaterial: (state, action) => {
       state.signBoard.material = action.payload.material;
+      state.signBoard.saved = false;
     },
     setSignboardShape: (state, action) => {
       state.signBoard.shape = action.payload.shape;
+      state.signBoard.saved = false;
     },
-    setSignboardText: (state, action) => {
-      state.signBoard.text = action.payload.text;
+    addSignboardText: (state, action) => {
+      state.signBoard.texts.push(action.payload.text);
+      state.signBoard.saved = false;
+    },
+    setTextRendered: (state, action) => {
+      let text = state.signBoard.texts[action.payload.index];
+      text.rendered = true;
+    },
+    setImageRendered: (state, action) => {
+      let image = state.signBoard.images[action.payload.index];
+      image.rendered = true;
+    },
+    addSignboardImage: (state, action) => {
+      state.signBoard.images.push(action.payload.image);
+      state.signBoard.saved = false;
     },
     setSignboardSvg: (state, action) => {
       state.signBoard.svg = action.payload.svg;
+      state.signBoard.saved = true;
     },
   },
 });
@@ -56,9 +78,12 @@ export const {
   setSignboardWidth,
   setSignboardHeight,
   setSignboardMaterial,
-  setSignboardText,
-  setSignboardSvg,
+  addSignboardText,
+  setTextRendered,
+  addSignboardImage,
+  setImageRendered,
   setSignboardShape,
+  setSignboardSvg,
 } = signBoardSlice.actions;
 
 export const selectSignboard = (state) => state.signBoard.signBoard;

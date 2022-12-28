@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedOption, selectToolbar } from '../reducers/toolbarSlice';
 import MaterialModal from './modals/MaterialModal';
 import ShapeModal from './modals/ShapeModal';
+import ImageModal from './modals/ImageModal';
 
 const Toolbar: React.FC = () => {
     const options = [
@@ -44,7 +45,7 @@ const Toolbar: React.FC = () => {
                     {
                     title: "Image",
                     icon: faImage,
-                    modal: <TextModal/>,
+                    modal: <ImageModal/>,
                     key: 5
                     },
                     {

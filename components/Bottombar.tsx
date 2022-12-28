@@ -8,16 +8,17 @@ const Bottombar: React.FC = () => {
 
     const signBoard = useSelector(selectSignboard)
 
+   
 
-    const handleSave = () => {
+    const handleSaveSvg = () => {
             if(signBoard.svg){
               const blob = new Blob([signBoard.svg], { type: 'text/plain' });
               var url = window.URL.createObjectURL(blob);
               var a = document.createElement("a");
-              a.href = url;
+              a.href = url;   
               a.download = "download.svg";
               a.click();
-              }
+            }
                 /*const context = canvas.getContext("2d")
                 if(context){
                   const imgData = context.getImageData(0, 0, signBoard.width, signBoard.height, {colorSpace: "srgb" });
@@ -79,7 +80,7 @@ const Bottombar: React.FC = () => {
   return (
    
     <div className='flex flex-row w-full h-20 border items-center justify-center'>
-    <button className=" bg-slate-300 rounded-lg p-4"onClick={() => handleSave()}>Download file</button>
+    <button className=" bg-slate-300 rounded-lg p-2"onClick={() => handleSaveSvg()}>Download SVG</button>
     </div>
   );
 };
