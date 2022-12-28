@@ -7,7 +7,7 @@ import { setSelectedOption } from '../../reducers/toolbarSlice';
 
 
 
-const ProductModal: React.FC = () => {
+const ApplicationModal: React.FC = () => {
    const [selectedProduct, setSelectedProduct] = useState(useSelector(selectSignboard).product)
     const products = [
         {
@@ -51,4 +51,4 @@ const ProductModal: React.FC = () => {
   );
 };
 
-export default ProductModal;
+export default ApplicationModal;

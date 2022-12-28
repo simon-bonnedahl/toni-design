@@ -40,6 +40,7 @@ const Signboard: React.FC = () => {
     t.left = canvas.width/2 - t.width/2
     canvas.add(t)
     canvas.setActiveObject(t)
+    saveSignboard()
   }
 
   const addImage = (canvas:any, imageUrl:string, imageType:string) => {
@@ -53,7 +54,7 @@ const Signboard: React.FC = () => {
             loadedObjects.set({
                     left: 0,
                     top: 0,
-                    width:50,
+                    width:50,     //Need to be calculated
                     height:50
             });
 
@@ -79,6 +80,7 @@ const Signboard: React.FC = () => {
       });
       canvas.add(imgInstance);
       canvas.setActiveObject(imgInstance)
+      saveSignboard()
       };
       img.src = imageUrl
     }
@@ -92,13 +94,24 @@ const Signboard: React.FC = () => {
         if (event.key === "Backspace") {   
           editor?.canvas.remove(targetObject)
         }
+        //Ctrl-Z ?
       }, [editor?.canvas]);
         
+      editor?.canvas.on({
+      'object:moving': function(e: any) {
+        e.target.opacity = 0.8;
+      },
+      'object:modified': function(e: any) {
+        saveSignboard()
+        e.target.opacity = 1;
+      }
+  });
       
 
       useEffect(() => {
         let canvas = editor?.canvas
-        
+        console.log(editor)
+
         if(canvas){
 
           let index = 0
@@ -138,11 +151,6 @@ const Signboard: React.FC = () => {
 
   return (
       <div className="relative p-2">
-        {!signBoard.saved && 
-        <div onClick={saveSignboard} className="bg-green-500 rounded-full absolute right-0 bottom-0 z-50 hover:scale-110 ease-in-out duration-300">
-          <FontAwesomeIcon className="w-8 h-8 p-1" icon={faCheck} color="#fff"/>
-        </div>
-        }
       <FabricJSCanvas className="sample-canvas overflow-hidden border-4 border-black rounded-md bg-white" onReady={init} />
       </div>
   );

@@ -26,8 +26,7 @@ const SizeModal: React.FC = () => {
 
   }
   const handleClose = () => {
-    let selectedOption = null
-    dispatch(setSelectedOption({selectedOption}))
+    dispatch(setSelectedOption({selectedOption: null}))
   }
 
   return (

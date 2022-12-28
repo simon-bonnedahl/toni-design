@@ -24,9 +24,8 @@ const TextModal: React.FC = () => {
     
   }
  
- const handleClose = () => {
-    let selectedOption = null
-    dispatch(setSelectedOption({selectedOption}))
+  const handleClose = () => {
+    dispatch(setSelectedOption({selectedOption: null}))
   }
 
   return (

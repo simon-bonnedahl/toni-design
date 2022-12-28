@@ -32,10 +32,8 @@ const MaterialModal: React.FC = () => {
   }
 
   const handleClose = () => {
-    let selectedOption = null
-    dispatch(setSelectedOption({selectedOption}))
+    dispatch(setSelectedOption({selectedOption: null}))
   }
-  console.log(selectedMaterial)
 
   return (
     <div className='absolute top-40 z-50 left-40 w-96 h-64 bg-white shadow-lg flex rounded-lg'>

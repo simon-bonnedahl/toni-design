@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import { faClose} from '@fortawesome/free-solid-svg-icons';
 import { useDispatch} from 'react-redux';
-import { addSignboardImage, setImageRendered, setSignboard} from '../../reducers/signboardSlice';
+import { addSignboardImage} from '../../reducers/signboardSlice';
 import { setSelectedOption } from '../../reducers/toolbarSlice';
 
 
@@ -19,15 +19,14 @@ const ImageModal: React.FC = () => {
         }
   }
 
-  const handleAddImage = () => {
-        if(image)
+  const handleAddImage = () => { 
+        if(image)    
             dispatch(addSignboardImage({image:{url:image.url, type:image.type, rendered:false}}))
-        
+            handleClose()
   }
 
  const handleClose = () => {
-    let selectedOption = null
-    dispatch(setSelectedOption({selectedOption}))
+    dispatch(setSelectedOption({selectedOption: null}))
   }
 
   return (
@@ -38,7 +37,7 @@ const ImageModal: React.FC = () => {
         <div className='flex flex-col w-8/12 p-5 space-y-2'>
             <label htmlFor="image-input">Upload Image:</label>  
             <input type="file" id="image-input" accept=".jpg, .jpeg, .png, .webp, .svg" onChange={handleImageUpload} />
-            <button onClick={handleAddImage} className='ml-2 p-2 px-4 w-fit text-gray-900 text-sm border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500'>Add</button>    
+            <button onClick={() => handleAddImage()} className='ml-2 p-2 px-4 w-fit text-gray-900 text-sm border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500'>Add</button>    
         </div>
     
       

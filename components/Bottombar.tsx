@@ -13,21 +13,17 @@ const Bottombar: React.FC = () => {
         var pdf = new jsPDF();
         pdf.addImage(signBoard.pixelData, 'JPEG', 0, 0); 
         pdf.save("download.pdf");
-      }else{
-        alert("Cannot save PDF")
       }
     }
     const handleSaveSvg = () => {
-            if(signBoard.svg){
-              const blob = new Blob([signBoard.svg], { type: 'text/plain' });
-              var url = window.URL.createObjectURL(blob);
-              var a = document.createElement("a");
-              a.href = url;   
-              a.download = "download.svg";
-              a.click();
-            }else{
-              alert("Cannot save SVG")
-            }
+      if(signBoard.svg){
+        const blob = new Blob([signBoard.svg], { type: 'text/plain' });
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;   
+        a.download = "download.svg";
+        a.click();
+      }
         
     }
 
