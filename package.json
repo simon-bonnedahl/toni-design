@@ -40,6 +40,6 @@
     "tailwindcss": "^3.2.4"
   },
   "engines": {
-    "node": "18.x"
+    "node": "19.x"
   }
 }
