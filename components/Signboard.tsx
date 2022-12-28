@@ -50,7 +50,7 @@ const Signboard: React.FC = () => {
         top: 0,
         angle: 0,
         opacity: 1,
-        width: Math.min(img.width, signBoard.width), //To not overflow the canvas
+        width: Math.min(img.width, signBoard.width), //To not overflow the canvas, this need to scale the image instead of cropping
         height: Math.min(img.height, signBoard.height),
       });
       canvas.add(imgInstance);
