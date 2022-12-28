@@ -1,7 +1,7 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
-import { selectSignboard, setImageRendered, setSignboard, setSignboardPixelData, setSignboardSvg, setTextRendered } from "../reducers/signboardSlice";
+import { selectSignboard, setImageRendered, setSignboardPixelData, setSignboardSvg, setTextRendered } from "../reducers/signboardSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 const fabric = require("fabric").fabric;
