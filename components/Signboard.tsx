@@ -50,8 +50,8 @@ const Signboard: React.FC = () => {
         top: 0,
         angle: 0,
         opacity: 1,
-        width: this.width,
-        height: this.height,
+        width: Math.min(img.width, signBoard.width), //To not overflow the canvas
+        height: Math.min(img.height, signBoard.height),
       });
       canvas.add(imgInstance);
       };
@@ -81,7 +81,7 @@ const Signboard: React.FC = () => {
           for(let i of signBoard.images){
             
             if(!i.rendered){
-              addImage(canvas, i.url, i.width, i.height)
+              addImage(canvas, i.url)
               dispatch(setImageRendered({index})) 
             }
             index += 1

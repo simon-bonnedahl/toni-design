@@ -14,9 +14,10 @@ const TextModal: React.FC = () => {
   const dispatch = useDispatch()
 
   const handleAddText = () => {
-    let string = document.getElementById("text-input").value
-    let font = document.getElementById("font-select").value
-    let color = document.getElementById("color-select").value
+    
+    let string = (document.getElementById("text-input") as HTMLInputElement).value
+    let font = (document.getElementById("font-select") as HTMLInputElement).value 
+    let color = (document.getElementById("color-select") as HTMLInputElement).value
     let t = {string: string, font: font, fontSize: 30, color: color, rendered:false}
     setText(t)
     dispatch(addSignboardText({text: t}))
@@ -40,26 +41,18 @@ const TextModal: React.FC = () => {
       </div>
       <div>
         <label className="text-sm text-gray-900">Font:</label>
-        <select id="font-select" className="flex-1 ml-2 p-2 text-gray-900 text-sm border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500">
-          {fonts.map(font =>{
-            if(font === text.font){
-              return(<option key={font} selected>{font}</option>)
-            }else{
-              return(<option key={font}>{font}</option>)
-            }
-          })}
+        <select defaultValue={fonts[0]} id="font-select" className="flex-1 ml-2 p-2 text-gray-900 text-sm border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500">
+           {fonts.map(font =>(
+            <option key={font}>{font}</option>
+          ))}
         </select>
       </div>
       <div>
         <label className="text-sm text-gray-900">Color:</label>
-        <select id="color-select" className="flex-1 ml-2 p-2 text-gray-900 text-sm border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500">
-          {colors.map(color =>{
-            if(color.hex === text.color){
-              return(<option key={color.name} selected>{color.name}</option>)
-            }else{
-              return(<option key={color.name}>{color.name}</option>)
-            }
-          })}
+        <select defaultValue={colors[0].name} id="color-select" className="flex-1 ml-2 p-2 text-gray-900 text-sm border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500">
+          {colors.map(color =>(
+            <option key={color.name}>{color.name}</option>
+          ))}
         </select>
       </div>
       <button onClick={handleAddText}className='ml-2 p-2 px-4 w-fit text-gray-900 text-sm border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500'>Add</button>    
