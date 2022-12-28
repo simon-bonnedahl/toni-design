@@ -1,3 +1,3 @@
 # Skyltmax-clone
 
-Try out ![Here](https://skyltmax-clone.vercel.app/)
+Try it out https://skyltmax-clone.vercel.app/
