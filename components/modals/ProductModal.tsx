@@ -2,32 +2,29 @@ import React, { useState } from 'react'
 import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import { faClose} from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectSignboard, setSignboardColor, setSignboardShape } from '../../reducers/signboardSlice';
+import { selectSignboard, setSignboardColor, setSignboardMaterial } from '../../reducers/signboardSlice';
 import { setSelectedOption } from '../../reducers/toolbarSlice';
 
 
 
-const ShapeModal: React.FC = () => {
-   const [selectedShape, setSelectedShape] = useState(useSelector(selectSignboard).shape)
-    const shapes = [
+const ProductModal: React.FC = () => {
+   const [selectedProduct, setSelectedProduct] = useState(useSelector(selectSignboard).product)
+    const products = [
         {
-        name: "Rectangle",
+        name: "Skylt",
         key: 0
         },
         {
-        name: "Rounded Rectangle",
+        name: "Gravyr",
         key: 1
         },
-        {
-        name: "Oval",
-        key: 2
-        },
+        
     ]
    const dispatch = useDispatch()
 
-  const handleShapeChange = (shape:string) => {
-    setSelectedShape(shape)
-    dispatch(setSignboardShape({shape}))
+  const handleProductChange = (p:string) => { 
+    setSelectedProduct(p)
+    dispatch(setSignboardMaterial({p}))
 
   }
 
@@ -42,16 +39,17 @@ const ShapeModal: React.FC = () => {
      <FontAwesomeIcon className="w-8 h-8 p-1" icon={faClose} color="#fff"/>
      </div>
      <div className='flex flex-col w-full p-5 space-y-2'>
-          {shapes.map(shape => {
-            if(shape.name === selectedShape){
-              return(<div key={shape.key} className='w-full bg-slate-400'>{shape.name}</div>)
-            }else{
-              return(<div key={shape.key} onClick={() => handleShapeChange(shape.name)} className='w-full bg-white'>{shape.name}</div>)
-            }
-          })}
-    </div>
+        {products.map(product => {
+          if(product.name === selectedProduct){
+            return(<div key={product.key} className='w-full bg-slate-400'>{product.name}</div>)
+          }else{
+            return(<div key={product.key}  onClick={() => handleProductChange(product.name)} className='w-full bg-white'>{product.name}</div>)
+          }
+        })}
+     </div>
+
    </div>
   );
 };
 
-export default ShapeModal;
+export default ProductModal;

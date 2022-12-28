@@ -2,8 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   signBoard: {
-    width: 600,
-    height: 200,
+    product: "Skylt",
+    width: 250, //mm
+    height: 100, //mm
     color: "#fff",
     border: "#000",
     material: "Aluminium",

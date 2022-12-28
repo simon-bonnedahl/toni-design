@@ -5,7 +5,7 @@ const Navbar: React.FC = () => {
 
   return (
    
-    <div className='w-full h-20 border '>Navbar</div>
+    <div className='w-full h-20 border '></div>
   );
 };
 

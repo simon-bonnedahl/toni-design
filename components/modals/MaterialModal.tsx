@@ -26,7 +26,6 @@ const MaterialModal: React.FC = () => {
    const dispatch = useDispatch()
 
   const handleMaterialChange = (material:string) => { 
-    console.log("xd")  
     setSelectedMaterial(material)
     dispatch(setSignboardMaterial({material}))
 
@@ -40,10 +39,10 @@ const MaterialModal: React.FC = () => {
 
   return (
     <div className='absolute top-40 z-50 left-40 w-96 h-64 bg-white shadow-lg flex rounded-lg'>
-     <div onClick={() => handleClose()} >
-     <FontAwesomeIcon className="w-8 h-8" icon={faClose}/>
+     <div className="absolute -top-3 -left-3 bg-red-500 rounded-full z-50 hover:scale-110 ease-in-out duration-300" onClick={() => handleClose()} >
+     <FontAwesomeIcon className="w-8 h-8 p-1" icon={faClose} color="#fff"/>
      </div>
-     <div className='flex flex-col w-full'>
+     <div className='flex flex-col w-full p-5 space-y-2'>
         {materials.map(material => {
           if(material.name === selectedMaterial){
             return(<div key={material.key} className='w-full bg-slate-400'>{material.name}</div>)

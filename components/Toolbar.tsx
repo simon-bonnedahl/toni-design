@@ -9,50 +9,57 @@ import { setSelectedOption, selectToolbar } from '../reducers/toolbarSlice';
 import MaterialModal from './modals/MaterialModal';
 import ShapeModal from './modals/ShapeModal';
 import ImageModal from './modals/ImageModal';
+import ProductModal from './modals/ProductModal';
 
 const Toolbar: React.FC = () => {
     const options = [
                     {
+                    title: "Product",
+                    icon: faQuestion,
+                    modal: <ProductModal/>,
+                    key: 0
+                    },
+                    {
                     title: "Material",
                     icon: faQuestion,
                     modal: <MaterialModal/>,
-                    key: 0
+                    key: 1
                     },
                     {
                     title: "Size",
                     icon: faExpand,
                     modal: <SizeModal/>,
-                    key: 1
+                    key: 2
                     },
                     {
                     title: "Shape",
                     icon: faShapes,
                     modal: <ShapeModal/>,
-                    key: 2
+                    key: 3
                     },
                     {
                     title: "Color",
                     icon: faDroplet,
                     modal: <ColorModal/>,
-                    key: 3
+                    key: 4
                     },
                     {
                     title: "Text",
                     icon: faT,
                     modal: <TextModal/>,
-                    key: 4
+                    key: 5
                     },
                     {
                     title: "Image",
                     icon: faImage,
                     modal: <ImageModal/>,
-                    key: 5
+                    key: 6
                     },
                     {
                     title: "Application",
                     icon: faQuestion,
                     modal: <TextModal/>,
-                    key: 6
+                    key: 7
                     },
                     ]
     const dispatch = useDispatch()

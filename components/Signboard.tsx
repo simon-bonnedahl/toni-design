@@ -20,8 +20,10 @@ const Signboard: React.FC = () => {
   } 
 
   const setSize = (canvas:any, width:number, height:number) =>{
-    canvas.setWidth(width)
-    canvas.setHeight(height)
+    //convert to pixels from mm
+    let c = 2.8346546
+    canvas.setWidth(width*c)
+    canvas.setHeight(height*c)
   }
   const setBackgroundColor = (canvas:any, color:string) =>{
     canvas.setBackgroundColor(color)
