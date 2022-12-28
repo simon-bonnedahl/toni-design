@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
-import { selectSignboard, setImageRendered, setSignboard, setSignboardSvg, setTextRendered } from "../reducers/signboardSlice";
+import { selectSignboard, setImageRendered, setSignboard, setSignboardPixelData, setSignboardSvg, setTextRendered } from "../reducers/signboardSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 const fabric = require("fabric").fabric;
@@ -36,22 +36,27 @@ const Signboard: React.FC = () => {
         });
 
     t.left = canvas.width/2 - t.width/2
-    console.log("Adding :", t)
     canvas.add(t)
   }
 
-  const addImage = (canvas:any, imageSource:string) => {
+  const addImage = (canvas:any, imageUrl:string) => {
       var imgElement = document.createElement('img');
-      imgElement.src = imageSource
-      var imgInstance = new fabric.Image(imgElement, {
+      imgElement.src = imageUrl
+      //Create the image to gain the width and height
+      let img = new Image()
+      img.onload = function () {
+        var imgInstance = new fabric.Image(imgElement, {
         left: 0,
         top: 0,
         angle: 0,
         opacity: 1,
-        width:200,
-        height:200
+        width: this.width,
+        height: this.height,
       });
       canvas.add(imgInstance);
+      };
+      img.src = imageUrl
+      
       
       };
       
@@ -72,9 +77,11 @@ const Signboard: React.FC = () => {
             index += 1
           }
           index = 0
+          console.log(signBoard.images)
           for(let i of signBoard.images){
+            
             if(!i.rendered){
-              addImage(canvas, i.src)
+              addImage(canvas, i.url, i.width, i.height)
               dispatch(setImageRendered({index})) 
             }
             index += 1
@@ -87,15 +94,18 @@ const Signboard: React.FC = () => {
   
 
 
-      const dispatchSvg = () =>{
+      const saveSignboard = () =>{
         let svg = editor?.canvas.toSVG()
         dispatch(setSignboardSvg({svg}))
+        var pixelData = editor?.canvas.toDataURL("image/jpeg", 1.0);
+        dispatch(setSignboardPixelData({pixelData}))
+        
       }
 
   return (
       <div className="relative p-2">
         {!signBoard.saved && 
-        <div onClick={dispatchSvg} className="bg-green-500 rounded-full absolute right-0 bottom-0 z-50 hover:scale-110 ease-in-out duration-300">
+        <div onClick={saveSignboard} className="bg-green-500 rounded-full absolute right-0 bottom-0 z-50 hover:scale-110 ease-in-out duration-300">
           <FontAwesomeIcon className="w-8 h-8 p-1" icon={faCheck} color="#fff"/>
         </div>
         }

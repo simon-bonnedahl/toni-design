@@ -9,14 +9,10 @@ const initialState = {
     material: "Aluminium",
     shape: "Rectangle",
     texts: [],
-    images: [
-      {
-        src: "https://picsum.photos/200/301",
-        rendered: false,
-      },
-    ],
+    images: [],
     saved: false,
     svg: "",
+    pixelData: "",
   },
 };
 
@@ -56,16 +52,20 @@ export const signBoardSlice = createSlice({
       let text = state.signBoard.texts[action.payload.index];
       text.rendered = true;
     },
-    setImageRendered: (state, action) => {
-      let image = state.signBoard.images[action.payload.index];
-      image.rendered = true;
-    },
     addSignboardImage: (state, action) => {
       state.signBoard.images.push(action.payload.image);
       state.signBoard.saved = false;
     },
+    setImageRendered: (state, action) => {
+      let image = state.signBoard.images[action.payload.index];
+      image.rendered = true;
+    },
     setSignboardSvg: (state, action) => {
       state.signBoard.svg = action.payload.svg;
+      state.signBoard.saved = true;
+    },
+    setSignboardPixelData: (state, action) => {
+      state.signBoard.pixelData = action.payload.pixelData;
       state.signBoard.saved = true;
     },
   },
@@ -84,6 +84,7 @@ export const {
   setImageRendered,
   setSignboardShape,
   setSignboardSvg,
+  setSignboardPixelData,
 } = signBoardSlice.actions;
 
 export const selectSignboard = (state) => state.signBoard.signBoard;
