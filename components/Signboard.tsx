@@ -8,6 +8,7 @@ const fabric = require("fabric").fabric;
 const Signboard: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor()
   const signBoard = useSelector(selectSignboard)
+  const [currentShape, setCurrentShape] = useState("")
   const dispatch = useDispatch()
 
   //canvas.setActiveObject(rect);
@@ -21,9 +22,61 @@ const Signboard: React.FC = () => {
     //convert to pixels from mm
     let c = 2.8346546
     let z = canvas.getZoom()
-    canvas.setWidth(width*c*z)
-    canvas.setHeight(height*c*z)
+    canvas.setWidth(width*c*z + 1)
+    canvas.setHeight(height*c*z + 1)
   }
+  const setShape = (canvas:any, shape:string) =>{
+
+    //Remove the previous shape
+
+    let s = null
+    let borderWidth = 2
+    let borderColor = "#000"
+    
+
+    switch(shape){
+      case "Rectangle":
+         s = new fabric.Rect({
+        width: canvas.width - borderWidth,
+        height: canvas.height - borderWidth,
+        fill: signBoard.color,
+        stroke: borderColor,
+        strokeWidth: borderWidth,
+      }) 
+        break;
+      case "Rounded Rectangle":
+        s = new fabric.Rect({
+        width: canvas.width - borderWidth,
+        height: canvas.height - borderWidth,
+        fill: signBoard.color,
+        stroke: borderColor,
+        strokeWidth: borderWidth,
+        rx: 20,
+        ry: 20,
+      }) 
+        break;
+      case "Ellipse":
+         s = new fabric.Ellipse({
+            rx: canvas.width/2 - borderWidth,
+            ry: canvas.height/2 - borderWidth,
+            fill: signBoard.color,
+            stroke: borderColor,
+            strokeWidth: borderWidth,    
+        }); 
+        break
+    }
+    //Lock the shapeobject
+    s.hasControls = false;
+    s.hasBorders = false;
+    s.lockMovementX = true;
+    s.lockMovementY = true;
+    s.selectable = false,
+    s.evented = false,
+    canvas._objects[0] = s
+    console.log(canvas)
+    setCurrentShape(shape)
+  }
+
   const setBackgroundColor = (canvas:any, color:string) =>{
     canvas.setBackgroundColor(color)
   }
@@ -132,6 +185,10 @@ const Signboard: React.FC = () => {
           }
 
           canvas.setZoom(signBoard.zoom)
+          if(signBoard.shape != currentShape){    //Apply this to below?
+            setShape(canvas, signBoard.shape)
+          }
+          
           setSize(canvas, signBoard.width, signBoard.height)
           setBackgroundColor(canvas, signBoard.color)
           document.addEventListener("keydown", keyHandler, false);
@@ -150,8 +207,8 @@ const Signboard: React.FC = () => {
       }
 
   return (
-      <div className="relative p-2">
-      <FabricJSCanvas className="sample-canvas overflow-hidden border-4 border-black rounded-md bg-white" onReady={init} />
+      <div className="border border-gray">
+      <FabricJSCanvas className="sample-canvas p-4" onReady={init} />
       </div>
   );
 };

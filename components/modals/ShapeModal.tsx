@@ -19,7 +19,7 @@ const ShapeModal: React.FC = () => {
         key: 1
         },
         {
-        name: "Oval",
+        name: "Ellipse",
         key: 2
         },
     ]

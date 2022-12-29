@@ -9,7 +9,7 @@ const initialState = {
     application: "Skruv",
     border: "#000",
     material: "Aluminium",
-    shape: "Rectangle",
+    shape: "Rounded Rectangle",
     price: 1000,
     texts: [],
     images: [],
