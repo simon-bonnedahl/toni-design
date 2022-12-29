@@ -43,8 +43,8 @@ const SizeModal: React.FC = () => {
             type="number"
             value={width}
             onChange={handleWidthChange}
-            min={50}
-            max={800}
+            min={5}
+            max={1000}
             step={5}
           />
         </label>
@@ -57,8 +57,8 @@ const SizeModal: React.FC = () => {
             type="number"
             value={height}
             onChange={handleHeightChange}
-            min={50}
-            max={800}
+            min={5}
+            max={1000}
             step={5}
           />
         </label>

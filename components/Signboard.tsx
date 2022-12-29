@@ -9,6 +9,7 @@ const Signboard: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor()
   const signBoard = useSelector(selectSignboard)
   const [currentShape, setCurrentShape] = useState("")
+  const [currentSize, setCurrentSize] = useState({width: 0, height: 0})
   const dispatch = useDispatch()
 
   //canvas.setActiveObject(rect);
@@ -22,13 +23,13 @@ const Signboard: React.FC = () => {
     //convert to pixels from mm
     let c = 2.8346546
     let z = canvas.getZoom()
+    setCurrentSize({width, height})
     canvas.setWidth(width*c*z + 1)
     canvas.setHeight(height*c*z + 1)
+    setShape(canvas, currentShape)
   }
+
   const setShape = (canvas:any, shape:string) =>{
-
-    //Remove the previous shape
-
     let s = null
     let borderWidth = 2
     let borderColor = "#000"
@@ -64,6 +65,8 @@ const Signboard: React.FC = () => {
             strokeWidth: borderWidth,    
         }); 
         break
+      default:
+        return
     }
     //Lock the shapeobject
     s.hasControls = false;
@@ -72,8 +75,9 @@ const Signboard: React.FC = () => {
     s.lockMovementY = true;
     s.selectable = false,
     s.evented = false,
+
+    //Replace the frame, this works if the frame always is the first object, which it should
     canvas._objects[0] = s
-    console.log(canvas)
     setCurrentShape(shape)
   }
 
@@ -188,8 +192,10 @@ const Signboard: React.FC = () => {
           if(signBoard.shape != currentShape){    //Apply this to below?
             setShape(canvas, signBoard.shape)
           }
+          if(signBoard.width != currentSize.width || signBoard.height != currentSize.height){
+            setSize(canvas, signBoard.width, signBoard.height)
+          }
           
-          setSize(canvas, signBoard.width, signBoard.height)
           setBackgroundColor(canvas, signBoard.color)
           document.addEventListener("keydown", keyHandler, false);
         }
