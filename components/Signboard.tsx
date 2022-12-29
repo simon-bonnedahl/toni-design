@@ -10,6 +10,9 @@ const Signboard: React.FC = () => {
   const signBoard = useSelector(selectSignboard)
   const [currentShape, setCurrentShape] = useState("")
   const [currentSize, setCurrentSize] = useState({width: 0, height: 0})
+  const [currentColor, setCurrentColor] = useState("#ffffff")
+  const [lastSave, setLastSave] = useState(new Date().getTime())
+  
   const dispatch = useDispatch()
 
   //canvas.setActiveObject(rect);
@@ -26,6 +29,7 @@ const Signboard: React.FC = () => {
     setCurrentSize({width, height})
     canvas.setWidth(width*c*z + 1)
     canvas.setHeight(height*c*z + 1)
+    //Update shape size
     setShape(canvas, currentShape)
   }
 
@@ -82,7 +86,10 @@ const Signboard: React.FC = () => {
   }
 
   const setBackgroundColor = (canvas:any, color:string) =>{
-    canvas.setBackgroundColor(color)
+    setCurrentColor(color)
+    setShape(canvas, currentShape)
+      
+    //canvas.setBackgroundColor(color)
   }
 
   const addText = (canvas:any, text: {string:string, font:string, fontSize:number, color:string , rendered:boolean}) => {
@@ -158,7 +165,14 @@ const Signboard: React.FC = () => {
         e.target.opacity = 0.8;
       },
       'object:modified': function(e: any) {
-        saveSignboard()
+        //Need timeout on saveSignboard since its heavy
+        let timeout = 3000 // 3 seconds
+        let now = new Date().getTime()
+        if(now - lastSave < 3000){
+          setLastSave(now)
+          saveSignboard()
+        }
+        
         e.target.opacity = 1;
       }
   });
@@ -166,9 +180,19 @@ const Signboard: React.FC = () => {
 
       useEffect(() => {
         let canvas = editor?.canvas
-        console.log(editor)
 
         if(canvas){
+          if(signBoard.shape != currentShape){    //Apply this to below?
+            setShape(canvas, signBoard.shape)
+          }
+          if(signBoard.width != currentSize.width || signBoard.height != currentSize.height){
+            setSize(canvas, signBoard.width, signBoard.height)
+          }
+          if(signBoard.color != currentColor){
+            setBackgroundColor(canvas, signBoard.color)
+          }
+          canvas.setZoom(signBoard.zoom)
+
           {/* Render new objects */}
           let index = 0
           for(let t of signBoard.texts){
@@ -187,16 +211,7 @@ const Signboard: React.FC = () => {
             }
             index += 1
           }
-
-          canvas.setZoom(signBoard.zoom)
-          if(signBoard.shape != currentShape){    //Apply this to below?
-            setShape(canvas, signBoard.shape)
-          }
-          if(signBoard.width != currentSize.width || signBoard.height != currentSize.height){
-            setSize(canvas, signBoard.width, signBoard.height)
-          }
-          
-          setBackgroundColor(canvas, signBoard.color)
+          //Add key listener
           document.addEventListener("keydown", keyHandler, false);
         }
         
