@@ -26,7 +26,6 @@ const Bottombar: React.FC = () => {
       }
         
     }
-    console.log(signBoard.price)
   return (
    
     <div className='flex flex-row w-full h-20 border items-center justify-between px-4'>
@@ -35,7 +34,7 @@ const Bottombar: React.FC = () => {
       <button className=" bg-slate-300 rounded-lg p-2"onClick={() => handleSavePdf()}>Download PDF</button>
     </div>
     {/*Price*/}
-    <div className=''>
+    <div>
       <span>{signBoard.price}</span> kr
     </div>
     </div>

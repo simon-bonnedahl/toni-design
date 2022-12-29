@@ -27,8 +27,8 @@ const Signboard: React.FC = () => {
     let c = 2.8346546
     let z = canvas.getZoom()
     setCurrentSize({width, height})
-    canvas.setWidth(width*c*z + 1)
-    canvas.setHeight(height*c*z + 1)
+    canvas.setWidth(width*c*z)
+    canvas.setHeight(height*c*z)
     //Update shape size
     setShape(canvas, currentShape)
   }
@@ -82,14 +82,13 @@ const Signboard: React.FC = () => {
 
     //Replace the frame, this works if the frame always is the first object, which it should
     canvas._objects[0] = s
+    canvas.renderAll();
     setCurrentShape(shape)
   }
 
   const setBackgroundColor = (canvas:any, color:string) =>{
     setCurrentColor(color)
     setShape(canvas, currentShape)
-      
-    //canvas.setBackgroundColor(color)
   }
 
   const addText = (canvas:any, text: {string:string, font:string, fontSize:number, color:string , rendered:boolean}) => {
@@ -103,7 +102,7 @@ const Signboard: React.FC = () => {
     t.left = canvas.width/2 - t.width/2
     canvas.add(t)
     canvas.setActiveObject(t)
-    saveSignboard()
+    canvas.renderAll()
   }
 
   const addImage = (canvas:any, imageUrl:string, imageType:string) => {
@@ -143,12 +142,11 @@ const Signboard: React.FC = () => {
       });
       canvas.add(imgInstance);
       canvas.setActiveObject(imgInstance)
-      saveSignboard()
+      canvas.renderAll()
       };
       img.src = imageUrl
     }
-    /*
-    });*/
+    
       };
       
 
@@ -156,25 +154,25 @@ const Signboard: React.FC = () => {
         let targetObject = editor?.canvas.getActiveObject()
         if (event.key === "Backspace") {   
           editor?.canvas.remove(targetObject)
+        }else{
+          console.log(editor?.canvas.getActiveObject())
+          if(targetObject)
+            editor?.canvas.discardActiveObject()
+            
         }
         //Ctrl-Z ?
       }, [editor?.canvas]);
-        
+      
+
+    
       editor?.canvas.on({
-      'object:moving': function(e: any) {
-        e.target.opacity = 0.8;
-      },
       'object:modified': function(e: any) {
-        //Need timeout on saveSignboard since its heavy
-        let timeout = 3000 // 3 seconds
-        let now = new Date().getTime()
-        if(now - lastSave < 3000){
-          setLastSave(now)
-          saveSignboard()
-        }
-        
-        e.target.opacity = 1;
-      }
+        //editor?.canvas.setActiveObject(null)
+        //saveSignboard()    
+      },
+      'object:selected': function (e: any) {
+      console.log('selected: ', e.target);
+      },
   });
       
 
@@ -182,7 +180,7 @@ const Signboard: React.FC = () => {
         let canvas = editor?.canvas
 
         if(canvas){
-          if(signBoard.shape != currentShape){    //Apply this to below?
+          if(signBoard.shape != currentShape){   
             setShape(canvas, signBoard.shape)
           }
           if(signBoard.width != currentSize.width || signBoard.height != currentSize.height){
@@ -191,7 +189,7 @@ const Signboard: React.FC = () => {
           if(signBoard.color != currentColor){
             setBackgroundColor(canvas, signBoard.color)
           }
-          canvas.setZoom(signBoard.zoom)
+          //canvas.setZoom(signBoard.zoom)
 
           {/* Render new objects */}
           let index = 0
@@ -214,22 +212,29 @@ const Signboard: React.FC = () => {
           //Add key listener
           document.addEventListener("keydown", keyHandler, false);
         }
+        saveSignboard()
         
       },[signBoard, editor?.canvas])
   
 
 
       const saveSignboard = () =>{
-        let svg = editor?.canvas.toSVG()
-        dispatch(setSignboardSvg({svg}))
-        var pixelData = editor?.canvas.toDataURL("image/jpeg", 1.0);
-        dispatch(setSignboardPixelData({pixelData}))
-        
+        //Need timeout on saveSignboard since its heavy
+        //Need to dispatch saveState?
+        let timeout = 3000 // 3 seconds
+        let now = new Date().getTime()
+        if(now - lastSave > timeout){
+          let svg = editor?.canvas.toSVG()
+          dispatch(setSignboardSvg({svg}))
+          var pixelData = editor?.canvas.toDataURL("image/jpeg", 1.0);
+          dispatch(setSignboardPixelData({pixelData}))
+          setLastSave(now) 
+        }
       }
 
   return (
       <div className="border border-gray">
-      <FabricJSCanvas className="sample-canvas p-4" onReady={init} />
+      <FabricJSCanvas className="sample-canvas" onReady={init} />
       </div>
   );
 };
