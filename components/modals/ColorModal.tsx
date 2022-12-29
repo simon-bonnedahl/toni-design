@@ -79,8 +79,8 @@ const ColorModal: React.FC = () => {
      {signBoard.product === "Engraved Sign" ? 
       <div className='flex w-full p-5 space-x-2 overflow-y-scroll'>
         {engravingColors.map(color => (
-          <div className='flex flex-col items-center justify-center'>
-            <div key={color.key} onClick={()=> dispatch(setSignboardColor({color:color.front.value}))} className="flex items-center justify-center w-12 h-12 rounded-full border-2 hover:cursor-pointer" style={{backgroundColor: color.front.value}}>
+          <div key={color.key} className='flex flex-col items-center justify-center'>
+            <div onClick={()=> dispatch(setSignboardColor({color:color.front.value}))} className="flex items-center justify-center w-12 h-12 rounded-full border-2 hover:cursor-pointer" style={{backgroundColor: color.front.value}}>
                 <FontAwesomeIcon className="w-8 h-8 p-1" icon={faT} color={color.back.value}/>
             </div>
             <p className='text-xs text-gray-500 font-light'>{color.front.name}</p>
