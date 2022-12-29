@@ -16,6 +16,7 @@ const initialState = {
     zoom: 1,
     svg: "",
     pixelData: "",
+    saved: false,
   },
 };
 const calculatePrice = (state) => {
@@ -80,6 +81,9 @@ export const signBoardSlice = createSlice({
         state.signBoard.zoom /= zoomStep;
       }
     },
+    setSignboardSaved: (state, action) => {
+      state.signBoard.saved = action.payload.saved;
+    },
   },
 });
 
@@ -99,6 +103,7 @@ export const {
   setSignboardSvg,
   setSignboardPixelData,
   signboardZoom,
+  setSignboardSaved,
 } = signBoardSlice.actions;
 
 export const selectSignboard = (state) => state.signBoard.signBoard;

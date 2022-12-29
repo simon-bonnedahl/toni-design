@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
-import { selectSignboard, setImageRendered, setSignboardPixelData, setSignboardSvg, setTextRendered } from "../reducers/signboardSlice";
+import { selectSignboard, setImageRendered, setSignboardPixelData, setSignboardSaved, setSignboardSvg, setTextRendered } from "../reducers/signboardSlice";
+import { sign } from "crypto";
 const fabric = require("fabric").fabric;
 
 
@@ -12,6 +13,8 @@ const Signboard: React.FC = () => {
   const [currentSize, setCurrentSize] = useState({width: 0, height: 0})
   const [currentColor, setCurrentColor] = useState("#ffffff")
   const [lastSave, setLastSave] = useState(new Date().getTime())
+
+  var last = new Date().getTime()
   
   const dispatch = useDispatch()
 
@@ -154,8 +157,7 @@ const Signboard: React.FC = () => {
         let targetObject = editor?.canvas.getActiveObject()
         if (event.key === "Backspace") {   
           editor?.canvas.remove(targetObject)
-        }else{
-          console.log(editor?.canvas.getActiveObject())
+        }else{    //If we press any other key, like typing text, we de-select the target object so it wont be deleted
           if(targetObject)
             editor?.canvas.discardActiveObject()
             
@@ -168,7 +170,7 @@ const Signboard: React.FC = () => {
       editor?.canvas.on({
       'object:modified': function(e: any) {
         //editor?.canvas.setActiveObject(null)
-        //saveSignboard()    
+        saveSignboard()    
       },
       'object:selected': function (e: any) {
       console.log('selected: ', e.target);
@@ -189,7 +191,7 @@ const Signboard: React.FC = () => {
           if(signBoard.color != currentColor){
             setBackgroundColor(canvas, signBoard.color)
           }
-          //canvas.setZoom(signBoard.zoom)
+          canvas.setZoom(signBoard.zoom)
 
           {/* Render new objects */}
           let index = 0
@@ -212,7 +214,10 @@ const Signboard: React.FC = () => {
           //Add key listener
           document.addEventListener("keydown", keyHandler, false);
         }
-        saveSignboard()
+        if(!signBoard.saved){
+          saveSignboard()
+        }
+        
         
       },[signBoard, editor?.canvas])
   
@@ -223,12 +228,15 @@ const Signboard: React.FC = () => {
         //Need to dispatch saveState?
         let timeout = 3000 // 3 seconds
         let now = new Date().getTime()
-        if(now - lastSave > timeout){
+        if((now - last) > timeout){
+          last = now
+          console.log("save")
           let svg = editor?.canvas.toSVG()
           dispatch(setSignboardSvg({svg}))
           var pixelData = editor?.canvas.toDataURL("image/jpeg", 1.0);
           dispatch(setSignboardPixelData({pixelData}))
-          setLastSave(now) 
+          dispatch(setSignboardSaved({saved:true}))
+          
         }
       }
 
