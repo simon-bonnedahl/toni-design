@@ -1,37 +1,18 @@
 import React, { useRef } from 'react'
-import { useSelector } from 'react-redux';
-import { selectSignboard } from '../reducers/signboardSlice';
-const { jsPDF } = require("jspdf")
+import { useDispatch, useSelector } from 'react-redux';
+import { selectSignboard, setDownloadPdf, setDownloadSvg } from '../reducers/signboardSlice';
 
 const Bottombar: React.FC = () => {
 
     const signBoard = useSelector(selectSignboard)
+    const dispatch = useDispatch()
 
-   
-    const handleSavePdf = () => { 
-      if(signBoard.pixelData){
-        var pdf = new jsPDF();
-        pdf.addImage(signBoard.pixelData, 'JPEG', 0, 0); 
-        pdf.save("download.pdf");
-      }
-    }
-    const handleSaveSvg = () => {
-      if(signBoard.svg){
-        const blob = new Blob([signBoard.svg], { type: 'text/plain' });
-        var url = window.URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;   
-        a.download = "download.svg";
-        a.click();
-      }
-        
-    }
   return (
    
     <div className='flex flex-row w-full h-20 border items-center justify-between px-4'>
     <div className='flex space-x-4'>
-      <button className=" bg-slate-300 rounded-lg p-2"onClick={() => handleSaveSvg()}>Download SVG</button>
-      <button className=" bg-slate-300 rounded-lg p-2"onClick={() => handleSavePdf()}>Download PDF</button>
+      <button className=" bg-slate-300 rounded-lg p-2"onClick={() => dispatch(setDownloadSvg({downloadSvg:true}))}>Download SVG</button>
+      <button className=" bg-slate-300 rounded-lg p-2"onClick={() => dispatch(setDownloadPdf({downloadPdf:true}))}>Download PDF</button>
     </div>
     {/*Price*/}
     <div>

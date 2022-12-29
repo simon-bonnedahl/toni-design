@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
-import { selectSignboard, setImageRendered, setSignboardPixelData, setSignboardSaved, setSignboardSvg, setTextRendered } from "../reducers/signboardSlice";
-import { sign } from "crypto";
+import { selectSignboard, setDownloadPdf, setDownloadSvg, setImageRendered, setSignboardPixelData, setSignboardSvg, setTextRendered } from "../reducers/signboardSlice";
 const fabric = require("fabric").fabric;
+const { jsPDF } = require("jspdf")
 
 
 const Signboard: React.FC = () => {
@@ -169,8 +169,7 @@ const Signboard: React.FC = () => {
     
       editor?.canvas.on({
       'object:modified': function(e: any) {
-        //editor?.canvas.setActiveObject(null)
-        saveSignboard()    
+        //editor?.canvas.setActiveObject(null)  
       },
       'object:selected': function (e: any) {
       console.log('selected: ', e.target);
@@ -213,32 +212,41 @@ const Signboard: React.FC = () => {
           }
           //Add key listener
           document.addEventListener("keydown", keyHandler, false);
+
+          console.log(signBoard)
+          if(signBoard.downloadPdf){
+            handleDownloadPdf(canvas)
+          }
+          if(signBoard.downloadSvg){
+            handleDownloadSvg(canvas)
+          }
         }
-        if(!signBoard.saved){
-          saveSignboard()
-        }
-        
-        
+
       },[signBoard, editor?.canvas])
-  
+      
 
 
-      const saveSignboard = () =>{
-        //Need timeout on saveSignboard since its heavy
-        //Need to dispatch saveState?
-        let timeout = 3000 // 3 seconds
-        let now = new Date().getTime()
-        if((now - last) > timeout){
-          last = now
-          console.log("save")
-          let svg = editor?.canvas.toSVG()
-          dispatch(setSignboardSvg({svg}))
-          var pixelData = editor?.canvas.toDataURL("image/jpeg", 1.0);
-          dispatch(setSignboardPixelData({pixelData}))
-          dispatch(setSignboardSaved({saved:true}))
-          
-        }
+    const handleDownloadPdf = (canvas:any) => { 
+        let pdf = new jsPDF();
+        let pixelData = canvas.toDataURL("image/jpeg", 1.0);
+        pdf.addImage(pixelData, 'JPEG', 0, 0); 
+        pdf.save("download.pdf");
+        dispatch(setDownloadPdf({downloadPdf:false}))
       }
+    
+    const handleDownloadSvg = (canvas:any) => {
+        let blob = new Blob([canvas.toSVG()], { type: 'text/plain' });
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;   
+        a.download = "download.svg";
+        a.click();
+        dispatch(setDownloadSvg({downloadSvg:false}))
+      }
+        
+    
+
+      
 
   return (
       <div className="border border-gray">

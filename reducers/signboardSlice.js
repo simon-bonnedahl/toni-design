@@ -14,9 +14,8 @@ const initialState = {
     texts: [],
     images: [],
     zoom: 1,
-    svg: "",
-    pixelData: "",
-    saved: false,
+    downloadSvg: false,
+    downloadPdf: false,
   },
 };
 const calculatePrice = (state) => {
@@ -67,12 +66,6 @@ export const signBoardSlice = createSlice({
       let image = state.signBoard.images[action.payload.index];
       image.rendered = true;
     },
-    setSignboardSvg: (state, action) => {
-      state.signBoard.svg = action.payload.svg;
-    },
-    setSignboardPixelData: (state, action) => {
-      state.signBoard.pixelData = action.payload.pixelData;
-    },
     signboardZoom: (state, action) => {
       let zoomStep = 1.25;
       if (action.payload.zoom === "in") {
@@ -81,8 +74,11 @@ export const signBoardSlice = createSlice({
         state.signBoard.zoom /= zoomStep;
       }
     },
-    setSignboardSaved: (state, action) => {
-      state.signBoard.saved = action.payload.saved;
+    setDownloadSvg: (state, action) => {
+      state.signBoard.downloadSvg = action.payload.downloadSvg;
+    },
+    setDownloadPdf: (state, action) => {
+      state.signBoard.downloadPdf = action.payload.downloadPdf;
     },
   },
 });
@@ -103,7 +99,8 @@ export const {
   setSignboardSvg,
   setSignboardPixelData,
   signboardZoom,
-  setSignboardSaved,
+  setDownloadSvg,
+  setDownloadPdf,
 } = signBoardSlice.actions;
 
 export const selectSignboard = (state) => state.signBoard.signBoard;
