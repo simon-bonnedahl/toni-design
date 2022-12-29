@@ -6,14 +6,22 @@ const initialState = {
     width: 250, //mm
     height: 100, //mm
     color: "#fff",
+    application: "Skruv",
     border: "#000",
     material: "Aluminium",
     shape: "Rectangle",
+    price: 1000,
     texts: [],
     images: [],
     svg: "",
     pixelData: "",
   },
+};
+const calculatePrice = (state) => {
+  let width = state.signBoard.width;
+  let height = state.signBoard.height;
+  let c = 0.125;
+  return width * height * c;
 };
 
 export const signBoardSlice = createSlice({
@@ -28,9 +36,11 @@ export const signBoardSlice = createSlice({
     },
     setSignboardWidth: (state, action) => {
       state.signBoard.width = action.payload.width;
+      state.signBoard.price = calculatePrice(state);
     },
     setSignboardHeight: (state, action) => {
       state.signBoard.height = action.payload.height;
+      state.signBoard.price = calculatePrice(state);
     },
     setSignboardMaterial: (state, action) => {
       state.signBoard.material = action.payload.material;
