@@ -16,7 +16,12 @@ const Bottombar: React.FC = () => {
     </div>
     {/*Price*/}
     <div>
-      <span>{signBoard.price}</span> kr
+      {signBoard.price && 
+      <div>
+        <span className='font-bold'>{signBoard.price}</span> kr
+      </div>
+      }
+      
     </div>
     </div>
   );

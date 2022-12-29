@@ -9,6 +9,7 @@ const { jsPDF } = require("jspdf")
 const Signboard: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor()
   const signBoard = useSelector(selectSignboard)
+  
   const [currentShape, setCurrentShape] = useState("")
   const [currentSize, setCurrentSize] = useState({width: 0, height: 0})
   const [currentColor, setCurrentColor] = useState("#ffffff")

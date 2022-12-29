@@ -43,9 +43,9 @@ const MaterialModal: React.FC = () => {
      <div className='flex flex-col w-full p-5 space-y-2'>
         {materials.map(material => {
           if(material.name === selectedMaterial){
-            return(<div key={material.key} className='w-full bg-slate-400'>{material.name}</div>)
+            return(<div key={material.key} className='w-full bg-slate-400 hover:cursor-pointer'>{material.name}</div>)
           }else{
-            return(<div key={material.key}  onClick={() => handleMaterialChange(material.name)} className='w-full bg-white'>{material.name}</div>)
+            return(<div key={material.key}  onClick={() => handleMaterialChange(material.name)} className='w-full bg-white hover:cursor-pointer'>{material.name}</div>)
           }
         })}
      </div>

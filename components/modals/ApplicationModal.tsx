@@ -11,12 +11,16 @@ const ApplicationModal: React.FC = () => {
    const [selectedApplication, setSelectedApplication] = useState(useSelector(selectSignboard).application)
     const applications = [
         {
-        name: "Skruv",
+        name: "None",
         key: 0
         },
         {
-        name: "Tejp",
+        name: "Tape",
         key: 1
+        },
+        {
+        name: "Bolt",
+        key: 2
         },
         
     ]
@@ -24,7 +28,7 @@ const ApplicationModal: React.FC = () => {
 
   const handleApplicationChange = (a:string) => { 
     setSelectedApplication(a)
-    dispatch(setSignboardApplication({a}))
+    dispatch(setSignboardApplication({application: a}))
 
   }
 
@@ -41,9 +45,9 @@ const ApplicationModal: React.FC = () => {
         {applications.map(application => {
             console.log(selectedApplication, application.name)
           if(application.name === selectedApplication){
-            return(<div key={application.key} className='w-full bg-slate-400'>{application.name}</div>)
+            return(<div key={application.key} className='w-full bg-slate-400 hover:cursor-pointer'>{application.name}</div>)
           }else{
-            return(<div key={application.key}  onClick={() => handleApplicationChange(application.name)} className='w-full bg-white'>{application.name}</div>)
+            return(<div key={application.key}  onClick={() => handleApplicationChange(application.name)} className='w-full bg-white hover:cursor-pointer'>{application.name}</div>)
           }
         })}
      </div>

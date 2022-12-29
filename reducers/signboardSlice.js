@@ -2,15 +2,14 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   signBoard: {
-    product: "Skylt",
+    product: "Engraved Sign",
     width: 250, //mm
     height: 100, //mm
     color: "#fff",
-    application: "Skruv",
-    border: "#000",
-    material: "Aluminium",
+    application: "None",
+    material: "Plastic",
     shape: "Rounded Rectangle",
-    price: 1000,
+    price: null,
     texts: [],
     images: [],
     zoom: 1,
@@ -21,7 +20,7 @@ const initialState = {
 const calculatePrice = (state) => {
   let width = state.signBoard.width;
   let height = state.signBoard.height;
-  let c = 0.125;
+  let c = 0.00725;
   return width * height * c;
 };
 
@@ -67,11 +66,11 @@ export const signBoardSlice = createSlice({
       image.rendered = true;
     },
     signboardZoom: (state, action) => {
-      let zoomStep = 1.25;
+      let zoomStep = 0.25;
       if (action.payload.zoom === "in") {
-        state.signBoard.zoom *= zoomStep;
+        state.signBoard.zoom += zoomStep;
       } else if (action.payload.zoom === "out") {
-        state.signBoard.zoom /= zoomStep;
+        state.signBoard.zoom -= zoomStep;
       }
     },
     setDownloadSvg: (state, action) => {
