@@ -18,7 +18,7 @@ const Topbar: React.FC = () => {
   }
   return (
    
-    <div className='flex flex-row justify-between w-screen h-20 shadow-lg'>
+    <div className='flex flex-row justify-between w-screen h-20 shadow-lg z-50'>
       {/*Zoom*/}
 
       <div className="flex items-center h-full pl-4 space-x-2 w-fit ml-40">

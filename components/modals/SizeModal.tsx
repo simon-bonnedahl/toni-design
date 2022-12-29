@@ -14,15 +14,20 @@ const SizeModal: React.FC = () => {
    const dispatch = useDispatch()
 
   const handleWidthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let width = event.target.valueAsNumber   
+    let width = event.target.valueAsNumber
     setWidth(width)
-    dispatch(setSignboardWidth({width}))
+    if(5 <= width && width <= 1000 ) {
+      dispatch(setSignboardWidth({width}))
+    }
+    
 
   }
   const handleHeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let height = event.target.valueAsNumber   
     setHeight(height)
-    dispatch(setSignboardHeight({height}))
+    if(5 <= width && width <= 800 ){
+      dispatch(setSignboardHeight({height}))
+    }
 
   }
   const handleClose = () => {

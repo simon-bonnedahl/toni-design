@@ -76,9 +76,11 @@ export const signBoardSlice = createSlice({
     },
     setDownloadSvg: (state, action) => {
       state.signBoard.downloadSvg = action.payload.downloadSvg;
+      state.signBoard.zoom = 1;
     },
     setDownloadPdf: (state, action) => {
       state.signBoard.downloadPdf = action.payload.downloadPdf;
+      state.signBoard.zoom = 1;
     },
   },
 });

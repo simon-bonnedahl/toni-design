@@ -28,17 +28,28 @@ const Signboard: React.FC = () => {
   const setSize = (canvas:any, width:number, height:number) =>{
     //convert to pixels from mm
     let c = 2.8346546
-    let z = canvas.getZoom()
-    setCurrentSize({width, height})
-    canvas.setWidth(width*c*z)
-    canvas.setHeight(height*c*z)
-    //Update shape size
-    setShape(canvas, currentShape)
+    let z = canvas.getZoom()  
+    let w = width * c * z
+    let h = height * c * z
+    let bw = 2 //border width
+
+
+    //Update shape size and position
+    let shape = canvas._objects[0]
+    if(shape){
+      if(signBoard.shape === "Ellipse"){
+        shape.set({rx: w/2 - bw, ry: h/2 - bw})
+      }else{
+        shape.set({width: w-bw, height: h-bw})
+      }
+      alignObject("center", shape)
+    }
+      setCurrentSize({width:w, height:h})
   }
 
   const setShape = (canvas:any, shape:string) =>{
     let s = null
-    let borderWidth = 2
+    let borderWidth = 1
     let borderColor = "#000"
     
 
@@ -83,6 +94,12 @@ const Signboard: React.FC = () => {
     s.selectable = false,
     s.evented = false,
 
+    s.shadow = new fabric.Shadow({ 
+            color: "#333", 
+            blur: 30,
+            offsetY: 5
+        })
+
     //Replace the frame, this works if the frame always is the first object, which it should
     canvas._objects[0] = s
     canvas.renderAll();
@@ -90,8 +107,10 @@ const Signboard: React.FC = () => {
   }
 
   const setBackgroundColor = (canvas:any, color:string) =>{
-    setCurrentColor(color)
-    setShape(canvas, currentShape)
+    let shape = canvas._objects[0]
+    if(shape)
+      shape.set({fill: color})
+      setCurrentColor(color)
   }
 
   const addText = (canvas:any, text: {string:string, font:string, fontSize:number, color:string , rendered:boolean}) => {
@@ -99,11 +118,9 @@ const Signboard: React.FC = () => {
             fill: text.color,
             fontFamily: text.font,
             fontSize: text.fontSize,
-            top: canvas.height/2 - text.fontSize/2,  
-        });
-
-    t.left = canvas.width/2 - t.width/2
+        }); 
     canvas.add(t)
+    alignObject('center', t)  
     canvas.setActiveObject(t)
     canvas.renderAll()
   }
@@ -114,16 +131,14 @@ const Signboard: React.FC = () => {
 
         fabric.loadSVGFromURL(imageUrl, function(objects: any, options: any) {
 
-            var loadedObjects = new fabric.Group(group);
+            var svg = new fabric.Group(group);
 
-            loadedObjects.set({
-                    left: 0,
-                    top: 0,
+            svg.set({
                     width:50,     //Need to be calculated
                     height:50
             });
-
-            canvas.add(loadedObjects);
+            alignObject("center", svg)
+            canvas.add(svg);
 
         },function(item: { getAttribute: (arg0: string) => any; }, object: { set: (arg0: string, arg1: any) => void; }) {
                 object.set('id',item.getAttribute('id'));
@@ -135,16 +150,16 @@ const Signboard: React.FC = () => {
       //Create the image to gain the width and height
       let img = new Image()
       img.onload = function () {
-        var imgInstance = new fabric.Image(imgElement, {
-        left: 0,
-        top: 0,
+        var i = new fabric.Image(imgElement, {
         angle: 0,
         opacity: 1,
         width: img.width * signBoard.zoom, //Math.min(img.width, signBoard.width), //To not overflow the canvas, this need to scale the image instead of cropping
         height: img.height * signBoard.zoom,  // Math.min(img.height, signBoard.height),
       });
-      canvas.add(imgInstance);
-      canvas.setActiveObject(imgInstance)
+
+      canvas.add(i);
+      alignObject('center', i)   
+      canvas.setActiveObject(i)
       canvas.renderAll()
       };
       img.src = imageUrl
@@ -166,16 +181,87 @@ const Signboard: React.FC = () => {
       }, [editor?.canvas]);
       
 
-    
-      editor?.canvas.on({
+     
+  const alignObject = (location:string, obj:any) => {
+
+      //activeObj.getBoundingRect()
+      //https://stackoverflow.com/questions/47408816/object-alignment-in-fabric-js
+    switch (location) {
+
+    case 'left':
+      obj.set({
+        left: 0
+      });
+      break;
+    case 'right':
+      obj.set({
+        left: canvas.width - (obj.width * obj.scaleX)
+      });
+      break;
+    case 'top':
+      obj.set({
+        top: 0
+      });
+      break;
+    case 'bottom':
+      obj.set({
+        top: canvas.height - (obj.height * obj.scaleY)
+      });
+      break;
+    case 'top-center':
+      obj.set({
+        left: (canvas.width / 2) - ((obj.width * obj.scaleX) / 2)
+      });
+      break;
+    case 'center':
+      obj.set({
+        left: (canvas.width / 2) - ((obj.width * obj.scaleX) / 2),
+        top: (canvas.height / 2) - ((obj.height * obj.scaleY) / 2)
+      });
+      break;
+  }
+}
+ let canvas = editor?.canvas
+ if(canvas){
+canvas.on('mouse:move', function(e:any) {
+  if (canvas.isDragging) {
+    var vpt = canvas.viewportTransform;
+    vpt[4] += e.clientX - canvas.lastPosX;
+    vpt[5] += e.clientY - canvas.lastPosY;
+    canvas.requestRenderAll();
+    canvas.lastPosX = e.clientX;
+    canvas.lastPosY = e.clientY;
+  }
+});
+canvas.on('mouse:up', function(opt: any) {
+  // on mouse up we want to recalculate new interaction
+  // for all objects, so we call setViewportTransform
+  canvas.setViewportTransform(canvas.viewportTransform);
+  canvas.isDragging = false;
+  canvas.selection = true;
+});
+
+canvas.on({
       'object:modified': function(e: any) {
         //editor?.canvas.setActiveObject(null)  
       },
       'object:selected': function (e: any) {
       console.log('selected: ', e.target);
       },
+      'mouse:down': function(e: any) {
+      if (e.altKey === true) {
+        console.log("HEEE")
+        canvas.isDragging = true;
+        canvas.selection = false;
+        canvas.lastPosX = e.clientX;
+        canvas.lastPosY = e.clientY;
+      }
+    },
+
   });
-      
+
+ }
+   
 
       useEffect(() => {
         let canvas = editor?.canvas
@@ -213,7 +299,6 @@ const Signboard: React.FC = () => {
           //Add key listener
           document.addEventListener("keydown", keyHandler, false);
 
-          console.log(signBoard)
           if(signBoard.downloadPdf){
             handleDownloadPdf(canvas)
           }
@@ -227,14 +312,19 @@ const Signboard: React.FC = () => {
 
 
     const handleDownloadPdf = (canvas:any) => { 
+        canvas._objects[0].set({shadow: null})
         let pdf = new jsPDF();
         let pixelData = canvas.toDataURL("image/jpeg", 1.0);
         pdf.addImage(pixelData, 'JPEG', 0, 0); 
         pdf.save("download.pdf");
         dispatch(setDownloadPdf({downloadPdf:false}))
+        setShape(canvas, currentShape)
       }
     
     const handleDownloadSvg = (canvas:any) => {
+        //remove shadow, maybe shrink canvas and align the sign in there before saving?
+  
+        canvas._objects[0].set({shadow: null})
         let blob = new Blob([canvas.toSVG()], { type: 'text/plain' });
         var url = window.URL.createObjectURL(blob);
         var a = document.createElement("a");
@@ -242,15 +332,12 @@ const Signboard: React.FC = () => {
         a.download = "download.svg";
         a.click();
         dispatch(setDownloadSvg({downloadSvg:false}))
+        setShape(canvas, currentShape)
       }
-        
-    
-
-      
 
   return (
-      <div className="border border-gray">
-      <FabricJSCanvas className="sample-canvas" onReady={init} />
+      <div className="border border-gray w-full h-full">
+      <FabricJSCanvas className="sample-canvas w-full h-full bg-slate-200" onReady={init} />
       </div>
   );
 };
