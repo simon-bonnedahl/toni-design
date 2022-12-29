@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect} from "react";
+import React, { useCallback, useEffect, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
 import { selectSignboard, setImageRendered, setSignboardPixelData, setSignboardSvg, setTextRendered } from "../reducers/signboardSlice";
@@ -20,8 +20,9 @@ const Signboard: React.FC = () => {
   const setSize = (canvas:any, width:number, height:number) =>{
     //convert to pixels from mm
     let c = 2.8346546
-    canvas.setWidth(width*c)
-    canvas.setHeight(height*c)
+    let z = canvas.getZoom()
+    canvas.setWidth(width*c*z)
+    canvas.setHeight(height*c*z)
   }
   const setBackgroundColor = (canvas:any, color:string) =>{
     canvas.setBackgroundColor(color)
@@ -73,8 +74,8 @@ const Signboard: React.FC = () => {
         top: 0,
         angle: 0,
         opacity: 1,
-        width: Math.min(img.width, signBoard.width), //To not overflow the canvas, this need to scale the image instead of cropping
-        height: Math.min(img.height, signBoard.height),
+        width: img.width * signBoard.zoom, //Math.min(img.width, signBoard.width), //To not overflow the canvas, this need to scale the image instead of cropping
+        height: img.height * signBoard.zoom,  // Math.min(img.height, signBoard.height),
       });
       canvas.add(imgInstance);
       canvas.setActiveObject(imgInstance)
@@ -111,7 +112,7 @@ const Signboard: React.FC = () => {
         console.log(editor)
 
         if(canvas){
-
+          {/* Render new objects */}
           let index = 0
           for(let t of signBoard.texts){
             if(!t.rendered){
@@ -129,7 +130,8 @@ const Signboard: React.FC = () => {
             }
             index += 1
           }
-     
+
+          canvas.setZoom(signBoard.zoom)
           setSize(canvas, signBoard.width, signBoard.height)
           setBackgroundColor(canvas, signBoard.color)
           document.addEventListener("keydown", keyHandler, false);

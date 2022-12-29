@@ -1,5 +1,5 @@
 import React from 'react'
-import { faDroplet, faExpand, faImage, faQuestion, faShapes, faT} from '@fortawesome/free-solid-svg-icons'
+import { faA, faDroplet, faExpand, faImage, faM, faP, faQuestion, faShapes, faT} from '@fortawesome/free-solid-svg-icons'
 import ToolBarOption from './ToolbarOption';
 import SizeModal from './modals/SizeModal';
 import ColorModal from './modals/ColorModal';
@@ -10,18 +10,19 @@ import MaterialModal from './modals/MaterialModal';
 import ShapeModal from './modals/ShapeModal';
 import ImageModal from './modals/ImageModal';
 import ProductModal from './modals/ProductModal';
+import ApplicationModal from './modals/ApplicationModal';
 
 const Toolbar: React.FC = () => {
     const options = [
                     {
                     title: "Product",
-                    icon: faQuestion,
+                    icon: faP,
                     modal: <ProductModal/>,
                     key: 0
                     },
                     {
                     title: "Material",
-                    icon: faQuestion,
+                    icon: faM,
                     modal: <MaterialModal/>,
                     key: 1
                     },
@@ -57,8 +58,8 @@ const Toolbar: React.FC = () => {
                     },
                     {
                     title: "Application",
-                    icon: faQuestion,
-                    modal: <TextModal/>,
+                    icon: faA,
+                    modal: <ApplicationModal/>,
                     key: 7
                     },
                     ]

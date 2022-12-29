@@ -2,29 +2,29 @@ import React, { useState } from 'react'
 import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import { faClose} from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectSignboard, setSignboardColor, setSignboardMaterial } from '../../reducers/signboardSlice';
+import { selectSignboard, setSignboardApplication } from '../../reducers/signboardSlice';
 import { setSelectedOption } from '../../reducers/toolbarSlice';
 
 
 
 const ApplicationModal: React.FC = () => {
-   const [selectedProduct, setSelectedProduct] = useState(useSelector(selectSignboard).product)
-    const products = [
+   const [selectedApplication, setSelectedApplication] = useState(useSelector(selectSignboard).application)
+    const applications = [
         {
-        name: "Skylt",
+        name: "Skruv",
         key: 0
         },
         {
-        name: "Gravyr",
+        name: "Tejp",
         key: 1
         },
         
     ]
    const dispatch = useDispatch()
 
-  const handleProductChange = (p:string) => { 
-    setSelectedProduct(p)
-    dispatch(setSignboardMaterial({p}))
+  const handleApplicationChange = (a:string) => { 
+    setSelectedApplication(a)
+    dispatch(setSignboardApplication({a}))
 
   }
 
@@ -38,11 +38,12 @@ const ApplicationModal: React.FC = () => {
      <FontAwesomeIcon className="w-8 h-8 p-1" icon={faClose} color="#fff"/>
      </div>
      <div className='flex flex-col w-full p-5 space-y-2'>
-        {products.map(product => {
-          if(product.name === selectedProduct){
-            return(<div key={product.key} className='w-full bg-slate-400'>{product.name}</div>)
+        {applications.map(application => {
+            console.log(selectedApplication, application.name)
+          if(application.name === selectedApplication){
+            return(<div key={application.key} className='w-full bg-slate-400'>{application.name}</div>)
           }else{
-            return(<div key={product.key}  onClick={() => handleProductChange(product.name)} className='w-full bg-white'>{product.name}</div>)
+            return(<div key={application.key}  onClick={() => handleApplicationChange(application.name)} className='w-full bg-white'>{application.name}</div>)
           }
         })}
      </div>

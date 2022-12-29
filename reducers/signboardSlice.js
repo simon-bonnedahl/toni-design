@@ -13,6 +13,7 @@ const initialState = {
     price: 1000,
     texts: [],
     images: [],
+    zoom: 1,
     svg: "",
     pixelData: "",
   },
@@ -45,6 +46,9 @@ export const signBoardSlice = createSlice({
     setSignboardMaterial: (state, action) => {
       state.signBoard.material = action.payload.material;
     },
+    setSignboardApplication: (state, action) => {
+      state.signBoard.application = action.payload.application;
+    },
     setSignboardShape: (state, action) => {
       state.signBoard.shape = action.payload.shape;
     },
@@ -68,6 +72,14 @@ export const signBoardSlice = createSlice({
     setSignboardPixelData: (state, action) => {
       state.signBoard.pixelData = action.payload.pixelData;
     },
+    signboardZoom: (state, action) => {
+      let zoomStep = 1.25;
+      if (action.payload.zoom === "in") {
+        state.signBoard.zoom *= zoomStep;
+      } else if (action.payload.zoom === "out") {
+        state.signBoard.zoom /= zoomStep;
+      }
+    },
   },
 });
 
@@ -78,6 +90,7 @@ export const {
   setSignboardWidth,
   setSignboardHeight,
   setSignboardMaterial,
+  setSignboardApplication,
   addSignboardText,
   setTextRendered,
   addSignboardImage,
@@ -85,6 +98,7 @@ export const {
   setSignboardShape,
   setSignboardSvg,
   setSignboardPixelData,
+  signboardZoom,
 } = signBoardSlice.actions;
 
 export const selectSignboard = (state) => state.signBoard.signBoard;
