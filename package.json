@@ -15,6 +15,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.2.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@reduxjs/toolkit": "^1.9.1",
+    "@sanity/cli": "^3.1.2",
     "@sanity/client": "^3.4.1",
     "@sanity/image-url": "^1.0.1",
     "@types/node": "18.11.18",
