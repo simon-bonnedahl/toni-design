@@ -29,7 +29,7 @@ function Home () {
       <main className='flex flex-col bg-gray-100 w-screen h-screen'>
         <HeaderBar/>
         <Navbar/>
-        <div className='flex space-x-2 p-4'>
+        <div className='grid grid-cols-4 gap-4 p-4'>
         {products.map(product =>(
           <ProductCard key={product.id} title={product.title} image={product.image} price={product.price} width={product.width} height={product.height}/>
         ))}

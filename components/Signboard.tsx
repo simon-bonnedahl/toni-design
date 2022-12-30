@@ -183,6 +183,7 @@ const Signboard: React.FC = () => {
 
       //activeObj.getBoundingRect()
       //https://stackoverflow.com/questions/47408816/object-alignment-in-fabric-js
+    let canvas = editor?.canvas
     switch (location) {
 
     case 'left':
@@ -218,119 +219,80 @@ const Signboard: React.FC = () => {
       break;
   }
 }
- let canvas = editor?.canvas
- if(canvas){
-canvas.on('mouse:move', function(e:any) {
-  if (canvas.isDragging) {
-    var vpt = canvas.viewportTransform;
-    vpt[4] += e.clientX - canvas.lastPosX;
-    vpt[5] += e.clientY - canvas.lastPosY;
-    canvas.requestRenderAll();
-    canvas.lastPosX = e.clientX;
-    canvas.lastPosY = e.clientY;
-  }
-});
-canvas.on('mouse:up', function(opt: any) {
-  // on mouse up we want to recalculate new interaction
-  // for all objects, so we call setViewportTransform
-  canvas.setViewportTransform(canvas.viewportTransform);
-  canvas.isDragging = false;
-  canvas.selection = true;
-});
 
-canvas.on({
-      'object:modified': function(e: any) {
-        //editor?.canvas.setActiveObject(null)  
-      },
-      'object:selected': function (e: any) {
-      console.log('selected: ', e.target);
-      },
-      'mouse:down': function(e: any) {
-      if (e.altKey === true) {
-        console.log("HEEE")
-        canvas.isDragging = true;
-        canvas.selection = false;
-        canvas.lastPosX = e.clientX;
-        canvas.lastPosY = e.clientY;
-      }
-    },
-
-  });
-
- }
    
 
-      useEffect(() => {
-        let canvas = editor?.canvas
+  useEffect(() => {
+    let canvas = editor?.canvas
 
-        if(canvas){
-          if(signBoard.shape != currentShape){   
-            setShape(canvas, signBoard.shape)
-          }
-          if(signBoard.width != currentSize.width || signBoard.height != currentSize.height){
-            setSize(canvas, signBoard.width, signBoard.height)
-          }
-          if(signBoard.color != currentColor){
-            setBackgroundColor(canvas, signBoard.color)
-          }
-          canvas.setZoom(signBoard.zoom)
+    if(canvas){
+      if(signBoard.shape != currentShape){   
+        setShape(canvas, signBoard.shape)
+      }
+      if(signBoard.width != currentSize.width || signBoard.height != currentSize.height){
+        setSize(canvas, signBoard.width, signBoard.height)
+      }
+      if(signBoard.color != currentColor){
+        setBackgroundColor(canvas, signBoard.color)
+      }
+      canvas.setZoom(signBoard.zoom)
 
-          {/* Render new objects */}
-          let index = 0
-          for(let t of signBoard.texts){
-            if(!t.rendered){
-              addText(canvas, t)
-              dispatch(setTextRendered({index}))   
-            }
-            index += 1
-          }
-
-          index = 0
-          for(let i of signBoard.images){      
-            if(!i.rendered){
-              addImage(canvas, i.url, i.type)
-              dispatch(setImageRendered({index})) 
-            }
-            index += 1
-          }
-          //Add key listener
-          document.addEventListener("keydown", keyHandler, false);
-
-          if(signBoard.downloadPdf){
-            handleDownloadPdf(canvas)
-          }
-          if(signBoard.downloadSvg){
-            handleDownloadSvg(canvas)
-          }
+      {/* Render new objects */}
+      let index = 0
+      for(let t of signBoard.texts){
+        if(!t.rendered){
+          addText(canvas, t)
+          dispatch(setTextRendered({index}))   
         }
-
-      },[signBoard, editor?.canvas])
-      
-
-
-    const handleDownloadPdf = (canvas:any) => { 
-        canvas._objects[0].set({shadow: null})
-        let pdf = new jsPDF();
-        let pixelData = canvas.toDataURL("image/jpeg", 1.0);
-        pdf.addImage(pixelData, 'JPEG', 0, 0); 
-        pdf.save("download.pdf");
-        dispatch(setDownloadPdf({downloadPdf:false}))
-        setShape(canvas, currentShape)
+        index += 1
       }
-    
-    const handleDownloadSvg = (canvas:any) => {
-        //remove shadow, maybe shrink canvas and align the sign in there before saving?
+
+      index = 0
+      for(let i of signBoard.images){      
+        if(!i.rendered){
+          addImage(canvas, i.url, i.type)
+          dispatch(setImageRendered({index})) 
+        }
+        index += 1
+      }
+      //Add key listener
+      document.addEventListener("keydown", keyHandler, false);
+
+      if(signBoard.downloadPdf){
+        handleDownloadPdf(canvas)
+      }
+      if(signBoard.downloadSvg){
+        handleDownloadSvg(canvas)
+      }
+    }
+
+  },[signBoard, editor?.canvas])
   
-        canvas._objects[0].set({shadow: null})
-        let blob = new Blob([canvas.toSVG()], { type: 'text/plain' });
-        var url = window.URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;   
-        a.download = "download.svg";
-        a.click();
-        dispatch(setDownloadSvg({downloadSvg:false}))
-        setShape(canvas, currentShape)
-      }
+
+
+const handleDownloadPdf = (canvas:any) => { 
+    canvas._objects[0].set({shadow: null})
+    let pdf = new jsPDF();
+    let pixelData = canvas.toDataURL("image/jpeg", 1.0);
+    pdf.addImage(pixelData, 'JPEG', 0, 0); 
+    pdf.save("download.pdf");
+    dispatch(setDownloadPdf({downloadPdf:false}))
+    setShape(canvas, currentShape)
+  }
+
+const handleDownloadSvg = (canvas:any) => {
+    //remove shadow, maybe shrink canvas and align the sign in there before saving?
+
+    canvas._objects[0].set({shadow: null})
+    let blob = new Blob([canvas.toSVG()], { type: 'text/plain' });
+    var url = window.URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;   
+    a.download = "download.svg";
+    a.click();
+    dispatch(setDownloadSvg({downloadSvg:false}))
+    setShape(canvas, currentShape)
+  }
     
   return (
       <div className="border border-gray w-full h-full">
