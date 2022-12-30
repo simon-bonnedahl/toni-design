@@ -9,14 +9,11 @@ const { jsPDF } = require("jspdf")
 const Signboard: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor()
   const signBoard = useSelector(selectSignboard)
-  
+
   const [currentShape, setCurrentShape] = useState("")
   const [currentSize, setCurrentSize] = useState({width: 0, height: 0})
   const [currentColor, setCurrentColor] = useState("#ffffff")
-  const [lastSave, setLastSave] = useState(new Date().getTime())
 
-  var last = new Date().getTime()
-  
   const dispatch = useDispatch()
 
   //canvas.setActiveObject(rect);
@@ -32,16 +29,15 @@ const Signboard: React.FC = () => {
     let z = canvas.getZoom()  
     let w = width * c * z
     let h = height * c * z
-    let bw = 2 //border width
 
 
     //Update shape size and position
     let shape = canvas._objects[0]
     if(shape){
       if(signBoard.shape === "Ellipse"){
-        shape.set({rx: w/2 - bw, ry: h/2 - bw})
+        shape.set({rx: w/2, ry: h/2})
       }else{
-        shape.set({width: w-bw, height: h-bw})
+        shape.set({width: w, height: h})
       }
       alignObject("center", shape)
     }

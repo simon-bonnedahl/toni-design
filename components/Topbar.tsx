@@ -10,11 +10,11 @@ const Topbar: React.FC = () => {
   const dispatch = useDispatch()
 
   const handleZoomOut = () => {
-    dispatch(signboardZoom({zoom:"out"}))
+    //dispatch(signboardZoom({zoom:"out"}))
 
   }
   const handleZoomIn = () => {
-    dispatch(signboardZoom({zoom:"in"}))
+    //dispatch(signboardZoom({zoom:"in"}))
   }
   return (
    
@@ -22,10 +22,10 @@ const Topbar: React.FC = () => {
       {/*Zoom*/}
 
       <div className="flex items-center h-full pl-4 space-x-2 w-fit ml-40">
-        <div onClick={handleZoomOut} className='bg-white shadow-md rounded-full w-10 h-10 flex items-center justify-center hover:scale-110 ease-in-out duration-300'>
+        <div onClick={handleZoomOut} className='bg-white shadow-md rounded-full w-10 h-10 flex items-center justify-center hover:scale-110 ease-in-out duration-300 hover:cursor-pointer'>
           <FontAwesomeIcon className="w-6 h-6" icon={faMagnifyingGlassMinus}/>
         </div>
-         <div onClick={handleZoomIn} className='bg-white shadow-md rounded-full w-10 h-10 flex items-center justify-center  hover:scale-110 ease-in-out duration-300'>
+         <div onClick={handleZoomIn} className='bg-white shadow-md rounded-full w-10 h-10 flex items-center justify-center  hover:scale-110 ease-in-out duration-300 hover:cursor-pointer'>
           <FontAwesomeIcon className="w-6 h-6" icon={faMagnifyingGlassPlus}/>
         </div>
       </div>

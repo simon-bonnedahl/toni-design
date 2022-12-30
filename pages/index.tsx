@@ -10,7 +10,7 @@ function Home () {
   return (
          <div>
       <Head>
-        <title>Skyltmax-clone</title>
+        <title>Toni Design</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className='flex flex-col bg-gray-100 w-screen h-screen'>
