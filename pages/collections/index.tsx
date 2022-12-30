@@ -31,7 +31,7 @@ function Home () {
         <Navbar/>
         <div className='flex space-x-2 p-4'>
         {products.map(product =>(
-          <ProductCard title={product.title} image={product.image} price={product.price} width={product.width} height={product.height}/>
+          <ProductCard key={product.id} title={product.title} image={product.image} price={product.price} width={product.width} height={product.height}/>
         ))}
         </div>
       </main>
