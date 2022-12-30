@@ -1,3 +1,3 @@
 # Skyltmax-clone
 
-https://skyltmax-clone.vercel.app/
+https://toni-design.vercel.app/
