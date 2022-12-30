@@ -17,6 +17,7 @@ const Bottombar: React.FC = () => {
       a.download = "download.json";
       a.click();
     }
+  
 
 
   return (

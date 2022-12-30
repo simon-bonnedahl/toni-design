@@ -2,26 +2,43 @@ import React, { useCallback, useEffect, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react'
 import { selectSignboard, setDownloadPdf, setDownloadSvg, setImageRendered, setSignboardPixelData, setSignboardSvg, setTextRendered } from "../reducers/signboardSlice";
+import ControlBox from "./modals/ControlBox";
+import { setSelectedOption } from "../reducers/toolbarSlice";
 const fabric = require("fabric").fabric;
 const { jsPDF } = require("jspdf")
-
 
 const Signboard: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor()
   const signBoard = useSelector(selectSignboard)
-
   const [currentShape, setCurrentShape] = useState("")
   const [currentSize, setCurrentSize] = useState({width: 0, height: 0})
   const [currentColor, setCurrentColor] = useState("#ffffff")
+  const [selectedObject, setSelectedObject] = useState(false)
 
   const dispatch = useDispatch()
 
   //canvas.setActiveObject(rect);
   const init = (canvas: any) => {
     setSize(canvas, signBoard.width, signBoard.height)
+    setControls()
     setBackgroundColor(canvas, signBoard.backgroundColor)
+    //Add key listener
+    document.addEventListener("keydown", keyHandler, false);
     onReady(canvas)
   } 
+
+  const setControls = () => {
+    let s = fabric.Object.prototype.set( {
+    cornerSize: 16,
+    cornerStyle: "circle",
+    borderWidth: 2,
+    borderColor: "#60a5fa",
+    } );
+    s.controls.mt.visible = false
+    s.controls.mr.visible = false
+    s.controls.ml.visible = false
+    s.controls.mb.visible = false
+  }
 
   const setSize = (canvas:any, width:number, height:number) =>{
     //convert to pixels from mm
@@ -111,7 +128,7 @@ const Signboard: React.FC = () => {
   }
 
   const addText = (canvas:any, text: {string:string, font:string, fontSize:number, color:string , rendered:boolean}) => {
-      var t = new fabric.Text(text.string, {
+    var t = new fabric.IText(text.string, {
             fill: text.color,
             fontFamily: text.font,
             fontSize: text.fontSize,
@@ -165,13 +182,15 @@ const Signboard: React.FC = () => {
       };
       
 
-      const keyHandler = useCallback((event: { key: string; }) => {
+    const keyHandler = useCallback((event: { key: string; }) => {
         let targetObject = editor?.canvas.getActiveObject()
         if (event.key === "Backspace") {   
-          editor?.canvas.remove(targetObject)
+          //editor?.canvas.remove(targetObject)
         }else{    //If we press any other key, like typing text, we de-select the target object so it wont be deleted
           if(targetObject)
-            editor?.canvas.discardActiveObject()
+
+            //editor?.canvas.discardActiveObject()
+            return
             
         }
         //Ctrl-Z ?
@@ -217,10 +236,24 @@ const Signboard: React.FC = () => {
         top: (canvas.height / 2) - ((obj.height * obj.scaleY) / 2)
       });
       break;
+    }
   }
-}
-
+  let canvas = editor?.canvas
+  
+  var selectHandler = function (e:any) {
+    console.log("I was triggered by a custom event.");
    
+};
+  {/*Canvas Events*/}
+  if(canvas){
+    //http://fabricjs.com/events
+    canvas.on({
+    'selection:created' :   () => setSelectedObject(true),
+    'selection:cleared' :   () => setSelectedObject(false),
+    });
+  }
+  
+  
 
   useEffect(() => {
     let canvas = editor?.canvas
@@ -236,6 +269,7 @@ const Signboard: React.FC = () => {
         setBackgroundColor(canvas, signBoard.color)
       }
       canvas.setZoom(signBoard.zoom)
+      
 
       {/* Render new objects */}
       let index = 0
@@ -255,8 +289,7 @@ const Signboard: React.FC = () => {
         }
         index += 1
       }
-      //Add key listener
-      document.addEventListener("keydown", keyHandler, false);
+      
 
       if(signBoard.downloadPdf){
         handleDownloadPdf(canvas)
@@ -295,8 +328,12 @@ const handleDownloadSvg = (canvas:any) => {
   }
     
   return (
-      <div className="border border-gray w-full h-full">
+      <div className="border border-gray w-full h-full relative">
       <FabricJSCanvas className="sample-canvas w-full h-full bg-slate-200" onReady={init} />
+        {selectedObject && <ControlBox/>}
+          
+  
+      
       </div>
   );
 };
