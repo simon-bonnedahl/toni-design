@@ -9,6 +9,15 @@ const Bottombar: React.FC = () => {
     const signBoard = useSelector(selectSignboard)
     const dispatch = useDispatch()
     const [amount, setAmount] = useState(1)
+   
+    const handleDownloadJSON = () =>{
+      var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(signBoard));
+      var a = document.createElement("a");
+      a.href = dataStr;   
+      a.download = "download.json";
+      a.click();
+    }
+
 
   return (
    
@@ -16,6 +25,7 @@ const Bottombar: React.FC = () => {
     <div className='flex space-x-4'>
       <button className='p-3 rounded-md bg-blue-400 text-white text-light text-sm' onClick={() => dispatch(setDownloadSvg({downloadSvg:true}))}>Download SVG</button>
       <button className='p-3 rounded-md bg-blue-400 text-white text-light text-sm' onClick={() => dispatch(setDownloadPdf({downloadPdf:true}))}>Download PDF</button>
+       <button className='p-3 rounded-md bg-blue-400 text-white text-light text-sm' onClick={handleDownloadJSON}>Download JSON</button>
     </div>
     {/*Add to cart*/}
     

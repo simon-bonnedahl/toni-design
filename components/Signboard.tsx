@@ -331,7 +331,7 @@ canvas.on({
         dispatch(setDownloadSvg({downloadSvg:false}))
         setShape(canvas, currentShape)
       }
-
+    
   return (
       <div className="border border-gray w-full h-full">
       <FabricJSCanvas className="sample-canvas w-full h-full bg-slate-200" onReady={init} />
