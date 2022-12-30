@@ -58,6 +58,11 @@ export default defineType({
       type: 'number',
     }),
     defineField({
+      name: 'price',
+      title: 'Pris',
+      type: 'number',
+    }),
+    defineField({
       name: 'adjutsable',
       title: 'Anpassningsbar?',
       type: 'boolean',

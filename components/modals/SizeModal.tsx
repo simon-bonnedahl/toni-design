@@ -25,7 +25,7 @@ const SizeModal: React.FC = () => {
   const handleHeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let height = event.target.valueAsNumber   
     setHeight(height)
-    if(5 <= width && width <= 230 ){
+    if(5 <= height && height <= 225 ){
       dispatch(setSignboardHeight({height}))
     }
 

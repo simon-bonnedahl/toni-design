@@ -5,7 +5,7 @@ const HeaderBar: React.FC = () => {
 
   return (
    
-    <div className='flex justify-end items-center w-full h-16 bg-blue-400 pl-12 pr-1 space-x-4'>
+    <div className='flex justify-end items-center w-full h-8 bg-blue-400 pl-12 pr-1 space-x-4 shadows-xl'>
         <div className='text-white text-sm'>
             <span className='font-bold hover:cursor-pointer'>Private</span> / <span className='hover:cursor-pointer'>Company</span>
         </div>
