@@ -17,12 +17,15 @@ const initialState = {
     downloadPdf: false,
   },
 };
-const calculatePrice = (state) => {
-  let width = state.signBoard.width;
-  let height = state.signBoard.height;
+
+const calculatePrice = (signBoard) => {
+  let width = signBoard.width;
+  let height = signBoard.height;
   let c = 0.00725;
   return width * height * c;
 };
+//Calculate price at initialization
+initialState.signBoard.price = calculatePrice(initialState.signBoard);
 
 export const signBoardSlice = createSlice({
   name: "signBoard",
@@ -36,11 +39,11 @@ export const signBoardSlice = createSlice({
     },
     setSignboardWidth: (state, action) => {
       state.signBoard.width = action.payload.width;
-      state.signBoard.price = calculatePrice(state);
+      state.signBoard.price = calculatePrice(state.signBoard);
     },
     setSignboardHeight: (state, action) => {
       state.signBoard.height = action.payload.height;
-      state.signBoard.price = calculatePrice(state);
+      state.signBoard.price = calculatePrice(state.signBoard);
     },
     setSignboardMaterial: (state, action) => {
       state.signBoard.material = action.payload.material;

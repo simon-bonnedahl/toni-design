@@ -16,7 +16,7 @@ const SizeModal: React.FC = () => {
   const handleWidthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let width = event.target.valueAsNumber
     setWidth(width)
-    if(5 <= width && width <= 1000 ) {
+    if(5 <= width && width <= 500 ) {
       dispatch(setSignboardWidth({width}))
     }
     
@@ -25,7 +25,7 @@ const SizeModal: React.FC = () => {
   const handleHeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let height = event.target.valueAsNumber   
     setHeight(height)
-    if(5 <= width && width <= 800 ){
+    if(5 <= width && width <= 230 ){
       dispatch(setSignboardHeight({height}))
     }
 
@@ -49,7 +49,7 @@ const SizeModal: React.FC = () => {
             value={width}
             onChange={handleWidthChange}
             min={5}
-            max={1000}
+            max={500}
             step={5}
           />
         </label>
@@ -63,7 +63,7 @@ const SizeModal: React.FC = () => {
             value={height}
             onChange={handleHeightChange}
             min={5}
-            max={1000}
+            max={230}
             step={5}
           />
         </label>

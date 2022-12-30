@@ -18,7 +18,7 @@ const Topbar: React.FC = () => {
   }
   return (
    
-    <div className='flex flex-row justify-between w-screen h-20 shadow-lg z-50'>
+    <div className='flex flex-row justify-between  w-screen h-20 shadow-lg z-50'>
       {/*Zoom*/}
 
       <div className="flex items-center h-full pl-4 space-x-2 w-fit ml-40">
@@ -30,7 +30,7 @@ const Topbar: React.FC = () => {
         </div>
       </div>
     {/*Size*/}
-    <div onClick={() => dispatch(setSelectedOption({selectedOption: 2}))} className='flex space-x-4 items-center h-full hover:cursor-pointer pr-4'>
+    <div onClick={() => dispatch(setSelectedOption({selectedOption: 2}))} className='flex space-x-4 items-center h-full hover:cursor-pointer pr-6'>
       <div>
       Width: <span className='font-bold'>{signBoard.width}</span> mm
       </div>

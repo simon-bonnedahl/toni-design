@@ -46,15 +46,15 @@ const Signboard: React.FC = () => {
 
   const setShape = (canvas:any, shape:string) =>{
     let s = null
-    let borderWidth = 1
+    let borderWidth = 0
     let borderColor = "#000"
     
 
     switch(shape){
       case "Rectangle":
          s = new fabric.Rect({
-        width: canvas.width - borderWidth,
-        height: canvas.height - borderWidth,
+        width: canvas.width ,
+        height: canvas.height,
         fill: signBoard.color,
         stroke: borderColor,
         strokeWidth: borderWidth,
@@ -62,8 +62,8 @@ const Signboard: React.FC = () => {
         break;
       case "Rounded Rectangle":
         s = new fabric.Rect({
-        width: canvas.width - borderWidth,
-        height: canvas.height - borderWidth,
+        width: canvas.width,
+        height: canvas.height,
         fill: signBoard.color,
         stroke: borderColor,
         strokeWidth: borderWidth,
@@ -73,8 +73,8 @@ const Signboard: React.FC = () => {
         break;
       case "Ellipse":
          s = new fabric.Ellipse({
-            rx: canvas.width/2 - borderWidth,
-            ry: canvas.height/2 - borderWidth,
+            rx: canvas.width/2,
+            ry: canvas.height/2,
             fill: signBoard.color,
             stroke: borderColor,
             strokeWidth: borderWidth,    
@@ -92,7 +92,7 @@ const Signboard: React.FC = () => {
     s.evented = false,
 
     s.shadow = new fabric.Shadow({ 
-            color: "#333", 
+            color: "#555", 
             blur: 30,
             offsetY: 5
         })
