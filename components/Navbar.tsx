@@ -9,7 +9,7 @@ const Navbar: React.FC = () => {
 
   return (
    
-    <div className='flex justify-between items-center w-full h-20 border pl-12 pr-1'>
+    <div className='flex justify-between items-center w-full h-20 pl-12 pr-1'>
       {/*Logo*/}
       <div className='w-20 h-20'>
       <Link href="https://www.tonireklam.se/">

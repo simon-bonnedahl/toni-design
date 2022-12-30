@@ -43,9 +43,9 @@ const ShapeModal: React.FC = () => {
      <div className='flex flex-col w-full p-5 space-y-2'>
           {shapes.map(shape => {
             if(shape.name === selectedShape){
-              return(<div key={shape.key} className='w-full bg-slate-400'>{shape.name}</div>)
+              return(<div key={shape.key} className='w-full bg-slate-400 hover:cursor-pointer'>{shape.name}</div>)
             }else{
-              return(<div key={shape.key} onClick={() => handleShapeChange(shape.name)} className='w-full bg-white'>{shape.name}</div>)
+              return(<div key={shape.key} onClick={() => handleShapeChange(shape.name)} className='w-full bg-white hover:cursor-pointer'>{shape.name}</div>)
             }
           })}
     </div>

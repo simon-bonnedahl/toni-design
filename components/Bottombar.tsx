@@ -14,20 +14,21 @@ const Bottombar: React.FC = () => {
    
     <div className='flex flex-row w-full h-28 border items-center justify-between px-4'>
     <div className='flex space-x-4'>
-      <button className=" bg-slate-300 rounded-lg p-2"onClick={() => dispatch(setDownloadSvg({downloadSvg:true}))}>Download SVG</button>
-      <button className=" bg-slate-300 rounded-lg p-2"onClick={() => dispatch(setDownloadPdf({downloadPdf:true}))}>Download PDF</button>
+      <button className='p-3 rounded-md bg-blue-400 text-white text-light text-sm' onClick={() => dispatch(setDownloadSvg({downloadSvg:true}))}>Download SVG</button>
+      <button className='p-3 rounded-md bg-blue-400 text-white text-light text-sm' onClick={() => dispatch(setDownloadPdf({downloadPdf:true}))}>Download PDF</button>
     </div>
-    {/*Add to basket*/}
+    {/*Add to cart*/}
     
-
+    
     <div className='flex items-center space-x-2'>
-      <div className='mr-4'>
+      {/*Price*/}
+      <div >
         <span className='font-bold text-xl'>{Math.round(signBoard.price)}</span> kr
       </div>
+      {/*Increase and Decrease*/}
       <div className='flex items-center rounded-md'>
         <button disabled={amount === 0} onClick={() => setAmount(amount -1)} className="p-4 rounded-md border bg-gray-200">
           <FontAwesomeIcon className="w-3 h-3" icon={faMinus}/>
-
         </button>
         <div className='p-4'>
         {amount}
@@ -36,8 +37,9 @@ const Bottombar: React.FC = () => {
           <FontAwesomeIcon className="w-3 h-3" icon={faPlus}/>
         </button>
       </div>
+      {/*Add button */}
       <div>
-        <button className='p-3 rounded-md bg-blue-400 text-white text-light'>Add to cart</button>
+        <button className='p-3 rounded-md bg-blue-400 text-white text-light text-sm'>Add to cart</button>
       </div>
     </div>
     
