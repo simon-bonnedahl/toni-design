@@ -21,11 +21,12 @@ const ColorModal: React.FC = () => {
         client.fetch(query, params).then((data:any) => {
             setColorOptions(data)
         })
-        
+    
    
     }, [])
 
-  const dispatch = useDispatch()
+
+   const dispatch = useDispatch()
 
   const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let color = event.target.value    
@@ -47,8 +48,8 @@ const ColorModal: React.FC = () => {
      </div>
      {signBoard.product === "Engraved Sign" ? 
       <div className='flex w-full p-5 space-x-2 overflow-y-scroll'>
-        {colorOptions.map(option => (
-          <div key={option.id} className='flex flex-col items-center justify-center'>
+        {colorOptions.map((option, key)=> (
+          <div key={key} className='flex flex-col items-center justify-center'>
             <div onClick={()=> dispatch(setSignboardColor({color:option.frontColorValue}))} className="flex items-center justify-center w-12 h-12 rounded-full border-2 hover:cursor-pointer" style={{backgroundColor: option.frontColorValue}}>
                 <FontAwesomeIcon className="w-8 h-8 p-1" icon={faT} color={option.backColorValue}/>
             </div>

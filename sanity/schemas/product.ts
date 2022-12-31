@@ -24,7 +24,11 @@ export default defineType({
       title: 'Artikelnummer',
       type: 'string',
     }),
-
+    defineField({
+      name: 'description',
+      title: 'Beskrivning av produkten',
+      type: 'string',
+    }),
     defineField({
       name: 'image',
       title: 'Bild',
@@ -32,14 +36,19 @@ export default defineType({
       options: {
         hotspot: true,
         accept: '.jpg, .png, .jpeg, .webp',
-      },
-      
+      },  
     }),
     defineField({
       name: 'categories',
       title: 'Kategorier',
       type: 'array',
       of: [{type: 'reference', to: {type: 'category'}}],
+    }),
+    defineField({
+      name: 'keywords',
+      title: 'Nyckelord som används för sökning',
+      type: 'array',
+      of: [{type: 'string'}],
     }),
     defineField({
       name: 'material',
@@ -80,5 +89,6 @@ export default defineType({
         accept: '.json',
       },
     }),
+    
   ]
 })

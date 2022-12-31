@@ -23,7 +23,6 @@ const Signboard: React.FC = () => {
     setControls()
     setBackgroundColor(canvas, signBoard.backgroundColor)
     //Add key listener
-    document.addEventListener("keydown", keyHandler, false);
     onReady(canvas)
   } 
 
@@ -56,7 +55,12 @@ const Signboard: React.FC = () => {
       }else{
         shape.set({width: w, height: h})
       }
-      alignObject("center", shape)
+      //align it in center of canvas
+      shape.set({
+        left: (canvas.width  / 2) - ((shape.width * shape.scaleX) / 2),
+        top: (canvas.height  / 2) - ((shape.height * shape.scaleY) / 2)
+      });
+
     }
       setCurrentSize({width:w, height:h})
   }
@@ -100,7 +104,7 @@ const Signboard: React.FC = () => {
       default:
         return
     }
-    //Lock the shapeobject
+    //Lock the shape
     s.hasControls = false;
     s.hasBorders = false;
     s.lockMovementX = true;
@@ -184,15 +188,25 @@ const Signboard: React.FC = () => {
 
     const keyHandler = useCallback((event: { key: string; }) => {
         let targetObject = editor?.canvas.getActiveObject()
-        if (event.key === "Backspace") {   
-          //editor?.canvas.remove(targetObject)
-        }else{    //If we press any other key, like typing text, we de-select the target object so it wont be deleted
-          if(targetObject)
-
-            //editor?.canvas.discardActiveObject()
+        switch(event.key){
+          case "ArrowUp":
+            targetObject?.set({top: targetObject.top - 1})       
+            break
+          case "ArrowDown":
+            targetObject?.set({top: targetObject.top + 1})
+            break
+          case "ArrowRight":
+            targetObject?.set({left: targetObject.left + 1})
+            break
+          case "ArrowLeft":
+            targetObject?.set({left: targetObject.left - 1})
+            break
+          default:
             return
-            
         }
+        editor?.canvas.renderAll()
+        
+        
         //Ctrl-Z ?
       }, [editor?.canvas]);
       
@@ -203,56 +217,122 @@ const Signboard: React.FC = () => {
       //activeObj.getBoundingRect()
       //https://stackoverflow.com/questions/47408816/object-alignment-in-fabric-js
     let canvas = editor?.canvas
+    let shape = canvas?._objects[0]
+    let padding = 2
+    
+    obj.angle = 0
     switch (location) {
-
-    case 'left':
-      obj.set({
-        left: 0
-      });
-      break;
-    case 'right':
-      obj.set({
-        left: canvas.width - (obj.width * obj.scaleX)
-      });
-      break;
-    case 'top':
-      obj.set({
-        top: 0
-      });
-      break;
-    case 'bottom':
-      obj.set({
-        top: canvas.height - (obj.height * obj.scaleY)
-      });
-      break;
-    case 'top-center':
-      obj.set({
-        left: (canvas.width / 2) - ((obj.width * obj.scaleX) / 2)
-      });
-      break;
-    case 'center':
-      obj.set({
-        left: (canvas.width / 2) - ((obj.width * obj.scaleX) / 2),
-        top: (canvas.height / 2) - ((obj.height * obj.scaleY) / 2)
-      });
-      break;
-    }
+      case 'mid-left':
+        obj.set({
+          left: shape.left + padding,
+          top: shape.top + (currentSize.height  / 2) - ((obj.height * obj.scaleY) / 2)
+        });
+        break;
+      case 'mid-right':
+        obj.set({
+          left: shape.left + currentSize.width - (obj.width * obj.scaleX),
+          top: shape.top + (currentSize.height  / 2) - ((obj.height * obj.scaleY) / 2)
+        });
+        break;
+      case 'top':
+        obj.set({
+          top: 0
+        });
+        break;
+      case 'bottom':
+        obj.set({
+          top: currentSize.height  - (obj.height * obj.scaleY)
+        });
+        break;
+      case 'top-center':
+        obj.set({
+          left: (currentSize.width  / 2) - ((obj.width * obj.scaleX) / 2)
+        });
+        break;
+      case 'center':
+        obj.set({
+          rotation: 0,
+          left: shape.left + (currentSize.width  / 2) - ((obj.width * obj.scaleX) / 2),
+          top: shape.top +  (currentSize.height  / 2) - ((obj.height * obj.scaleY) / 2)
+        });
+        break;
+      default:
+        return    
+      }
+    canvas.renderAll();
   }
   let canvas = editor?.canvas
   
-  var selectHandler = function (e:any) {
-    console.log("I was triggered by a custom event.");
-   
-};
+  const handleSelectObject = () => {
+    document.addEventListener("keydown", keyHandler, false);
+    setSelectedObject(true)
+  }
+  const handleUnselectObject = () => {
+    document.removeEventListener("keydown", keyHandler, false);
+    setSelectedObject(false)
+  }
+
+  const handleMoveObject = (e:any) => {
+    //Bound it to the signboard
+    let obj = e.target
+    let canvas = editor?.canvas
+    let shape = canvas?._objects[0]
+    let padding = 2
+    if(obj.left < shape.left + padding){
+      obj.set({left: shape.left + padding})
+    }
+    if(obj.left > shape.left + currentSize.width - (obj.width * obj.scaleX)){
+      obj.set({left: shape.left + currentSize.width - (obj.width * obj.scaleX)})
+    }
+    if(obj.top < shape.top + padding){
+      obj.set({top: shape.top + padding})
+    }
+    if(obj.top > shape.top + currentSize.height - (obj.height * obj.scaleY)){
+      obj.set({top: shape.top + currentSize.height - (obj.height * obj.scaleY)})
+    }
+  }
+
+  const handleScaleObject = (e:any) => {
+    //Lock its scaling so it cant be scaled to be bigger than the signboard
+    let obj = e.target
+    let canvas = editor?.canvas
+    let shape = canvas?._objects[0]
+    let padding = 2
+
+    if(obj.width * obj.scaleX > currentSize.width - padding){
+      obj.set({scaleX: (currentSize.width - padding) / obj.width})
+    }
+    if(obj.height * obj.scaleY > currentSize.height - padding){
+      obj.set({scaleY: (currentSize.height - padding) / obj.height})
+    }
+  }
+
+  
+ 
+
   {/*Canvas Events*/}
   if(canvas){
     //http://fabricjs.com/events
     canvas.on({
-    'selection:created' :   () => setSelectedObject(true),
-    'selection:cleared' :   () => setSelectedObject(false),
+    'selection:created' : handleSelectObject,
+    'selection:cleared' : handleUnselectObject,
+    'object:moving': handleMoveObject,
+    'object:scaling': handleScaleObject
     });
   }
   
+  const handleDeleteObject = () => {
+    editor?.canvas.remove(editor?.canvas.getActiveObject())
+  }
+  const handleAlignObjectCenter = () => {
+    alignObject('center', editor?.canvas.getActiveObject())
+  }
+  const handleAlignObjectLeft = () => {
+    alignObject('mid-left', editor?.canvas.getActiveObject())
+  }
+  const handleAlignObjectRight = () => {
+    alignObject('mid-right', editor?.canvas.getActiveObject())
+  }
   
 
   useEffect(() => {
@@ -297,6 +377,7 @@ const Signboard: React.FC = () => {
       if(signBoard.downloadSvg){
         handleDownloadSvg(canvas)
       }
+     
     }
 
   },[signBoard, editor?.canvas])
@@ -330,7 +411,10 @@ const handleDownloadSvg = (canvas:any) => {
   return (
       <div className="border border-gray w-full h-full relative">
       <FabricJSCanvas className="sample-canvas w-full h-full bg-slate-200" onReady={init} />
-        {selectedObject && <ControlBox/>}
+        {selectedObject && <ControlBox handleDelete= {handleDeleteObject}
+                                       handleAlignCenter={handleAlignObjectCenter} 
+                                       handleAlignLeft={handleAlignObjectLeft} 
+                                       handleAlignRight={handleAlignObjectRight}/>}
           
   
       
