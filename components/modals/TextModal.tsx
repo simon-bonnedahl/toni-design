@@ -45,6 +45,7 @@ const TextModal: React.FC = () => {
     };
     setText(t);
     dispatch(addCommand({ command: "addText", value: t }));
+    handleClose();
   };
 
   const handleClose = () => {

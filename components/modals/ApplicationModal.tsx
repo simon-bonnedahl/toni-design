@@ -2,15 +2,12 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectSignboard,
-  setSignboardApplication,
-} from "../../reducers/signSlice";
+import { getSignMetadata, setSignApplication } from "../../reducers/signSlice";
 import { setSelectedOption } from "../../reducers/toolbarSlice";
 
 const ApplicationModal: React.FC = () => {
   const [selectedApplication, setSelectedApplication] = useState(
-    useSelector(selectSignboard).application
+    useSelector(getSignMetadata).application
   );
   const applications = [
     //Plocka från sanity?
@@ -31,7 +28,7 @@ const ApplicationModal: React.FC = () => {
 
   const handleApplicationChange = (a: string) => {
     setSelectedApplication(a);
-    dispatch(setSignboardApplication({ application: a }));
+    dispatch(setSignApplication({ application: a }));
   };
 
   const handleClose = () => {

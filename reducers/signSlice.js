@@ -22,14 +22,14 @@ const initialState = {
   },
 };
 
-const calculatePrice = (visual) => {
-  let width = visual.width;
-  let height = visual.height;
+const calculatePrice = (sign) => {
+  let width = sign.visual.width;
+  let height = sign.visual.height;
   let c = 0.00725;
   return width * height * c;
 };
 //Calculate price at initialization
-initialState.sign.price = calculatePrice(initialState.sign);
+initialState.sign.metadata.price = calculatePrice(initialState.sign);
 
 export const signSlice = createSlice({
   name: "sign",
@@ -52,7 +52,7 @@ export const signSlice = createSlice({
     },
     saveSign: (state, action) => {
       state.sign.visual = action.payload.sign;
-      state.sign.metadata.price = calculatePrice(state.sign.visual);
+      state.sign.metadata.price = calculatePrice(state.sign);
     },
   },
 });

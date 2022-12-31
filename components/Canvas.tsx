@@ -21,7 +21,7 @@ const Canvas: React.FC = () => {
 
   const commands = useSelector(selectCommands);
   const [signHistory, setSignHistory] = useState<any[]>([sign]);
-
+  const [historyIndex, setHistoryIndex] = useState(0);
   const [selectedObject, setSelectedObject] = useState(false);
 
   const dispatch = useDispatch();
@@ -150,24 +150,33 @@ const Canvas: React.FC = () => {
     canvas.add(t);
     alignObject("center", t);
     canvas.setActiveObject(t);
-    return { ...sign, elements: [...sign.elements, text] };
+    let textElement = {
+      ...text,
+      type: "text",
+      top: t.top,
+      left: t.left,
+      width: t.width,
+      height: t.height,
+    };
+    return { ...sign, elements: [...sign.elements, textElement] };
   };
 
   const addImage = (canvas: any, imageUrl: string, imageType: string) => {
+    let i: any = null;
     if (imageType === "image/svg+xml") {
       var group: any[] = [];
 
       fabric.loadSVGFromURL(
         imageUrl,
         function (objects: any, options: any) {
-          var svg = new fabric.Group(group);
+          i = new fabric.Group(group);
 
-          svg.set({
+          i.set({
             width: 50, //Need to be calculated
             height: 50,
           });
-          alignObject("center", svg);
-          canvas.add(svg);
+          alignObject("center", i);
+          canvas.add(i);
         },
         function (
           item: { getAttribute: (arg0: string) => any },
@@ -183,7 +192,7 @@ const Canvas: React.FC = () => {
       //Create the image to gain the width and height
       let img = new Image();
       img.onload = function () {
-        var i = new fabric.Image(imgElement, {
+        i = new fabric.Image(imgElement, {
           angle: 0,
           opacity: 1,
           width: img.width, //Math.min(img.width, sign.width), //To not overflow the canvas, this need to scale the image instead of cropping
@@ -196,6 +205,44 @@ const Canvas: React.FC = () => {
       };
       img.src = imageUrl;
     }
+    if (i) {
+      let imageElement = {
+        type: "image",
+        imageType: imageType,
+        imageUrl: imageUrl,
+        top: i.top,
+        left: i.left,
+        width: i.width,
+        height: i.height,
+      };
+      return {
+        ...sign,
+        elements: [...sign.elements, imageElement],
+      };
+    }
+  };
+
+  const recreateSign = (canvas: any, sign: any) => {
+    canvas.clear();
+    setShape(canvas, sign.shape);
+    setColor(canvas, sign.color);
+    setSize(canvas, sign.width, sign.height);
+    sign.elements.forEach((element: any) => {
+      if (element.type == "text") {
+        addText(canvas, element);
+      }
+      if (element.type == "image") {
+        addImage(canvas, element.imageUrl, element.imageType);
+      }
+      let obj = canvas._objects[canvas._objects.length - 1];
+      obj.set({
+        top: element.top,
+        left: element.left,
+        width: element.width,
+        height: element.height,
+      });
+    });
+    return sign;
   };
 
   const keyHandler = useCallback(
@@ -341,11 +388,8 @@ const Canvas: React.FC = () => {
     if (canvas) {
       //New way of updating the canvas
       if (commands.length > signHistory.length - 1) {
-        let command = commands[commands.length - 1];
-        let sign = handleCommand(command, canvas);
-        setSign(sign);
-        dispatch(saveSign({ sign }));
-        setSignHistory([...signHistory, sign]);
+        let command = commands[commands.length - 1]; //Look at the latest commands
+        handleCommand(command, canvas);
         canvas.renderAll();
       }
     }
@@ -353,6 +397,7 @@ const Canvas: React.FC = () => {
 
   const handleCommand = (command: any, canvas: any) => {
     let result = null;
+
     switch (command.command) {
       case "addText":
         result = addText(canvas, command.value);
@@ -369,8 +414,38 @@ const Canvas: React.FC = () => {
       case "setColor":
         result = setColor(canvas, command.value);
         break;
+      case "goBack":
+        let backIndex = historyIndex - 1;
+        if (backIndex < 0) return;
+        setHistoryIndex(backIndex);
+        console.log(signHistory[backIndex]);
+        result = recreateSign(canvas, signHistory[backIndex]);
+        break;
+      case "goForward":
+        console.log(historyIndex, signHistory.length - 1);
+        let forwardIndex = historyIndex + 1;
+        if (forwardIndex > signHistory.length - 1) return;
+        console.log("go forward");
+        setHistoryIndex(forwardIndex);
+        console.log(signHistory[forwardIndex]);
+        result = recreateSign(canvas, signHistory[forwardIndex]);
+        break;
+      default:
+        return;
     }
-    return result;
+
+    //result cant be null
+    setSign(result);
+    dispatch(saveSign({ sign: result })); //Save the sign so the other components can read its visual properties
+
+    if (command.command === "goBack" || command.command === "goForward") {
+      //if commans is goBack we dont add the new sign to the history
+    } else {
+      //If command isnt goBack we go to the front of the history and add the new sign
+      setHistoryIndex(signHistory.length);
+      setSignHistory([...signHistory, result]);
+    }
+    console.log(signHistory);
   };
 
   const handleDownloadPdf = (canvas: any) => {

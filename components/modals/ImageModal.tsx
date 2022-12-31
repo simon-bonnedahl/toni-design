@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
-import { addSignboardImage } from "../../reducers/signSlice";
 import { setSelectedOption } from "../../reducers/toolbarSlice";
+import { addCommand } from "../../reducers/editorSlice";
 
 const ImageModal: React.FC = () => {
   const dispatch = useDispatch();
@@ -20,8 +20,9 @@ const ImageModal: React.FC = () => {
   const handleAddImage = () => {
     if (image)
       dispatch(
-        addSignboardImage({
-          image: { url: image.url, type: image.type, rendered: false },
+        addCommand({
+          command: "addImage",
+          value: { url: image.url, type: image.type },
         })
       );
     handleClose();
