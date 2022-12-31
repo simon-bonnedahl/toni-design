@@ -21,7 +21,7 @@ const TextModal: React.FC = () => {
     "Times New Roman",
     "Garmond",
     "Courier New",
-    "Brush Script",
+    "Brush Script MT",
   ];
   const colors = [
     { name: "Black", hex: "#000000" },

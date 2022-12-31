@@ -20,7 +20,7 @@ export default defineType({
       },
     }),
     defineField({
-      name: 'product_id',
+      name: 'id',
       title: 'Artikelnummer',
       type: 'string',
     }),
@@ -72,7 +72,7 @@ export default defineType({
       type: 'number',
     }),
     defineField({
-      name: 'adjutsable',
+      name: 'adjustable',
       title: 'Anpassningsbar?',
       type: 'boolean',
     }),

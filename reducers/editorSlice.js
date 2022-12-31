@@ -11,11 +11,14 @@ export const editorSlice = createSlice({
     addCommand: (state, action) => {
       state.commands = [...state.commands, action.payload];
     },
+    clearCommands: (state) => {
+      state.commands = [];
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { addCommand } = editorSlice.actions;
+export const { addCommand, clearCommands } = editorSlice.actions;
 
 export const selectCommands = (state) => state.editor.commands;
 

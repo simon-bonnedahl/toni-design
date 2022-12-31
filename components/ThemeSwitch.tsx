@@ -1,19 +1,25 @@
-import { faLightbulb, faSun, faSunPlantWilt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faLightbulb,
+  faSun,
+  faSunPlantWilt,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 
 const ThemeSwitch: React.FC = () => {
-    const [darkTheme, setDarkTheme] = useState(false)
+  const [darkTheme, setDarkTheme] = useState(false);
 
-    const toggleTheme = () => {
-        setDarkTheme(!darkTheme)
-    }
-
+  const toggleTheme = () => {
+    setDarkTheme(!darkTheme);
+  };
+  //https://web.dev/patterns/theming/theme-switch/
   return (
     <div className="hover:cursor-pointer" onClick={toggleTheme}>
-        {darkTheme ?  <FontAwesomeIcon className="w-5 h-5" icon={faLightbulb} color="#fff" /> :
-         <FontAwesomeIcon className="w-5 h-5" icon={faLightbulb} color="#000" />}
-       
+      {darkTheme ? (
+        <FontAwesomeIcon className="w-5 h-5" icon={faLightbulb} color="#fff" />
+      ) : (
+        <FontAwesomeIcon className="w-5 h-5" icon={faLightbulb} color="#000" />
+      )}
     </div>
   );
 };

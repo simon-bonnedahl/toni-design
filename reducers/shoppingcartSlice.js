@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   items: [],
+  buyer: "private",
 };
 
 export const shoppingcartSlice = createSlice({
@@ -22,16 +23,22 @@ export const shoppingcartSlice = createSlice({
       }
       state.items = newCart;
     },
+    setBuyer: (state, action) => {
+      state.buyer = action.payload.buyer;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { addToCart, removeFromCart } = shoppingcartSlice.actions;
+export const { addToCart, removeFromCart, setBuyer } =
+  shoppingcartSlice.actions;
 
 export const selectCartItems = (state) => state.shoppingcart.items;
 
 export const selectCartItemsWithId = (state, id) =>
   state.shoppingcart.items.filter((item) => item.id === id);
+
+export const selectBuyer = (state) => state.shoppingcart.buyer;
 
 export const selectCartTotal = (state) =>
   state.shoppingcart.items.reduce((total, item) => (total += item.price), 0);

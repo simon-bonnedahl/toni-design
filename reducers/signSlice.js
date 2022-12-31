@@ -35,6 +35,9 @@ export const signSlice = createSlice({
   name: "sign",
   initialState,
   reducers: {
+    setSign: (state, action) => {
+      state.sign = action.payload.sign;
+    },
     setSignProduct: (state, action) => {
       state.sign.metadata.product = action.payload.product;
     },
@@ -59,6 +62,7 @@ export const signSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
+  setSign,
   setSignProduct,
   setSignMaterial,
   setSignApplication,

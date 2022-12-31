@@ -7,7 +7,7 @@ import { selectCommands } from "../reducers/editorSlice";
 import { saveSign } from "../reducers/signSlice";
 const fabric = require("fabric").fabric;
 const { jsPDF } = require("jspdf");
-const { uuid } = require("uuidv4");
+const { v4: uuidv4 } = require("uuid");
 
 const Canvas: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor();
@@ -143,7 +143,7 @@ const Canvas: React.FC = () => {
   };
 
   const addText = (canvas: any, text: any) => {
-    let id = uuid();
+    let id = uuidv4();
     var t = new fabric.IText(text.string, {
       fill: text.color,
       fontFamily: text.font,
@@ -165,24 +165,42 @@ const Canvas: React.FC = () => {
     return { ...sign, elements: [...sign.elements, textElement] };
   };
 
-  const addImage = (canvas: any, imageUrl: string, imageType: string) => {
-    let id = uuid();
-    let i: any = null;
+  const addImage = async (canvas: any, imageUrl: string, imageType: string) => {
+    let id = uuidv4();
     if (imageType === "image/svg+xml") {
       var group: any[] = [];
 
       fabric.loadSVGFromURL(
         imageUrl,
         function (objects: any, options: any) {
-          i = new fabric.Group(group);
+          let svg = new fabric.Group(group);
 
-          i.set({
+          svg.set({
             width: 50, //Need to be calculated
             height: 50,
             id: id,
           });
-          alignObject("center", i);
-          canvas.add(i);
+
+          canvas.add(svg);
+          alignObject("center", svg);
+          canvas.setActiveObject(svg);
+          canvas.renderAll();
+          return {
+            ...sign,
+            elements: [
+              ...sign.elements,
+              {
+                type: "image",
+                imageType: imageType,
+                imageUrl: imageUrl,
+                id: id,
+                top: svg.top,
+                left: svg.left,
+                width: svg.width,
+                height: svg.height,
+              },
+            ],
+          };
         },
         function (
           item: { getAttribute: (arg0: string) => any },
@@ -198,7 +216,8 @@ const Canvas: React.FC = () => {
       //Create the image to gain the width and height
       let img = new Image();
       img.onload = function () {
-        i = new fabric.Image(imgElement, {
+        console.log("HEeEEEEEEEJ");
+        let i = new fabric.Image(imgElement, {
           angle: 0,
           opacity: 1,
           id: id,
@@ -209,24 +228,25 @@ const Canvas: React.FC = () => {
         canvas.add(i);
         alignObject("center", i);
         canvas.setActiveObject(i);
+        canvas.renderAll();
+        return {
+          ...sign,
+          elements: [
+            ...sign.elements,
+            {
+              type: "image",
+              imageType: imageType,
+              imageUrl: imageUrl,
+              id: id,
+              top: i.top,
+              left: i.left,
+              width: i.width,
+              height: i.height,
+            },
+          ],
+        };
       };
       img.src = imageUrl;
-    }
-    if (i) {
-      let imageElement = {
-        type: "image",
-        imageType: imageType,
-        imageUrl: imageUrl,
-        id: id,
-        top: i.top,
-        left: i.left,
-        width: i.width,
-        height: i.height,
-      };
-      return {
-        ...sign,
-        elements: [...sign.elements, imageElement],
-      };
     }
   };
 
@@ -247,10 +267,12 @@ const Canvas: React.FC = () => {
       let obj = canvas._objects[canvas._objects.length - 1];
       console.log("OBJ", obj);
       obj.set({
+        scaleX: element.width / obj.width,
+        scaleY: element.height / obj.height,
+      });
+      obj.set({
         top: element.top,
         left: element.left,
-        width: element.width,
-        height: element.height,
       });
     });
     return sign;
@@ -276,8 +298,6 @@ const Canvas: React.FC = () => {
           return;
       }
       editor?.canvas.renderAll();
-
-      //Ctrl-Z ?
     },
     [editor?.canvas]
   );
@@ -343,6 +363,7 @@ const Canvas: React.FC = () => {
 
   const handleMoveObject = (e: any) => {
     //Bound it to the sign
+    console.log("Move object");
     let obj = e.target;
     let canvas = editor?.canvas;
     let shape = canvas?._objects[0];
@@ -374,15 +395,15 @@ const Canvas: React.FC = () => {
 
     for (let i = 0; i < sign.elements.length; i++) {
       let element = { ...sign.elements[i] };
-      console.log("Object", obj.id, "Element", element.id);
+      console.log("Object", obj);
 
       if (element.id == obj.id) {
-        console.log("Found it");
         element.top = obj.top;
         element.left = obj.left;
-        element.width = obj.width;
-        element.height = obj.height;
+        element.width = obj.width * obj.scaleX;
+        element.height = obj.height * obj.scaleY;
       }
+      console.log(element);
       newList.push(element);
     }
     let s = { ...sign, elements: newList };
@@ -438,8 +459,8 @@ const Canvas: React.FC = () => {
       case "addText":
         result = addText(canvas, command.value);
         break;
-      case "addImage":
-        result = addImage(canvas, command.value.url, command.value.type);
+      case "addImage": //async
+        addImage(canvas, command.value.url, command.value.type).then(result);
         break;
       case "setShape":
         result = setShape(canvas, command.value);
@@ -466,20 +487,25 @@ const Canvas: React.FC = () => {
         console.log(signHistory[forwardIndex]);
         result = recreateSign(canvas, signHistory[forwardIndex]);
         break;
+      case "reCreate":
+        result = recreateSign(canvas, command.value);
+        break;
       default:
         return;
     }
 
     //result cant be null
-    setSign(result);
-    dispatch(saveSign({ sign: result })); //Save the sign so the other components can read its visual properties
+    if (result) {
+      setSign(result);
+      dispatch(saveSign({ sign: result })); //Save the sign so the other components can read its visual properties
 
-    if (command.command === "goBack" || command.command === "goForward") {
-      //if commans is goBack we dont add the new sign to the history
-    } else {
-      //If command isnt goBack we go to the front of the history and add the new sign
-      setHistoryIndex(signHistory.length);
-      setSignHistory([...signHistory, result]);
+      if (command.command === "goBack" || command.command === "goForward") {
+        //if commans is goBack we dont add the new sign to the history
+      } else {
+        //If command isnt goBack we go to the front of the history and add the new sign
+        setHistoryIndex(signHistory.length);
+        setSignHistory([...signHistory, result]);
+      }
     }
   };
 

@@ -10,11 +10,15 @@ function Home() {
   useEffect(() => {
     //https://www.sanity.io/docs/js-client
     //const query = '*[_type == "bike" && seats >= $minSeats] {name, seats}'
-    const query = '*[_type == "product"]';
+    const query = `*[_type == 'product'] {
+                                ...,
+            "jsonURL": json.asset->url
+      }`;
     const params = {};
 
     client.fetch(query, params).then((data: any) => {
       setProducts(data);
+      console.log(data);
     });
   }, []);
   return (
@@ -35,6 +39,8 @@ function Home() {
               price={product.price}
               width={product.width}
               height={product.height}
+              adjustable={product.adjustable}
+              json={product.jsonURL}
             />
           ))}
         </div>
