@@ -1,55 +1,78 @@
-import React, { useState } from 'react'
-import { FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import { faClose} from '@fortawesome/free-solid-svg-icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectSignboard, setSignboardColor, setSignboardShape } from '../../reducers/signboardSlice';
-import { setSelectedOption } from '../../reducers/toolbarSlice';
-
-
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClose } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { getSignVisual } from "../../reducers/signSlice";
+import { setSelectedOption } from "../../reducers/toolbarSlice";
+import { addCommand } from "../../reducers/editorSlice";
 
 const ShapeModal: React.FC = () => {
-   const [selectedShape, setSelectedShape] = useState(useSelector(selectSignboard).shape)
-    const shapes = [
-        {
-        name: "Rectangle",
-        key: 0
-        },
-        {
-        name: "Rounded Rectangle",
-        key: 1
-        },
-        {
-        name: "Ellipse",
-        key: 2
-        },
-    ]
-   const dispatch = useDispatch()
+  const [selectedShape, setSelectedShape] = useState(
+    useSelector(getSignVisual).shape
+  );
+  const shapes = [
+    {
+      name: "Rectangle",
+      key: 0,
+    },
+    {
+      name: "Rounded Rectangle",
+      key: 1,
+    },
+    {
+      name: "Ellipse",
+      key: 2,
+    },
+  ];
+  const dispatch = useDispatch();
 
-  const handleShapeChange = (shape:string) => {
-    setSelectedShape(shape)
-    dispatch(setSignboardShape({shape}))
-
-  }
+  const handleShapeChange = (shape: string) => {
+    setSelectedShape(shape);
+    dispatch(
+      addCommand({
+        command: "setShape",
+        value: shape,
+      })
+    );
+  };
 
   const handleClose = () => {
-    dispatch(setSelectedOption({selectedOption: null}))
-  }
+    dispatch(setSelectedOption({ selectedOption: null }));
+  };
 
   return (
-    <div className='absolute top-40 z-50 left-40 w-96 h-64 bg-white shadow-lg flex rounded-lg'>
-     <div className="absolute -top-3 -left-3 bg-red-500 rounded-full z-50 hover:scale-110 ease-in-out duration-300" onClick={() => handleClose()} >
-     <FontAwesomeIcon className="w-8 h-8 p-1" icon={faClose} color="#fff"/>
-     </div>
-     <div className='flex flex-col w-full p-5 space-y-2'>
-          {shapes.map(shape => {
-            if(shape.name === selectedShape){
-              return(<div key={shape.key} className='w-full bg-slate-400 hover:cursor-pointer'>{shape.name}</div>)
-            }else{
-              return(<div key={shape.key} onClick={() => handleShapeChange(shape.name)} className='w-full bg-white hover:cursor-pointer'>{shape.name}</div>)
-            }
-          })}
+    <div className="absolute top-40 z-50 left-40 w-96 h-64 bg-white shadow-lg flex rounded-lg">
+      <div
+        className="absolute -top-3 -left-3 bg-red-500 rounded-full z-50 hover:scale-110 ease-in-out duration-300"
+        onClick={() => handleClose()}
+      >
+        <FontAwesomeIcon className="w-8 h-8 p-1" icon={faClose} color="#fff" />
+      </div>
+      <div className="flex flex-col w-full p-5 space-y-2">
+        {shapes.map((shape) => {
+          if (shape.name === selectedShape) {
+            return (
+              <div
+                key={shape.key}
+                className="w-full bg-blue-400 hover:cursor-pointer"
+              >
+                {shape.name}
+              </div>
+            );
+          } else {
+            return (
+              <div
+                key={shape.key}
+                onClick={() => handleShapeChange(shape.name)}
+                className="w-full bg-white hover:cursor-pointer"
+              >
+                {shape.name}
+              </div>
+            );
+          }
+        })}
+      </div>
     </div>
-   </div>
   );
 };
 
