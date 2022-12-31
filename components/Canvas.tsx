@@ -7,6 +7,7 @@ import { selectCommands } from "../reducers/editorSlice";
 import { saveSign } from "../reducers/signSlice";
 const fabric = require("fabric").fabric;
 const { jsPDF } = require("jspdf");
+const { uuid } = require("uuidv4");
 
 const Canvas: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor();
@@ -142,10 +143,12 @@ const Canvas: React.FC = () => {
   };
 
   const addText = (canvas: any, text: any) => {
+    let id = uuid();
     var t = new fabric.IText(text.string, {
       fill: text.color,
       fontFamily: text.font,
       fontSize: text.fontSize,
+      id: id,
     });
     canvas.add(t);
     alignObject("center", t);
@@ -153,6 +156,7 @@ const Canvas: React.FC = () => {
     let textElement = {
       ...text,
       type: "text",
+      id: id,
       top: t.top,
       left: t.left,
       width: t.width,
@@ -162,6 +166,7 @@ const Canvas: React.FC = () => {
   };
 
   const addImage = (canvas: any, imageUrl: string, imageType: string) => {
+    let id = uuid();
     let i: any = null;
     if (imageType === "image/svg+xml") {
       var group: any[] = [];
@@ -174,6 +179,7 @@ const Canvas: React.FC = () => {
           i.set({
             width: 50, //Need to be calculated
             height: 50,
+            id: id,
           });
           alignObject("center", i);
           canvas.add(i);
@@ -195,6 +201,7 @@ const Canvas: React.FC = () => {
         i = new fabric.Image(imgElement, {
           angle: 0,
           opacity: 1,
+          id: id,
           width: img.width, //Math.min(img.width, sign.width), //To not overflow the canvas, this need to scale the image instead of cropping
           height: img.height, // Math.min(img.height, sign.height),
         });
@@ -210,6 +217,7 @@ const Canvas: React.FC = () => {
         type: "image",
         imageType: imageType,
         imageUrl: imageUrl,
+        id: id,
         top: i.top,
         left: i.left,
         width: i.width,
@@ -227,7 +235,9 @@ const Canvas: React.FC = () => {
     setShape(canvas, sign.shape);
     setColor(canvas, sign.color);
     setSize(canvas, sign.width, sign.height);
+    console.log("Recreating sign");
     sign.elements.forEach((element: any) => {
+      console.log("recreating element", element);
       if (element.type == "text") {
         addText(canvas, element);
       }
@@ -235,6 +245,7 @@ const Canvas: React.FC = () => {
         addImage(canvas, element.imageUrl, element.imageType);
       }
       let obj = canvas._objects[canvas._objects.length - 1];
+      console.log("OBJ", obj);
       obj.set({
         top: element.top,
         left: element.left,
@@ -356,9 +367,33 @@ const Canvas: React.FC = () => {
 
   const handleScaleObject = (e: any) => {};
 
-  {
-    /*Canvas Events*/
-  }
+  const handleModifyObject = (e: any) => {
+    let obj = e.target;
+    //link the object to the elements in the sign
+    let newList = [];
+
+    for (let i = 0; i < sign.elements.length; i++) {
+      let element = { ...sign.elements[i] };
+      console.log("Object", obj.id, "Element", element.id);
+
+      if (element.id == obj.id) {
+        console.log("Found it");
+        element.top = obj.top;
+        element.left = obj.left;
+        element.width = obj.width;
+        element.height = obj.height;
+      }
+      newList.push(element);
+    }
+    let s = { ...sign, elements: newList };
+    setSign(s);
+    dispatch(saveSign({ sign: s }));
+    setHistoryIndex(signHistory.length);
+    setSignHistory([...signHistory, s]);
+  };
+
+  /*Canvas Events*/
+
   if (canvas) {
     //http://fabricjs.com/events
     canvas.on({
@@ -366,6 +401,7 @@ const Canvas: React.FC = () => {
       "selection:cleared": handleUnselectObject,
       "object:moving": handleMoveObject,
       "object:scaling": handleScaleObject,
+      "object:modified": handleModifyObject,
     });
   }
 
@@ -445,7 +481,6 @@ const Canvas: React.FC = () => {
       setHistoryIndex(signHistory.length);
       setSignHistory([...signHistory, result]);
     }
-    console.log(signHistory);
   };
 
   const handleDownloadPdf = (canvas: any) => {

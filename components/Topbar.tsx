@@ -1,4 +1,7 @@
-import { faBackward, faForward } from "@fortawesome/free-solid-svg-icons";
+import {
+  faRotateBack,
+  faRotateForward,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,19 +21,19 @@ const Topbar: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-row justify-end  w-screen h-10 shadow-lg z-50">
+    <div className="flex flex-row justify-between w-screen h-10 shadow-lg z-50">
       <div className="flex items-center h-full pl-4 space-x-2 w-fit ml-40">
         <div
           onClick={handleGoBack}
-          className="bg-white shadow-md rounded-full w-10 h-10 flex items-center justify-center hover:scale-110 ease-in-out duration-300 hover:cursor-pointer"
+          className="bg-white shadow-md rounded-full w-8 h-8 flex items-center justify-center hover:scale-110 ease-in-out duration-300 hover:cursor-pointer"
         >
-          <FontAwesomeIcon className="w-6 h-6" icon={faBackward} />
+          <FontAwesomeIcon className="w-6 h-6" icon={faRotateBack} />
         </div>
         <div
           onClick={handleGoForward}
-          className="bg-white shadow-md rounded-full w-10 h-10 flex items-center justify-center  hover:scale-110 ease-in-out duration-300 hover:cursor-pointer"
+          className="bg-white shadow-md rounded-full w-8 h-8 flex items-center justify-center  hover:scale-110 ease-in-out duration-300 hover:cursor-pointer"
         >
-          <FontAwesomeIcon className="w-6 h-6" icon={faForward} />
+          <FontAwesomeIcon className="w-6 h-6" icon={faRotateForward} />
         </div>
       </div>
 
