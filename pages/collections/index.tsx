@@ -33,7 +33,7 @@ function Home() {
         <div className="grid grid-cols-4 gap-4 p-4">
           {products.map((product) => (
             <ProductCard
-              key={product.id}
+              key={product._id}
               title={product.title}
               image={product.image}
               price={product.price}

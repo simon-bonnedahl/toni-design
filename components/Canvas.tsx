@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
-
 import ControlBox from "./modals/ControlBox";
 import { selectCommands } from "../reducers/editorSlice";
 import { saveSign } from "../reducers/signSlice";
@@ -24,11 +23,12 @@ const Canvas: React.FC = () => {
   const [signHistory, setSignHistory] = useState<any[]>([sign]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [selectedObject, setSelectedObject] = useState(false);
+  const [commandsRecieved, setCommandsRecieved] = useState(0);
 
   const dispatch = useDispatch();
 
   const init = (canvas: any) => {
-    setShape(canvas, sign.shape);
+    setShape(canvas, sign.shape, sign.width, sign.height);
     setSize(canvas, sign.width, sign.height);
     setColor(canvas, sign.color);
     setEditorControls();
@@ -61,6 +61,8 @@ const Canvas: React.FC = () => {
       } else {
         shape.set({ width: toPixels(width), height: toPixels(height) });
       }
+      canvas.renderAll();
+      console.log(shape);
       centerSign(canvas);
     }
     return { ...sign, width, height };
@@ -76,12 +78,17 @@ const Canvas: React.FC = () => {
     }
   };
 
-  const setShape = (canvas: any, shape: string) => {
+  const setShape = (
+    canvas: any,
+    shape: string,
+    width: number,
+    height: number
+  ) => {
     let s = null;
     let borderWidth = 0;
     let borderColor = "#000";
-    let w = toPixels(sign.width);
-    let h = toPixels(sign.height);
+    let w = toPixels(width);
+    let h = toPixels(height);
 
     switch (shape) {
       case "Rectangle":
@@ -121,18 +128,17 @@ const Canvas: React.FC = () => {
     s.hasBorders = false;
     s.lockMovementX = true;
     s.lockMovementY = true;
-    (s.selectable = false),
-      (s.evented = false),
-      (s.shadow = new fabric.Shadow({
-        color: "#555",
-        blur: 30,
-        offsetY: 5,
-      }));
+    s.selectable = false;
+    s.evented = false;
+    s.shadow = new fabric.Shadow({
+      color: "#555",
+      blur: 30,
+      offsetY: 5,
+    });
 
     //Replace the frame, this works if the frame always is the first object, which it should
     canvas._objects[0] = s;
     centerSign(canvas);
-    console.log({ ...sign, shape });
     return { ...sign, shape };
   };
 
@@ -157,10 +163,11 @@ const Canvas: React.FC = () => {
       ...text,
       type: "text",
       id: id,
-      top: t.top,
-      left: t.left,
+      x: translateCenterOrigin(t.top, t.left).x,
+      y: translateCenterOrigin(t.top, t.left).y,
       width: t.width,
       height: t.height,
+      angle: t.angle,
     };
     return { ...sign, elements: [...sign.elements, textElement] };
   };
@@ -194,10 +201,11 @@ const Canvas: React.FC = () => {
                 imageType: imageType,
                 imageUrl: imageUrl,
                 id: id,
-                top: svg.top,
-                left: svg.left,
+                x: translateCenterOrigin(svg.top, svg.left).x,
+                y: translateCenterOrigin(svg.top, svg.left).y,
                 width: svg.width,
                 height: svg.height,
+                angle: svg.angle,
               },
             ],
           };
@@ -216,7 +224,6 @@ const Canvas: React.FC = () => {
       //Create the image to gain the width and height
       let img = new Image();
       img.onload = function () {
-        console.log("HEeEEEEEEEJ");
         let i = new fabric.Image(imgElement, {
           angle: 0,
           opacity: 1,
@@ -238,10 +245,11 @@ const Canvas: React.FC = () => {
               imageType: imageType,
               imageUrl: imageUrl,
               id: id,
-              top: i.top,
-              left: i.left,
+              x: translateCenterOrigin(i.top, i.left).x,
+              y: translateCenterOrigin(i.top, i.left).y,
               width: i.width,
               height: i.height,
+              angle: i.angle,
             },
           ],
         };
@@ -252,12 +260,10 @@ const Canvas: React.FC = () => {
 
   const recreateSign = (canvas: any, sign: any) => {
     canvas.clear();
-    setShape(canvas, sign.shape);
+    setShape(canvas, sign.shape, sign.width, sign.height);
     setColor(canvas, sign.color);
     setSize(canvas, sign.width, sign.height);
-    console.log("Recreating sign");
     sign.elements.forEach((element: any) => {
-      console.log("recreating element", element);
       if (element.type == "text") {
         addText(canvas, element);
       }
@@ -265,45 +271,95 @@ const Canvas: React.FC = () => {
         addImage(canvas, element.imageUrl, element.imageType);
       }
       let obj = canvas._objects[canvas._objects.length - 1];
-      console.log("OBJ", obj);
       obj.set({
         scaleX: element.width / obj.width,
         scaleY: element.height / obj.height,
       });
       obj.set({
-        top: element.top,
-        left: element.left,
+        top: translateTopLeftOrigin(element.x, element.y).top,
+        left: translateTopLeftOrigin(element.x, element.y).left,
+        angle: element.angle,
       });
     });
     return sign;
   };
+  const translateCenterOrigin = (top: number, left: number) => {
+    let canvas = editor?.canvas;
+    let center = canvas.getCenter();
+    let x = top - center.top;
+    let y = left - center.left;
+    return { x, y };
+  };
+  const translateTopLeftOrigin = (x: number, y: number) => {
+    let canvas = editor?.canvas;
+    let center = canvas.getCenter();
+    let top = x + center.top;
+    let left = y + center.left;
+
+    return { top, left };
+  };
+
+  const getElementById = (id: string) => {
+    return sign.elements.find((element: any) => element.id === id);
+  };
+
+  const updateElement = (id: string, element: any) => {
+    let newList: {}[] = [];
+    sign.elements.forEach((e: any) => {
+      if (e.id === id) {
+        newList.push(element);
+      } else {
+        newList.push(e);
+      }
+    });
+    let newSign = { ...sign, elements: newList };
+    setSign(newSign);
+    dispatch(saveSign({ sign: newSign }));
+    setHistoryIndex(signHistory.length);
+    setSignHistory([...signHistory, newSign]);
+  };
 
   const keyHandler = useCallback(
     (event: { key: string }) => {
-      let targetObject = editor?.canvas.getActiveObject();
+      let obj = editor?.canvas.getActiveObject();
+      let shape = editor?.canvas._objects[0];
+      let speed = 2;
       switch (event.key) {
         case "ArrowUp":
-          targetObject?.set({ top: targetObject.top - 1 });
+          if (obj.top < shape.top) return;
+          obj?.set({ top: obj.top - speed });
           break;
         case "ArrowDown":
-          targetObject?.set({ top: targetObject.top + 1 });
+          if (obj.top > shape.top + shape.height - obj.height * obj.scaleY)
+            return;
+          obj?.set({ top: obj.top + speed });
           break;
         case "ArrowRight":
-          targetObject?.set({ left: targetObject.left + 1 });
+          if (obj.left > shape.left + shape.width - obj.width * obj.scaleX)
+            return;
+          obj?.set({ left: obj.left + speed });
           break;
         case "ArrowLeft":
-          targetObject?.set({ left: targetObject.left - 1 });
+          if (obj.left < shape.left) return;
+          obj?.set({ left: obj.left - speed });
           break;
         default:
           return;
       }
+      let element = getElementById(obj?.id);
+      if (element) {
+        updateElement(obj?.id, {
+          ...element,
+          x: translateCenterOrigin(obj.top, obj.left).x,
+          y: translateCenterOrigin(obj.top, obj.left).y,
+        });
+      }
       editor?.canvas.renderAll();
     },
-    [editor?.canvas]
+    [editor?.canvas, sign]
   );
 
   const alignObject = (location: string, obj: any) => {
-    //activeObj.getBoundingRect()
     //https://stackoverflow.com/questions/47408816/object-alignment-in-fabric-js
     let canvas = editor?.canvas;
     let shape = canvas?._objects[0];
@@ -348,6 +404,15 @@ const Canvas: React.FC = () => {
       default:
         return;
     }
+    let element = getElementById(obj.id);
+    if (element) {
+      updateElement(obj.id, {
+        ...element,
+        x: translateCenterOrigin(obj.top, obj.left).x,
+        y: translateCenterOrigin(obj.top, obj.left).y,
+      });
+    }
+
     canvas.renderAll();
   };
   let canvas = editor?.canvas;
@@ -362,8 +427,6 @@ const Canvas: React.FC = () => {
   };
 
   const handleMoveObject = (e: any) => {
-    //Bound it to the sign
-    console.log("Move object");
     let obj = e.target;
     let canvas = editor?.canvas;
     let shape = canvas?._objects[0];
@@ -390,20 +453,30 @@ const Canvas: React.FC = () => {
 
   const handleModifyObject = (e: any) => {
     let obj = e.target;
-    //link the object to the elements in the sign
-    let newList = [];
 
+    let element = getElementById(obj.id);
+    if (element) {
+      updateElement(obj.id, {
+        ...element,
+        x: translateCenterOrigin(obj.top, obj.left).x,
+        y: translateCenterOrigin(obj.top, obj.left).y,
+        width: obj.width * obj.scaleX,
+        height: obj.height * obj.scaleY,
+        angle: obj.angle,
+      });
+    }
+  };
+
+  const handleTextChange = (e: any) => {
+    let text = e.target;
+    let newList = [];
     for (let i = 0; i < sign.elements.length; i++) {
       let element = { ...sign.elements[i] };
-      console.log("Object", obj);
 
-      if (element.id == obj.id) {
-        element.top = obj.top;
-        element.left = obj.left;
-        element.width = obj.width * obj.scaleX;
-        element.height = obj.height * obj.scaleY;
+      if (element.id == text.id) {
+        console.log(text.text);
+        element.string = text.text;
       }
-      console.log(element);
       newList.push(element);
     }
     let s = { ...sign, elements: newList };
@@ -423,6 +496,7 @@ const Canvas: React.FC = () => {
       "object:moving": handleMoveObject,
       "object:scaling": handleScaleObject,
       "object:modified": handleModifyObject,
+      "text:changed": handleTextChange,
     });
   }
 
@@ -443,14 +517,16 @@ const Canvas: React.FC = () => {
     let canvas = editor?.canvas;
 
     if (canvas) {
+      console.log(canvas._objects);
       //New way of updating the canvas
-      if (commands.length > signHistory.length - 1) {
+      if (commands.length > commandsRecieved) {
         let command = commands[commands.length - 1]; //Look at the latest commands
         handleCommand(command, canvas);
+        setCommandsRecieved((commandsRecieved) => (commandsRecieved += 1));
         canvas.renderAll();
       }
     }
-  }, [editor?.canvas, commands]);
+  }, [editor?.canvas, commands, sign]);
 
   const handleCommand = (command: any, canvas: any) => {
     let result = null;
@@ -458,18 +534,24 @@ const Canvas: React.FC = () => {
     switch (command.command) {
       case "addText":
         result = addText(canvas, command.value);
+        console.log("Add Text Command", result);
         break;
       case "addImage": //async
         addImage(canvas, command.value.url, command.value.type).then(result);
+        console.log("Add Image Command", result);
         break;
       case "setShape":
-        result = setShape(canvas, command.value);
+        result = setShape(canvas, command.value, sign.width, sign.height);
+        console.log("Set Shape Command", result);
+
         break;
       case "setSize":
         result = setSize(canvas, command.value.width, command.value.height);
+        console.log("Set Size Command", result);
         break;
       case "setColor":
         result = setColor(canvas, command.value);
+        console.log("Set Color Command", result);
         break;
       case "goBack":
         let backIndex = historyIndex - 1;
@@ -477,18 +559,21 @@ const Canvas: React.FC = () => {
         setHistoryIndex(backIndex);
         console.log(signHistory[backIndex]);
         result = recreateSign(canvas, signHistory[backIndex]);
+        console.log("Go Back Command", result);
         break;
       case "goForward":
         console.log(historyIndex, signHistory.length - 1);
         let forwardIndex = historyIndex + 1;
         if (forwardIndex > signHistory.length - 1) return;
-        console.log("go forward");
         setHistoryIndex(forwardIndex);
         console.log(signHistory[forwardIndex]);
         result = recreateSign(canvas, signHistory[forwardIndex]);
+        console.log("Go Forward Command", result);
+
         break;
       case "reCreate":
         result = recreateSign(canvas, command.value);
+        console.log("Recreate Command", result);
         break;
       default:
         return;
@@ -516,7 +601,7 @@ const Canvas: React.FC = () => {
     pdf.addImage(pixelData, "JPEG", 0, 0);
     pdf.save("download.pdf");
     //dispatch(setDownloadPdf({ downloadPdf: false }));
-    setShape(canvas, sign.shape);
+    setShape(canvas, sign.shape, sign.width, sign.height);
   };
 
   const handleDownloadSvg = (canvas: any) => {
@@ -530,7 +615,7 @@ const Canvas: React.FC = () => {
     a.download = "download.svg";
     a.click();
     // dispatch(setDownloadSvg({ downloadSvg: false }));
-    setShape(canvas, sign.shape);
+    setShape(canvas, sign.shape, sign.width, sign.height);
   };
 
   return (

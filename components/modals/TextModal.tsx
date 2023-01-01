@@ -10,7 +10,6 @@ const TextModal: React.FC = () => {
     string: "",
     font: "Arial",
     color: "Black",
-    rendered: false,
   });
   const fonts = [
     "Arial",
@@ -26,6 +25,10 @@ const TextModal: React.FC = () => {
   const colors = [
     { name: "Black", hex: "#000000" },
     { name: "White", hex: "#ffffff" },
+    { name: "Red", hex: "#ff0000" },
+    { name: "Green", hex: "#00ff00" },
+    { name: "Blue", hex: "#0000ff" },
+    { name: "Brun", hex: "#8B4513" },
   ];
   const dispatch = useDispatch();
 
@@ -41,7 +44,6 @@ const TextModal: React.FC = () => {
       font: font,
       fontSize: 30,
       color: color,
-      rendered: false,
     };
     setText(t);
     dispatch(addCommand({ command: "addText", value: t }));
