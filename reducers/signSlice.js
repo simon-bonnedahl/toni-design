@@ -54,7 +54,6 @@ export const signSlice = createSlice({
       state.sign.data.pixelData = action.payload.pixelData;
     },
     saveSign: (state, action) => {
-      console.log("Saving sign");
       state.sign.visual = action.payload.sign;
       state.sign.metadata.price = calculatePrice(state.sign);
     },

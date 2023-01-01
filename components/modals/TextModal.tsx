@@ -42,7 +42,7 @@ const TextModal: React.FC = () => {
     let t = {
       string: string,
       font: font,
-      fontSize: 30,
+      fontSize: 40,
       color: color,
     };
     setText(t);

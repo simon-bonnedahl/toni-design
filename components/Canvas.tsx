@@ -4,6 +4,7 @@ import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 import ControlBox from "./modals/ControlBox";
 import { selectCommands } from "../reducers/editorSlice";
 import { saveSign } from "../reducers/signSlice";
+import { objectTraps } from "immer/dist/internal";
 const fabric = require("fabric").fabric;
 const { jsPDF } = require("jspdf");
 const { v4: uuidv4 } = require("uuid");
@@ -28,9 +29,9 @@ const Canvas: React.FC = () => {
   const dispatch = useDispatch();
 
   const init = (canvas: any) => {
-    setShape(canvas, sign.shape, sign.width, sign.height);
-    setSize(canvas, sign.width, sign.height);
-    setColor(canvas, sign.color);
+    setShape(canvas, sign.shape, sign.width, sign.height, true);
+    setSize(canvas, sign.width, sign.height, true);
+    setColor(canvas, sign.color, true);
     setEditorControls();
     canvas.renderAll();
     onReady(canvas);
@@ -53,7 +54,16 @@ const Canvas: React.FC = () => {
     return mm * 2.8346546;
   };
 
-  const setSize = (canvas: any, width: number, height: number) => {
+  const toMillimeter = (px: number) => {
+    return px / 2.8346546;
+  };
+
+  const setSize = (
+    canvas: any,
+    width: number,
+    height: number,
+    updateBackend: boolean
+  ) => {
     let shape = canvas._objects[0];
     if (shape) {
       if (sign.shape === "Ellipse") {
@@ -62,10 +72,12 @@ const Canvas: React.FC = () => {
         shape.set({ width: toPixels(width), height: toPixels(height) });
       }
       canvas.renderAll();
-      console.log(shape);
       centerSign(canvas);
     }
-    return { ...sign, width, height };
+    if (updateBackend) {
+      let newSign = { ...sign, width, height };
+      saveSignState(newSign);
+    }
   };
 
   const centerSign = (canvas: any) => {
@@ -82,7 +94,8 @@ const Canvas: React.FC = () => {
     canvas: any,
     shape: string,
     width: number,
-    height: number
+    height: number,
+    updateBackend: boolean
   ) => {
     let s = null;
     let borderWidth = 0;
@@ -139,46 +152,76 @@ const Canvas: React.FC = () => {
     //Replace the frame, this works if the frame always is the first object, which it should
     canvas._objects[0] = s;
     centerSign(canvas);
-    return { ...sign, shape };
+    if (updateBackend) {
+      let newSign = { ...sign, shape };
+      saveSignState(newSign);
+    }
   };
 
-  const setColor = (canvas: any, color: string) => {
+  const setColor = (canvas: any, color: string, updateBackend: boolean) => {
     let shape = canvas._objects[0];
     if (shape) shape.set({ fill: color });
-    return { ...sign, color };
+    if (updateBackend) {
+      let newSign = { ...sign, color };
+      saveSignState(newSign);
+    }
   };
 
-  const addText = (canvas: any, text: any) => {
-    let id = uuidv4();
-    var t = new fabric.IText(text.string, {
+  const addText = (canvas: any, text: any, updateBackend: boolean) => {
+    let id = text.id ? text.id : uuidv4(); //If the text already has an id, use that, otherwise generate a new one
+
+    let textObject = new fabric.IText(text.string, {
+      //Create the text visual object
       fill: text.color,
       fontFamily: text.font,
       fontSize: text.fontSize,
       id: id,
     });
-    canvas.add(t);
-    alignObject("center", t);
-    canvas.setActiveObject(t);
-    let textElement = {
-      ...text,
-      type: "text",
-      id: id,
-      x: translateCenterOrigin(t.top, t.left).x,
-      y: translateCenterOrigin(t.top, t.left).y,
-      width: t.width,
-      height: t.height,
-      angle: t.angle,
-    };
-    return { ...sign, elements: [...sign.elements, textElement] };
+    if (!text.id) {
+      alignObject("center", textObject); //Align the text to the center//Set the text as the active object
+    } else {
+      //Its an existing text, already in the backend
+      console.log("reacreating this existing text", textObject);
+      let pos = translateTopLeftOrigin(toPixels(text.x), toPixels(text.y));
+      textObject.set({
+        top: pos.top,
+        left: pos.left,
+        angle: text.angle,
+        scaleX: toPixels(text.width) / textObject.width,
+        scaleY: toPixels(text.height) / textObject.height,
+      });
+    }
+    if (updateBackend) {
+      //Create the text backend object
+      let pos = translateCenterOrigin(textObject.left, textObject.top);
+      let textObj = {
+        ...text,
+        type: "text",
+        id: id,
+        x: toMillimeter(pos.x),
+        y: toMillimeter(pos.y),
+        width: toMillimeter(textObject.width),
+        height: toMillimeter(textObject.height),
+        angle: textObject.angle,
+      };
+
+      let result = addObjectToState(textObj);
+      console.log("Add text command result:", result);
+    }
+    canvas.add(textObject);
+    canvas.setActiveObject(textObject);
   };
 
-  const addImage = async (canvas: any, imageUrl: string, imageType: string) => {
-    let id = uuidv4();
-    if (imageType === "image/svg+xml") {
+  const addImage = (canvas: any, image: any) => {
+    let id = image.id ? image.id : uuidv4();
+    if (image.id) {
+      //we know the image contains visual props
+    }
+    if (image.imageType === "image/svg+xml") {
       var group: any[] = [];
-
       fabric.loadSVGFromURL(
-        imageUrl,
+        image.url,
+        sign,
         function (objects: any, options: any) {
           let svg = new fabric.Group(group);
 
@@ -187,28 +230,21 @@ const Canvas: React.FC = () => {
             height: 50,
             id: id,
           });
-
           canvas.add(svg);
           alignObject("center", svg);
           canvas.setActiveObject(svg);
           canvas.renderAll();
-          return {
-            ...sign,
-            elements: [
-              ...sign.elements,
-              {
-                type: "image",
-                imageType: imageType,
-                imageUrl: imageUrl,
-                id: id,
-                x: translateCenterOrigin(svg.top, svg.left).x,
-                y: translateCenterOrigin(svg.top, svg.left).y,
-                width: svg.width,
-                height: svg.height,
-                angle: svg.angle,
-              },
-            ],
-          };
+          let pos = translateCenterOrigin(svg.top, svg.left);
+          console.log("HAHAHAHA");
+          console.log(sign.elements);
+          console.log("3");
+          updateObjectInState(id, {
+            x: pos.x,
+            y: pos.y,
+            width: svg.width,
+            height: svg.height,
+            angle: svg.angle,
+          });
         },
         function (
           item: { getAttribute: (arg0: string) => any },
@@ -220,10 +256,11 @@ const Canvas: React.FC = () => {
       );
     } else {
       let imgElement = document.createElement("img");
-      imgElement.src = imageUrl;
+      imgElement.src = image.url;
       //Create the image to gain the width and height
       let img = new Image();
       img.onload = function () {
+        //Then only reason to create the image is to get the width and height
         let i = new fabric.Image(imgElement, {
           angle: 0,
           opacity: 1,
@@ -236,87 +273,115 @@ const Canvas: React.FC = () => {
         alignObject("center", i);
         canvas.setActiveObject(i);
         canvas.renderAll();
-        return {
-          ...sign,
-          elements: [
-            ...sign.elements,
-            {
-              type: "image",
-              imageType: imageType,
-              imageUrl: imageUrl,
-              id: id,
-              x: translateCenterOrigin(i.top, i.left).x,
-              y: translateCenterOrigin(i.top, i.left).y,
-              width: i.width,
-              height: i.height,
-              angle: i.angle,
-            },
-          ],
-        };
+        //Update the element
+        let pos = translateCenterOrigin(i.top, i.left);
+        console.log("4");
+        updateObjectInState(id, {
+          x: pos.x,
+          y: pos.y,
+          width: i.width,
+          height: i.height,
+          angle: i.angle,
+        });
       };
-      img.src = imageUrl;
+      img.src = image.url;
     }
+    //We add the object to the state before we have the width and height
+    // This is because the image onload is async, we then update the object on loa
+    addObjectToState({
+      type: "image",
+      imageType: image.imageType,
+      url: image.url,
+      id: id,
+    });
+  };
+
+  const recreateCanvas = async (canvas: any, elements: any) => {
+    elements.forEach((element: any) => {
+      if (element.type == "text") {
+        addText(canvas, element, false);
+      }
+      if (element.type == "image") {
+        addImage(canvas, element); //blir buggat då den är async
+      }
+    });
   };
 
   const recreateSign = (canvas: any, sign: any) => {
+    console.log("Reacreating sign", sign);
+    saveSignState(sign);
+    //update the visual
     canvas.clear();
-    setShape(canvas, sign.shape, sign.width, sign.height);
-    setColor(canvas, sign.color);
-    setSize(canvas, sign.width, sign.height);
-    sign.elements.forEach((element: any) => {
-      if (element.type == "text") {
-        addText(canvas, element);
-      }
-      if (element.type == "image") {
-        addImage(canvas, element.imageUrl, element.imageType);
-      }
-      let obj = canvas._objects[canvas._objects.length - 1];
-      obj.set({
-        scaleX: element.width / obj.width,
-        scaleY: element.height / obj.height,
-      });
-      obj.set({
-        top: translateTopLeftOrigin(element.x, element.y).top,
-        left: translateTopLeftOrigin(element.x, element.y).left,
-        angle: element.angle,
-      });
-    });
-    return sign;
+    setShape(canvas, sign.shape, sign.width, sign.height, false);
+    setColor(canvas, sign.color, false);
+    setSize(canvas, sign.width, sign.height, false);
+
+    recreateCanvas(canvas, sign.elements);
   };
+
   const translateCenterOrigin = (top: number, left: number) => {
     let canvas = editor?.canvas;
     let center = canvas.getCenter();
-    let x = top - center.top;
-    let y = left - center.left;
+    let x = left - center.left;
+    let y = top - center.top;
     return { x, y };
   };
   const translateTopLeftOrigin = (x: number, y: number) => {
     let canvas = editor?.canvas;
     let center = canvas.getCenter();
-    let top = x + center.top;
-    let left = y + center.left;
+    let top = y + center.top;
+    let left = x + center.left;
 
     return { top, left };
   };
 
-  const getElementById = (id: string) => {
+  const getObjectById = (id: string) => {
     return sign.elements.find((element: any) => element.id === id);
   };
 
-  const updateElement = (id: string, element: any) => {
+  const addObjectToState = (obj: any) => {
+    console.log("Adding object to state");
+    console.log("before: ", sign);
+    let newSign = { ...sign, elements: [...sign.elements, obj] };
+    console.log("after: ", newSign);
+    saveSignState(newSign);
+    return newSign;
+  };
+
+  const removeObjectFromState = (id: string) => {
+    console.log("Removing object from state");
     let newList: {}[] = [];
-    sign.elements.forEach((e: any) => {
-      if (e.id === id) {
+    sign.elements.forEach((element: any) => {
+      if (element.id !== id) {
         newList.push(element);
-      } else {
-        newList.push(e);
       }
     });
     let newSign = { ...sign, elements: newList };
+    saveSignState(newSign);
+    return newSign;
+  };
+
+  const updateObjectInState = (id: number, props: any) => {
+    console.log("Updating object in state");
+    let newList: {}[] = [];
+    sign.elements.forEach((element: any) => {
+      if (element.id === id) {
+        newList.push({ ...element, ...props });
+      } else {
+        newList.push(element);
+      }
+    });
+    let newSign = { ...sign, elements: newList };
+    saveSignState(newSign);
+    return newSign;
+  };
+
+  const saveSignState = (newSign: any) => {
+    console.log("Saving sign state", newSign);
     setSign(newSign);
     dispatch(saveSign({ sign: newSign }));
-    setHistoryIndex(signHistory.length);
     setSignHistory([...signHistory, newSign]);
+    setHistoryIndex(signHistory.length - 1);
   };
 
   const keyHandler = useCallback(
@@ -346,15 +411,13 @@ const Canvas: React.FC = () => {
         default:
           return;
       }
-      let element = getElementById(obj?.id);
-      if (element) {
-        updateElement(obj?.id, {
-          ...element,
-          x: translateCenterOrigin(obj.top, obj.left).x,
-          y: translateCenterOrigin(obj.top, obj.left).y,
-        });
-      }
       editor?.canvas.renderAll();
+      let pos = translateCenterOrigin(obj.top, obj.left);
+      console.log("5");
+      updateObjectInState(obj?.id, {
+        x: toMillimeter(pos.x),
+        y: toMillimeter(pos.y),
+      });
     },
     [editor?.canvas, sign]
   );
@@ -404,14 +467,12 @@ const Canvas: React.FC = () => {
       default:
         return;
     }
-    let element = getElementById(obj.id);
-    if (element) {
-      updateElement(obj.id, {
-        ...element,
-        x: translateCenterOrigin(obj.top, obj.left).x,
-        y: translateCenterOrigin(obj.top, obj.left).y,
-      });
-    }
+    let pos = translateCenterOrigin(obj.top, obj.left);
+    console.log("1");
+    updateObjectInState(obj.id, {
+      x: toMillimeter(pos.x),
+      y: toMillimeter(pos.y),
+    });
 
     canvas.renderAll();
   };
@@ -454,17 +515,15 @@ const Canvas: React.FC = () => {
   const handleModifyObject = (e: any) => {
     let obj = e.target;
 
-    let element = getElementById(obj.id);
-    if (element) {
-      updateElement(obj.id, {
-        ...element,
-        x: translateCenterOrigin(obj.top, obj.left).x,
-        y: translateCenterOrigin(obj.top, obj.left).y,
-        width: obj.width * obj.scaleX,
-        height: obj.height * obj.scaleY,
-        angle: obj.angle,
-      });
-    }
+    let pos = translateCenterOrigin(obj.top, obj.left);
+    console.log("2");
+    updateObjectInState(obj.id, {
+      x: toMillimeter(pos.x),
+      y: toMillimeter(pos.y),
+      width: toMillimeter(obj.width * obj.scaleX),
+      height: toMillimeter(obj.height * obj.scaleY),
+      angle: obj.angle,
+    });
   };
 
   const handleTextChange = (e: any) => {
@@ -474,8 +533,7 @@ const Canvas: React.FC = () => {
       let element = { ...sign.elements[i] };
 
       if (element.id == text.id) {
-        console.log(text.text);
-        element.string = text.text;
+        element.string = text.text; //Change the width also?
       }
       newList.push(element);
     }
@@ -501,6 +559,8 @@ const Canvas: React.FC = () => {
   }
 
   const handleDeleteObject = () => {
+    let obj = editor?.canvas.getActiveObject();
+    removeObjectFromState(obj?.id);
     editor?.canvas.remove(editor?.canvas.getActiveObject());
   };
   const handleAlignObjectCenter = () => {
@@ -526,71 +586,42 @@ const Canvas: React.FC = () => {
         canvas.renderAll();
       }
     }
-  }, [editor?.canvas, commands, sign]);
+  }, [commands, canvas]);
 
   const handleCommand = (command: any, canvas: any) => {
-    let result = null;
-
     switch (command.command) {
       case "addText":
-        result = addText(canvas, command.value);
-        console.log("Add Text Command", result);
+        addText(canvas, command.value, true);
         break;
       case "addImage": //async
-        addImage(canvas, command.value.url, command.value.type).then(result);
-        console.log("Add Image Command", result);
+        addImage(canvas, command.value);
         break;
       case "setShape":
-        result = setShape(canvas, command.value, sign.width, sign.height);
-        console.log("Set Shape Command", result);
-
+        setShape(canvas, command.value, sign.width, sign.height, true);
         break;
       case "setSize":
-        result = setSize(canvas, command.value.width, command.value.height);
-        console.log("Set Size Command", result);
+        setSize(canvas, command.value.width, command.value.height, true);
         break;
       case "setColor":
-        result = setColor(canvas, command.value);
-        console.log("Set Color Command", result);
+        setColor(canvas, command.value, true);
         break;
       case "goBack":
         let backIndex = historyIndex - 1;
         if (backIndex < 0) return;
         setHistoryIndex(backIndex);
-        console.log(signHistory[backIndex]);
-        result = recreateSign(canvas, signHistory[backIndex]);
-        console.log("Go Back Command", result);
+        recreateSign(canvas, signHistory[backIndex]);
         break;
       case "goForward":
-        console.log(historyIndex, signHistory.length - 1);
         let forwardIndex = historyIndex + 1;
         if (forwardIndex > signHistory.length - 1) return;
         setHistoryIndex(forwardIndex);
-        console.log(signHistory[forwardIndex]);
-        result = recreateSign(canvas, signHistory[forwardIndex]);
-        console.log("Go Forward Command", result);
-
+        recreateSign(canvas, signHistory[forwardIndex]);
         break;
       case "reCreate":
-        result = recreateSign(canvas, command.value);
-        console.log("Recreate Command", result);
+        recreateSign(canvas, command.value);
         break;
       default:
         return;
-    }
-
-    //result cant be null
-    if (result) {
-      setSign(result);
-      dispatch(saveSign({ sign: result })); //Save the sign so the other components can read its visual properties
-
-      if (command.command === "goBack" || command.command === "goForward") {
-        //if commans is goBack we dont add the new sign to the history
-      } else {
-        //If command isnt goBack we go to the front of the history and add the new sign
-        setHistoryIndex(signHistory.length);
-        setSignHistory([...signHistory, result]);
-      }
     }
   };
 
@@ -601,7 +632,7 @@ const Canvas: React.FC = () => {
     pdf.addImage(pixelData, "JPEG", 0, 0);
     pdf.save("download.pdf");
     //dispatch(setDownloadPdf({ downloadPdf: false }));
-    setShape(canvas, sign.shape, sign.width, sign.height);
+    setShape(canvas, sign.shape, sign.width, sign.height, false);
   };
 
   const handleDownloadSvg = (canvas: any) => {
@@ -615,7 +646,7 @@ const Canvas: React.FC = () => {
     a.download = "download.svg";
     a.click();
     // dispatch(setDownloadSvg({ downloadSvg: false }));
-    setShape(canvas, sign.shape, sign.width, sign.height);
+    setShape(canvas, sign.shape, sign.width, sign.height, false);
   };
 
   return (
