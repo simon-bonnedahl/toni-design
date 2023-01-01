@@ -4,7 +4,6 @@ import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 import ControlBox from "./modals/ControlBox";
 import { selectCommands } from "../reducers/editorSlice";
 import { saveSign } from "../reducers/signSlice";
-import { objectTraps } from "immer/dist/internal";
 const fabric = require("fabric").fabric;
 const { jsPDF } = require("jspdf");
 const { v4: uuidv4 } = require("uuid");
@@ -193,7 +192,7 @@ const Canvas: React.FC = () => {
     }
     if (updateBackend) {
       //Create the text backend object
-      let pos = translateCenterOrigin(textObject.left, textObject.top);
+      let pos = translateCenterOrigin(textObject.top, textObject.left);
       let textObj = {
         ...text,
         type: "text",
@@ -205,95 +204,99 @@ const Canvas: React.FC = () => {
         angle: textObject.angle,
       };
 
-      let result = addObjectToState(textObj);
-      console.log("Add text command result:", result);
+      let state = addObjectToState(textObj);
+      saveSignState(state);
+      console.log("Add text command result:", state);
     }
     canvas.add(textObject);
     canvas.setActiveObject(textObject);
   };
 
-  const addImage = (canvas: any, image: any) => {
+  const addImage = (canvas: any, image: any, updateBackend: boolean) => {
+    console.log("Adding image", image);
     let id = image.id ? image.id : uuidv4();
-    if (image.id) {
-      //we know the image contains visual props
-    }
-    if (image.imageType === "image/svg+xml") {
-      var group: any[] = [];
-      fabric.loadSVGFromURL(
-        image.url,
-        sign,
-        function (objects: any, options: any) {
-          let svg = new fabric.Group(group);
 
+    if (image.imageType === "image/svg+xml") {
+      //Async load
+      fabric.loadSVGFromURL(image.url, function (objects: any, options: any) {
+        let svg = fabric.util.groupSVGElements(objects, options);
+        svg.set({
+          id: id,
+        });
+
+        canvas.add(svg);
+        if (image.id) {
+          //IF we have visual props
+          let pos = translateTopLeftOrigin(
+            toPixels(image.x),
+            toPixels(image.y)
+          );
+          console.log(pos);
           svg.set({
-            width: 50, //Need to be calculated
-            height: 50,
-            id: id,
+            top: pos.top,
+            left: pos.left,
+            scaleX: toPixels(image.width) / svg.width,
+            scaleY: toPixels(image.height) / svg.height,
+            angle: image.angle,
           });
-          canvas.add(svg);
-          alignObject("center", svg);
-          canvas.setActiveObject(svg);
-          canvas.renderAll();
-          let pos = translateCenterOrigin(svg.top, svg.left);
-          console.log("HAHAHAHA");
-          console.log(sign.elements);
-          console.log("3");
-          updateObjectInState(id, {
-            x: pos.x,
-            y: pos.y,
-            width: svg.width,
-            height: svg.height,
-            angle: svg.angle,
-          });
-        },
-        function (
-          item: { getAttribute: (arg0: string) => any },
-          object: { set: (arg0: string, arg1: any) => void }
-        ) {
-          object.set("id", item.getAttribute("id"));
-          group.push(object);
         }
-      );
+        //Center it
+        if (!image.id) alignObject("center", svg);
+        canvas.setActiveObject(svg);
+        canvas.renderAll();
+        let pos = translateCenterOrigin(svg.top, svg.left);
+        let state = addObjectToState({
+          ...image,
+          type: "image",
+          id: id,
+          width: toMillimeter(svg.width),
+          height: toMillimeter(svg.height),
+          x: toMillimeter(pos.x),
+          y: toMillimeter(pos.y),
+        });
+        saveSignState(state);
+        console.log("Add image command result:", state);
+      });
     } else {
       let imgElement = document.createElement("img");
       imgElement.src = image.url;
       //Create the image to gain the width and height
-      let img = new Image();
-      img.onload = function () {
+      let i = new Image();
+      i.onload = function () {
         //Then only reason to create the image is to get the width and height
-        let i = new fabric.Image(imgElement, {
-          angle: 0,
-          opacity: 1,
+        let img = new fabric.Image(imgElement);
+
+        img.set({
           id: id,
-          width: img.width, //Math.min(img.width, sign.width), //To not overflow the canvas, this need to scale the image instead of cropping
-          height: img.height, // Math.min(img.height, sign.height),
         });
 
-        canvas.add(i);
-        alignObject("center", i);
-        canvas.setActiveObject(i);
+        canvas.add(img);
+        if (image.id) {
+          //IF we have visual props
+          let pos = translateTopLeftOrigin(
+            toPixels(image.x),
+            toPixels(image.y)
+          );
+        }
+        //Center it
+        if (!image.id) alignObject("center", img);
+        canvas.setActiveObject(img);
         canvas.renderAll();
-        //Update the element
-        let pos = translateCenterOrigin(i.top, i.left);
-        console.log("4");
-        updateObjectInState(id, {
-          x: pos.x,
-          y: pos.y,
-          width: i.width,
-          height: i.height,
-          angle: i.angle,
+        let pos = translateCenterOrigin(img.top, img.left);
+        let state = addObjectToState({
+          ...image,
+          type: "image",
+          id: id,
+          width: toMillimeter(img.width),
+          height: toMillimeter(img.height),
+          x: toMillimeter(pos.x),
+          y: toMillimeter(pos.y),
         });
+        saveSignState(state);
+        console.log("Add image command result:", state);
       };
-      img.src = image.url;
+      i.src = image.url;
     }
-    //We add the object to the state before we have the width and height
-    // This is because the image onload is async, we then update the object on loa
-    addObjectToState({
-      type: "image",
-      imageType: image.imageType,
-      url: image.url,
-      id: id,
-    });
   };
 
   const recreateCanvas = async (canvas: any, elements: any) => {
@@ -302,7 +305,7 @@ const Canvas: React.FC = () => {
         addText(canvas, element, false);
       }
       if (element.type == "image") {
-        addImage(canvas, element); //blir buggat då den är async
+        addImage(canvas, element, false); //blir buggat då den är async
       }
     });
   };
@@ -341,11 +344,8 @@ const Canvas: React.FC = () => {
 
   const addObjectToState = (obj: any) => {
     console.log("Adding object to state");
-    console.log("before: ", sign);
-    let newSign = { ...sign, elements: [...sign.elements, obj] };
-    console.log("after: ", newSign);
-    saveSignState(newSign);
-    return newSign;
+    let newState = { ...sign, elements: [...sign.elements, obj] };
+    return newState;
   };
 
   const removeObjectFromState = (id: string) => {
@@ -356,9 +356,8 @@ const Canvas: React.FC = () => {
         newList.push(element);
       }
     });
-    let newSign = { ...sign, elements: newList };
-    saveSignState(newSign);
-    return newSign;
+    let newState = { ...sign, elements: newList };
+    return newState;
   };
 
   const updateObjectInState = (id: number, props: any) => {
@@ -371,9 +370,8 @@ const Canvas: React.FC = () => {
         newList.push(element);
       }
     });
-    let newSign = { ...sign, elements: newList };
-    saveSignState(newSign);
-    return newSign;
+    let newState = { ...sign, elements: newList };
+    return newState;
   };
 
   const saveSignState = (newSign: any) => {
@@ -413,16 +411,17 @@ const Canvas: React.FC = () => {
       }
       editor?.canvas.renderAll();
       let pos = translateCenterOrigin(obj.top, obj.left);
-      console.log("5");
-      updateObjectInState(obj?.id, {
+      let state = updateObjectInState(obj.id, {
         x: toMillimeter(pos.x),
         y: toMillimeter(pos.y),
       });
+
+      saveSignState(state);
     },
     [editor?.canvas, sign]
   );
 
-  const alignObject = (location: string, obj: any) => {
+  const alignObject = (location: string, obj: any, updateBackend?: boolean) => {
     //https://stackoverflow.com/questions/47408816/object-alignment-in-fabric-js
     let canvas = editor?.canvas;
     let shape = canvas?._objects[0];
@@ -467,12 +466,15 @@ const Canvas: React.FC = () => {
       default:
         return;
     }
-    let pos = translateCenterOrigin(obj.top, obj.left);
-    console.log("1");
-    updateObjectInState(obj.id, {
-      x: toMillimeter(pos.x),
-      y: toMillimeter(pos.y),
-    });
+    if (updateBackend) {
+      let pos = translateCenterOrigin(obj.top, obj.left);
+      let state = updateObjectInState(obj.id, {
+        x: toMillimeter(pos.x),
+        y: toMillimeter(pos.y),
+      });
+
+      saveSignState(state);
+    }
 
     canvas.renderAll();
   };
@@ -516,14 +518,15 @@ const Canvas: React.FC = () => {
     let obj = e.target;
 
     let pos = translateCenterOrigin(obj.top, obj.left);
-    console.log("2");
-    updateObjectInState(obj.id, {
+    let state = updateObjectInState(obj.id, {
       x: toMillimeter(pos.x),
       y: toMillimeter(pos.y),
       width: toMillimeter(obj.width * obj.scaleX),
       height: toMillimeter(obj.height * obj.scaleY),
       angle: obj.angle,
     });
+
+    saveSignState(state);
   };
 
   const handleTextChange = (e: any) => {
@@ -564,20 +567,19 @@ const Canvas: React.FC = () => {
     editor?.canvas.remove(editor?.canvas.getActiveObject());
   };
   const handleAlignObjectCenter = () => {
-    alignObject("center", editor?.canvas.getActiveObject());
+    alignObject("center", editor?.canvas.getActiveObject(), true);
   };
   const handleAlignObjectLeft = () => {
-    alignObject("mid-left", editor?.canvas.getActiveObject());
+    alignObject("mid-left", editor?.canvas.getActiveObject(), true);
   };
   const handleAlignObjectRight = () => {
-    alignObject("mid-right", editor?.canvas.getActiveObject());
+    alignObject("mid-right", editor?.canvas.getActiveObject(), true);
   };
 
   useEffect(() => {
     let canvas = editor?.canvas;
 
     if (canvas) {
-      console.log(canvas._objects);
       //New way of updating the canvas
       if (commands.length > commandsRecieved) {
         let command = commands[commands.length - 1]; //Look at the latest commands
@@ -594,7 +596,7 @@ const Canvas: React.FC = () => {
         addText(canvas, command.value, true);
         break;
       case "addImage": //async
-        addImage(canvas, command.value);
+        addImage(canvas, command.value, true);
         break;
       case "setShape":
         setShape(canvas, command.value, sign.width, sign.height, true);
@@ -619,6 +621,14 @@ const Canvas: React.FC = () => {
         break;
       case "reCreate":
         recreateSign(canvas, command.value);
+        break;
+      case "saveSign":
+        if (command.value === "SVG") {
+          handleDownloadSvg(canvas);
+        }
+        if (command.value === "PDF") {
+          handleDownloadPdf(canvas);
+        }
         break;
       default:
         return;

@@ -22,7 +22,7 @@ const ImageModal: React.FC = () => {
       dispatch(
         addCommand({
           command: "addImage",
-          value: { url: image.url, type: image.type },
+          value: { url: image.url, imageType: image.type },
         })
       );
     handleClose();
