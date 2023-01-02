@@ -2,7 +2,11 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose, faT } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { getSignMetadata, getSignVisual } from "../../reducers/signSlice";
+import {
+  getSignMetadata,
+  getSignVisual,
+  setSignColorCombination,
+} from "../../reducers/signSlice";
 import { setSelectedOption } from "../../reducers/toolbarSlice";
 import client from "../../sanity";
 import { addCommand } from "../../reducers/editorSlice";
@@ -39,6 +43,16 @@ const ColorModal: React.FC = () => {
     );
   };
 
+  const handleEngravedColorChange = (option: any) => {
+    dispatch(
+      addCommand({
+        command: "setColor",
+        value: option.frontColorValue,
+      })
+    );
+    dispatch(setSignColorCombination({ colorCombination: option.name }));
+  };
+
   const handleClose = () => {
     dispatch(setSelectedOption({ selectedOption: null }));
   };
@@ -59,14 +73,7 @@ const ColorModal: React.FC = () => {
               className="flex flex-col items-center justify-center"
             >
               <div
-                onClick={() =>
-                  dispatch(
-                    addCommand({
-                      command: "setColor",
-                      value: option.frontColorValue,
-                    })
-                  )
-                }
+                onClick={() => handleEngravedColorChange(option)}
                 className="flex items-center justify-center w-12 h-12 rounded-full border-2 hover:cursor-pointer"
                 style={{ backgroundColor: option.frontColorValue }}
               >

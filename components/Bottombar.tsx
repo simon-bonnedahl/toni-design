@@ -2,6 +2,7 @@ import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { selectCartItems, setShowModal } from "../reducers/cartSlice";
 import { addCommand } from "../reducers/editorSlice";
 import { getSignJSON, getSignMetadata } from "../reducers/signSlice";
 
@@ -10,6 +11,8 @@ const Bottombar: React.FC = () => {
   const json = useSelector(getSignJSON);
   const dispatch = useDispatch();
   const [amount, setAmount] = useState(1);
+
+  const items = useSelector(selectCartItems);
 
   const handleDownloadJSON = () => {
     var dataStr =
@@ -27,14 +30,16 @@ const Bottombar: React.FC = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(json),
+      body: JSON.stringify(items),
     }).then((res) => {
       res.json();
-      console.log(res);
+      alert(res.status);
     });
   };
 
-  const handleAddToBasket = async () => {};
+  const handleAddToCart = () => {
+    dispatch(addCommand({ command: "addToCart", value: amount }));
+  };
 
   return (
     <div className="flex flex-row w-full h-20 border items-center justify-between px-4">
@@ -89,7 +94,7 @@ const Bottombar: React.FC = () => {
         {/*Add button */}
         <div>
           <button
-            onClick={handleAddToBasket}
+            onClick={handleAddToCart}
             className="p-3 rounded-md bg-blue-400 text-white text-light text-sm hover:"
           >
             Add to cart

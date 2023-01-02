@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectBuyer, setBuyer } from "../reducers/shoppingcartSlice";
+import { selectBuyer, setBuyer } from "../reducers/cartSlice";
 import ThemeSwitch from "./ThemeSwitch";
 const HeaderBar: React.FC = () => {
   const [buyerState, setBuyerState] = useState(useSelector(selectBuyer));

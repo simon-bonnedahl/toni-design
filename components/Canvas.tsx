@@ -3,7 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 import ControlBox from "./modals/ControlBox";
 import { selectCommands } from "../reducers/editorSlice";
-import { saveSign, setSignSvg } from "../reducers/signSlice";
+import { getSignMetadata, saveSign, setSignSvg } from "../reducers/signSlice";
+import { addToCart, setShowModal } from "../reducers/cartSlice";
+import CartModal from "./modals/CartModal";
+import { uuid } from "uuidv4";
 const fabric = require("fabric").fabric;
 const { jsPDF } = require("jspdf");
 const { v4: uuidv4 } = require("uuid");
@@ -18,12 +21,15 @@ const Canvas: React.FC = () => {
     shape: "Rectangle",
     elements: [],
   });
+  const signMetaData = useSelector(getSignMetadata);
 
   const commands = useSelector(selectCommands);
   const [signHistory, setSignHistory] = useState<any[]>([sign]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [selectedObject, setSelectedObject] = useState(false);
   const [commandsRecieved, setCommandsRecieved] = useState(0);
+
+  const [showCartModal, setShowCartModal] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -382,7 +388,8 @@ const Canvas: React.FC = () => {
 
   const saveSignState = (newSign: any) => {
     console.log("Saving sign state", newSign);
-    setSign(newSign);
+    let id = uuidv4();
+    setSign({ ...newSign, id });
     dispatch(saveSign({ sign: newSign }));
     setSignHistory([...signHistory, newSign]);
     setHistoryIndex(signHistory.length - 1);
@@ -636,9 +643,32 @@ const Canvas: React.FC = () => {
           handleDownloadPdf(canvas);
         }
         break;
+      case "addToCart":
+        handleAddToCart(command.value);
+        break;
       default:
         return;
     }
+  };
+
+  const handleAddToCart = (amount: number) => {
+    console.log("Adding to cart", sign);
+    canvas._objects[0].set({ shadow: null });
+
+    let svg = canvas.toSVG();
+    let item = {
+      id: sign.id,
+      metadata: signMetaData,
+      data: {
+        svg: svg,
+      },
+      visual: sign,
+    };
+    for (let i = 0; i < amount; i++) {
+      dispatch(addToCart(item));
+    }
+    setShowCartModal(true);
+    setShape(canvas, sign.shape, sign.width, sign.height, false);
   };
 
   const handleDownloadPdf = (canvas: any) => {
@@ -674,6 +704,7 @@ const Canvas: React.FC = () => {
           handleAlignRight={handleAlignObjectRight}
         />
       )}
+      {showCartModal && <CartModal setShowCartModal={setShowCartModal} />}
     </div>
   );
 };

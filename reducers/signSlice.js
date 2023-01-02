@@ -6,6 +6,7 @@ const initialState = {
       product: "Engraved Sign",
       material: "Plastic",
       application: "None",
+      colorCombination: "White/Black",
       price: null,
     },
     visual: {
@@ -57,6 +58,9 @@ export const signSlice = createSlice({
       state.sign.visual = action.payload.sign;
       state.sign.metadata.price = calculatePrice(state.sign);
     },
+    setSignColorCombination: (state, action) => {
+      state.sign.metadata.colorCombination = action.payload.colorCombination;
+    },
   },
 });
 
@@ -69,6 +73,7 @@ export const {
   setSignSvg,
   setSignPixelData,
   saveSign,
+  setSignColorCombination,
 } = signSlice.actions;
 
 export const getSignJSON = (state) => state.sign.sign;
