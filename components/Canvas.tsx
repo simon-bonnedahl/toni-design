@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 import ControlBox from "./modals/ControlBox";
 import { selectCommands } from "../reducers/editorSlice";
-import { saveSign } from "../reducers/signSlice";
+import { saveSign, setSignSvg } from "../reducers/signSlice";
 const fabric = require("fabric").fabric;
 const { jsPDF } = require("jspdf");
 const { v4: uuidv4 } = require("uuid");
@@ -310,9 +310,15 @@ const Canvas: React.FC = () => {
     });
   };
 
-  const recreateSign = (canvas: any, sign: any) => {
+  const recreateSign = (canvas: any, sign: any, savetoHistory?: boolean) => {
     console.log("Reacreating sign", sign);
-    saveSignState(sign);
+    if (!savetoHistory) {
+      setSign(sign);
+      dispatch(saveSign({ sign }));
+    } else {
+      saveSignState(sign);
+    }
+
     //update the visual
     canvas.clear();
     setShape(canvas, sign.shape, sign.width, sign.height, false);
@@ -617,14 +623,14 @@ const Canvas: React.FC = () => {
         let forwardIndex = historyIndex + 1;
         if (forwardIndex > signHistory.length - 1) return;
         setHistoryIndex(forwardIndex);
-        recreateSign(canvas, signHistory[forwardIndex]);
+        recreateSign(canvas, signHistory[forwardIndex], false);
         break;
       case "reCreate":
-        recreateSign(canvas, command.value);
+        recreateSign(canvas, command.value, false);
         break;
       case "saveSign":
         if (command.value === "SVG") {
-          handleDownloadSvg(canvas);
+          handleSaveSvg(canvas);
         }
         if (command.value === "PDF") {
           handleDownloadPdf(canvas);
@@ -645,16 +651,11 @@ const Canvas: React.FC = () => {
     setShape(canvas, sign.shape, sign.width, sign.height, false);
   };
 
-  const handleDownloadSvg = (canvas: any) => {
+  const handleSaveSvg = (canvas: any) => {
     //remove shadow, maybe shrink canvas and align the sign in there before saving?
-
     canvas._objects[0].set({ shadow: null });
-    let blob = new Blob([canvas.toSVG()], { type: "text/plain" });
-    var url = window.URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.href = url;
-    a.download = "download.svg";
-    a.click();
+    dispatch(setSignSvg({ svg: canvas.toSVG() }));
+
     // dispatch(setDownloadSvg({ downloadSvg: false }));
     setShape(canvas, sign.shape, sign.width, sign.height, false);
   };
