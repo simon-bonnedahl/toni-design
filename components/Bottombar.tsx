@@ -33,7 +33,12 @@ const Bottombar: React.FC = () => {
       body: JSON.stringify(items),
     }).then((res) => {
       res.json();
-      alert(res.status);
+      console.log(res);
+      if (res.status == 200) {
+        alert("Order placed successfully");
+      } else {
+        alert("Something went wrong");
+      }
     });
   };
 
