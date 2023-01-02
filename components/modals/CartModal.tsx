@@ -44,7 +44,12 @@ const CartModal: React.FC<Props> = ({ setShowCartModal }) => {
         </div>
         <div className="flex-col space-y-4">
           {Object.entries(groupedItemsInCart).map(([key, items], index) => (
-            <CartRow index={index} quantity={items.length} item={items[0]} />
+            <CartRow
+              key={key}
+              index={index}
+              quantity={items.length}
+              item={items[0]}
+            />
           ))}
         </div>
       </div>
