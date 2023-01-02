@@ -1692,7 +1692,7 @@
     lodash "^4.17.21"
     rxjs "^6.5.3"
 
-"@sanity/vision@^3.0.0":
+"@sanity/vision@^3.1.2":
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/@sanity/vision/-/vision-3.1.2.tgz#9036437ac171342349d445086a228b31371183c5"
   integrity sha512-0YpaufuyU2Q/JfHKnqTVZx36KgFtjj4AQUJupygoW+ngsg9Y6gJZfPukZ0rEEVtnvpVXNh+ZdjpuxdytHiNDmQ==
