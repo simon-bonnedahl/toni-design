@@ -95,19 +95,36 @@ const compileFiles = (files: any) => {
 };
 
 const compileSummary = (body: any) => {
-  let html = `<h1>Order ${orderId}</h1>`;
+  let html = `<h1 style="text-align: center;">Order ${orderId}</h1>`;
 
   for (let i = 0; i < body.length; i++) {
-    html += `<p>_________________________________</p>
-        <br>
+    html += `
+    <hr style="width: 100%"></hr>
+    <div style="display:flex; justify-content: space-evenly;">
+    <div>
         <p><b>Produkt:</b> ${body[i].metadata.product} x ${body[i].quantity} </p>
         <p><b>Material:</b> ${body[i].metadata.material}</p>      
         <p><b>Storlek :</b> ${body[i].visual.width} x ${body[i].visual.height} </p>
         <p><b>Form: </b> ${body[i].visual.shape}</p>
         <p><b>Färgkombination: </b> ${body[i].metadata.colorCombination}</p>
-        <p><b>Fäst metod:</b> ${body[i].metadata.application}</p>`;
+        <p><b>Fäst metod:</b> ${body[i].metadata.application}</p>          
+    </div> 
+        <img src="${body[i].data.pixelData}" alt="order-image" style="width: 50%; height: auto; border: 1px solid white; border-radius: 5px"/>
+    </div>`;
   }
-  html += "<p>_________________________________</p><p>Filer: </p>";
+  html += ` <hr style="width: 100%"></hr>
+  <h2>Beställningsuppgifter</h2>
+    <p>Simon Bonnedahl</p>
+    <p>Testvägen 1a</p>
+    <p>12345, Testorten</p>      
+    <p>Sverige</p>
+    <br>
+    <p><b>Betalsätt: </b> Swish Payment</p>
+    <p><b>Slutbelopp:</b> 1000 kr</p>  
+    <br>
+  `;
+  html += ` <hr style="width: 100%"></hr>
+  <h2>Produktionsfiler</h2>`;
 
   return html;
 };
@@ -134,7 +151,6 @@ export default function handler(
               "attachment"
             ),
           ];
-
           let emailParams = new EmailParams()
             .setFrom("order@simonbonnedahl.dev")
             .setRecipients(recipients)

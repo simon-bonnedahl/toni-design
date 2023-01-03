@@ -1,7 +1,7 @@
 import {defineField, defineType} from 'sanity'
 
 export default defineType({
-  name: 'asset',
+  name: 'signImages',
   title: 'Media',
   type: 'document',
   fields: [
@@ -15,10 +15,7 @@ export default defineType({
       title: 'Media URL',
       type: 'image',
     }),
-    defineField({
-      name: 'accessibility',
-      title: 'Användas i redigeraren?',
-      type: 'boolean',
-    }),
   ],
 })
+
+//Behövs detta?

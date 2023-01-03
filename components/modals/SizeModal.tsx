@@ -11,11 +11,10 @@ const SizeModal: React.FC = () => {
   const [height, setHeight] = useState(useSelector(getSignVisual).height);
 
   const dispatch = useDispatch();
-
   const handleWidthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let width = event.target.valueAsNumber;
     setWidth(width);
-    if (5 <= width && width <= 600) {
+    if (5 <= width && width <= 400) {
       dispatch(
         addCommand({
           command: "setSize",
@@ -27,7 +26,7 @@ const SizeModal: React.FC = () => {
   const handleHeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let height = event.target.valueAsNumber;
     setHeight(height);
-    if (5 <= height && height <= 225) {
+    if (5 <= height && height <= 200) {
       dispatch(
         addCommand({
           command: "setSize",
@@ -58,7 +57,7 @@ const SizeModal: React.FC = () => {
               value={width}
               onChange={handleWidthChange}
               min={5}
-              max={600}
+              max={400}
               step={5}
             />
           </label>
@@ -72,7 +71,7 @@ const SizeModal: React.FC = () => {
               value={height}
               onChange={handleHeightChange}
               min={5}
-              max={230}
+              max={200}
               step={5}
             />
           </label>

@@ -14,8 +14,6 @@ interface Props {
 }
 
 const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
-  let blob = new Blob([item.data.svg], { type: "image/svg+xml" });
-  let url = URL.createObjectURL(blob);
   let image = document.createElement("img");
 
   const [itemQuantity, setItemQuantity] = useState(quantity);
@@ -24,9 +22,9 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
   );
 
   if (image) {
-    image.src = url;
+    image.src = item.data.pixelData;
     image.addEventListener("load", () => {
-      URL.revokeObjectURL(url), { once: true };
+      URL.revokeObjectURL(item.data.pixelData), { once: true };
       let div = document.getElementById("sign-image-" + index);
       if (div) {
         div.innerHTML = "";

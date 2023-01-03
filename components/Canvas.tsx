@@ -11,6 +11,7 @@ import client, { urlFor } from "../sanity";
 const fabric = require("fabric").fabric;
 const { jsPDF } = require("jspdf");
 const { v4: uuidv4 } = require("uuid");
+import { saveAs } from "file-saver";
 
 const Canvas: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor();
@@ -585,7 +586,8 @@ const Canvas: React.FC = () => {
 
   const handleDeleteObject = () => {
     let obj = editor?.canvas.getActiveObject();
-    removeObjectFromState(obj?.id);
+    let state = removeObjectFromState(obj?.id);
+    saveSignState(state);
     editor?.canvas.remove(editor?.canvas.getActiveObject());
   };
   const handleAlignObjectCenter = () => {
@@ -649,7 +651,7 @@ const Canvas: React.FC = () => {
           handleSaveSvg(canvas);
         }
         if (command.value === "PDF") {
-          handleDownloadPdf(canvas);
+          handleDownloadJpeg(canvas);
         }
         break;
       case "addToCart":
@@ -662,7 +664,10 @@ const Canvas: React.FC = () => {
 
   const handleAddToCart = (amount: number) => {
     console.log("Adding to cart", sign);
+    let pixelData = canvas.toDataURL("image/jpeg", 1.0);
     canvas._objects[0].set({ shadow: null });
+
+    //Ajust the svg optimised for the printer
     canvas._objects[0].set({
       fill: "#ffffff",
       stroke: "#ff0000",
@@ -670,8 +675,8 @@ const Canvas: React.FC = () => {
     });
 
     let svg = canvas.toSVG();
-    console.log(svg);
-    let pixelData = canvas.toDataURL("image/jpeg", 1.0);
+    //Crop it?
+
     let item = {
       id: sign.id,
       metadata: signMetaData,
@@ -686,22 +691,25 @@ const Canvas: React.FC = () => {
     }
     setShowCartModal(true);
     setShape(canvas, sign.shape, sign.width, sign.height, false);
+    setColor(canvas, sign.color, false);
   };
 
-  const handleDownloadPdf = (canvas: any) => {
-    canvas._objects[0].set({ shadow: null });
-
-    //dispatch(setDownloadPdf({ downloadPdf: false }));
-    setShape(canvas, sign.shape, sign.width, sign.height, false);
+  const handleDownloadJpeg = (canvas: any) => {
+    var saveImg = document.createElement("a");
+    saveImg.href = canvas.toDataURL({
+      format: "image/jpeg",
+      quality: 0.8,
+    });
+    saveImg.download = "sign.jpeg";
+    saveImg.click();
   };
 
   const handleSaveSvg = (canvas: any) => {
-    //remove shadow, maybe shrink canvas and align the sign in there before saving?
-    canvas._objects[0].set({ shadow: null });
-    dispatch(setSignSvg({ svg: canvas.toSVG() }));
-
-    // dispatch(setDownloadSvg({ downloadSvg: false }));
-    setShape(canvas, sign.shape, sign.width, sign.height, false);
+    canvas._objects[0].set({ shadow: null, strokeWidth: 1, stroke: "#ff0000" });
+    console.log("Saving SVG");
+    let svg = canvas.toSVG();
+    let blob = new Blob([svg], { type: "image/svg+xml" });
+    saveAs(blob, "sign.svg");
   };
 
   return (
