@@ -13,6 +13,7 @@ const initialState = {
       width: 250, //mm
       height: 100, //mm
       color: "#fff",
+      textColor: "#000",
       shape: "Rectangle",
       elements: [],
     },
@@ -58,6 +59,9 @@ export const signSlice = createSlice({
       state.sign.visual = action.payload.sign;
       state.sign.metadata.price = calculatePrice(state.sign);
     },
+    setSignTextColor: (state, action) => {
+      state.sign.visual.textColor = action.payload.textColor;
+    },
     setSignColorCombination: (state, action) => {
       state.sign.metadata.colorCombination = action.payload.colorCombination;
     },
@@ -73,6 +77,7 @@ export const {
   setSignSvg,
   setSignPixelData,
   saveSign,
+  setSignTextColor,
   setSignColorCombination,
 } = signSlice.actions;
 

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { useLocalStorage } from "use-hooks";
 
 const ThemeSwitch: React.FC = () => {
-  const [theme, setTheme] = useState("autumn");
+  const [theme, setTheme] = useLocalStorage("theme", "autumn");
   const toggleTheme = () => {
     setTheme(theme === "business" ? "autumn" : "business");
   };

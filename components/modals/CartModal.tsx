@@ -10,7 +10,6 @@ interface Props {
 }
 const CartModal: React.FC<Props> = ({ setShowCartModal }) => {
   const items = useSelector(selectCartItems);
-  console.log(items);
 
   const [groupedItemsInCart, setGroupedItemsInCart] = useState<any[]>([]);
 

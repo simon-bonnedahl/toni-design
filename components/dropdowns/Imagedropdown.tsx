@@ -21,7 +21,6 @@ const Imagedropdown: React.FC = () => {
           filename: file.name,
         })
         .then((document) => {
-          console.log(document);
           const doc = {
             _type: "asset",
             id: imgId,

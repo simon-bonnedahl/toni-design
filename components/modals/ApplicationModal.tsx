@@ -45,7 +45,6 @@ const ApplicationModal: React.FC = () => {
       </div>
       <div className="flex flex-col w-full p-5 space-y-2">
         {applications.map((application) => {
-          console.log(selectedApplication, application.name);
           if (application.name === selectedApplication) {
             return (
               <div

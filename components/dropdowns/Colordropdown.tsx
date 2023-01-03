@@ -12,6 +12,7 @@ import {
   getSignMetadata,
   getSignVisual,
   setSignColorCombination,
+  setSignTextColor,
 } from "../../reducers/signSlice";
 import client from "../../sanity";
 
@@ -51,7 +52,7 @@ const Colordropdown: React.FC = () => {
     dispatch(
       addCommand({
         command: "setColor",
-        value: option.frontColorValue,
+        value: option,
       })
     );
     dispatch(setSignColorCombination({ colorCombination: option.name }));
@@ -69,7 +70,7 @@ const Colordropdown: React.FC = () => {
       </label>
       <div
         tabIndex={0}
-        className="dropdown-content card card-compact bg-neutral p-2 shadow"
+        className="dropdown-content card w-80 card-compact bg-neutral p-2 shadow"
       >
         <div className="card-body">
           <h3 className="card-title text-neutral-content">Ändra färg</h3>

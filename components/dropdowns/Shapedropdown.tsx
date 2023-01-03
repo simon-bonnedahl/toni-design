@@ -70,16 +70,16 @@ const Shapedropdown: React.FC = () => {
       case "Rectangle":
         //return a rectangle div stroke
         return (
-          <div className="w-12 h-12 border-4 border-neutral-content bg-none"></div>
+          <div className="w-12 h-12 border-4 border-primary bg-none"></div>
         );
 
       case "Rounded Rectangle":
         return (
-          <div className="w-12 h-12 border-4 border-neutral-content  rounded-md bg-none"></div>
+          <div className="w-12 h-12 border-4 border-primary rounded-md bg-none"></div>
         );
       case "Ellipse":
         return (
-          <div className="w-12 h-12 border-4 border-neutral-content  rounded-full bg-none"></div>
+          <div className="w-12 h-12 border-4 border-primary  rounded-full bg-none"></div>
         );
     }
   };
@@ -103,13 +103,11 @@ const Shapedropdown: React.FC = () => {
         className="btn btn-primary m-1 flex space-x-2 btn-outline"
       >
         <p className="text-content-primary">Form</p>
-        <div className="text-content-primary">
-          {getIconSmall(selectedShape)}
-        </div>
+        {getIconSmall(selectedShape)}
       </label>
       <div
         tabIndex={0}
-        className="dropdown-content card card-compact bg-neutral p-2 shadow"
+        className="dropdown-content card w-80 card-compact bg-neutral p-2 shadow"
       >
         <div className="card-body">
           <h3 className="card-title text-neutral-content">Ändra form</h3>

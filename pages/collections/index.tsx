@@ -18,7 +18,6 @@ function Home() {
 
     client.fetch(query, params).then((data: any) => {
       setProducts(data);
-      console.log(data);
     });
   }, []);
   return (
@@ -40,6 +39,7 @@ function Home() {
               width={product.width}
               height={product.height}
               adjustable={product.adjustable}
+              material={product.material}
               json={product.jsonURL}
             />
           ))}

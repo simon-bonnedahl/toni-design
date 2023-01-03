@@ -1,38 +1,14 @@
-import {
-  faCircle,
-  faCube,
-  faDroplet,
-  faExpand,
-  faFileText,
-  faImage,
-  faPaintRoller,
-  faQuestion,
-  faUsersRectangle,
-} from "@fortawesome/free-solid-svg-icons";
-import {
-  IconLookup,
-  IconDefinition,
-  findIconDefinition,
-  library,
-} from "@fortawesome/fontawesome-svg-core";
+import { faFileText } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addCommand } from "../../reducers/editorSlice";
-import {
-  getSignMetadata,
-  getSignVisual,
-  setSignColorCombination,
-} from "../../reducers/signSlice";
-import client from "../../sanity";
-import { faRectangleTimes } from "@fortawesome/free-regular-svg-icons";
+import { getSignVisual } from "../../reducers/signSlice";
 
 const Textdropdown: React.FC = () => {
-  const [text, setText] = useState({
-    string: "",
-    font: "Arial",
-    color: "Black",
-  });
+  const textColor = useSelector(getSignVisual).textColor;
+  console.log(useSelector(getSignVisual));
+
   const fonts = [
     "Arial",
     "Verdana",
@@ -44,14 +20,6 @@ const Textdropdown: React.FC = () => {
     "Courier New",
     "Brush Script MT",
   ];
-  const colors = [
-    { name: "Black", hex: "#000000" },
-    { name: "White", hex: "#ffffff" },
-    { name: "Red", hex: "#ff0000" },
-    { name: "Green", hex: "#00ff00" },
-    { name: "Blue", hex: "#0000ff" },
-    { name: "Brun", hex: "#8B4513" },
-  ];
   const dispatch = useDispatch();
 
   const handleAddText = () => {
@@ -59,15 +27,12 @@ const Textdropdown: React.FC = () => {
       .value;
     let font = (document.getElementById("font-select") as HTMLInputElement)
       .value;
-    let color = (document.getElementById("color-select") as HTMLInputElement)
-      .value;
     let t = {
       string: string,
       font: font,
       fontSize: 40,
-      color: color,
+      color: textColor,
     };
-    setText(t);
     dispatch(addCommand({ command: "addText", value: t }));
   };
   return (

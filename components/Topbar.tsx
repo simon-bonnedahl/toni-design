@@ -18,9 +18,16 @@ const Topbar: React.FC = () => {
   const dispatch = useDispatch();
 
   return (
-    <div className="flex flex-row justify-between w-screen shadow-lg z-50 bg-base-200">
+    <div className="flex flex-row justify-between w-screen shadow-lg bg-base-200">
       <div className="flex items-center h-full pl-4 space-x-5">
-        <button className="btn btn-primary btn-outline ml-10">Börja om</button>
+        <button
+          onClick={() =>
+            dispatch(addCommand({ command: "reset", value: null }))
+          }
+          className="btn btn-primary btn-outline ml-10"
+        >
+          Börja om
+        </button>
         <div
           onClick={() =>
             dispatch(addCommand({ command: "goBack", value: null }))

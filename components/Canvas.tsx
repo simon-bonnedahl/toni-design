@@ -20,6 +20,7 @@ const Canvas: React.FC = () => {
     width: 250,
     height: 100,
     color: "#ffffff",
+    textColor: "#000000",
     shape: "Rectangle",
     elements: [],
   });
@@ -168,8 +169,23 @@ const Canvas: React.FC = () => {
   const setColor = (canvas: any, color: string, updateBackend: boolean) => {
     let shape = canvas._objects[0];
     if (shape) shape.set({ fill: color });
+
     if (updateBackend) {
       let newSign = { ...sign, color };
+      saveSignState(newSign);
+    }
+  };
+
+  const setTextColor = (canvas: any, color: string, updateBackend: boolean) => {
+    //loop through all elmenents and set the color of the text
+    for (let i = 1; i < canvas._objects.length; i++) {
+      let text = canvas._objects[i];
+      if (text.type === "i-text") {
+        text.set({ fill: color });
+      }
+    }
+    if (updateBackend) {
+      let newSign = { ...sign, textColor: color };
       saveSignState(newSign);
     }
   };
@@ -226,7 +242,6 @@ const Canvas: React.FC = () => {
     let query = `*[_type == 'asset' && id == '${image.imageId}']`;
     let url = "";
     await client.fetch(query).then((res: any) => {
-      console.log(res);
       console.log("Got image from sanity", res[0].url);
       url = urlFor(res[0].url).url();
     });
@@ -247,7 +262,6 @@ const Canvas: React.FC = () => {
             toPixels(image.x),
             toPixels(image.y)
           );
-          console.log(pos);
           svg.set({
             top: pos.top,
             left: pos.left,
@@ -629,8 +643,10 @@ const Canvas: React.FC = () => {
         setSize(canvas, command.value.width, command.value.height, true);
         break;
       case "setColor":
-        setColor(canvas, command.value, true);
+        setColor(canvas, command.value.frontColorValue, true);
+        setTextColor(canvas, command.value.backColorValue, true);
         break;
+
       case "goBack":
         let backIndex = historyIndex - 1;
         if (backIndex < 0) return;
@@ -654,6 +670,9 @@ const Canvas: React.FC = () => {
           handleDownloadJpeg(canvas);
         }
         break;
+      case "reset":
+        handleReset(canvas);
+        break;
       case "addToCart":
         handleAddToCart(command.value);
         break;
@@ -662,6 +681,23 @@ const Canvas: React.FC = () => {
     }
   };
 
+  const handleReset = (canvas: any) => {
+    canvas.clear();
+
+    saveSignState({
+      width: 250,
+      height: 100,
+      color: "#ffffff",
+      textColor: "#000000",
+      shape: "Rectangle",
+      elements: [],
+    });
+    setShape(canvas, "Rectangle", 250, 100, true);
+    setSize(canvas, 250, 100, true);
+    setColor(canvas, "#ffffff", true);
+    setEditorControls();
+    canvas.renderAll();
+  };
   const handleAddToCart = (amount: number) => {
     console.log("Adding to cart", sign);
     let pixelData = canvas.toDataURL("image/jpeg", 1.0);

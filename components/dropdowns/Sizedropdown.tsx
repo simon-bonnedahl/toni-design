@@ -47,7 +47,7 @@ const Sizedropdown: React.FC = () => {
       </label>
       <div
         tabIndex={0}
-        className="dropdown-content card card-compact p-2 shadow bg-neutral"
+        className="dropdown-content card w-80 card-compact p-2 shadow bg-neutral"
       >
         <div className="card-body">
           <h3 className="card-title text-neutral-content">Ändra storlek</h3>
@@ -56,7 +56,7 @@ const Sizedropdown: React.FC = () => {
               <span className="label-text"></span>
             </label>
             <label className="input-group">
-              <span>Bredd</span>
+              <span className="bg-primary text-primary-content">Bredd</span>
               <input
                 className="input-md input-bordered"
                 type="number"
@@ -66,7 +66,7 @@ const Sizedropdown: React.FC = () => {
                 max={400}
                 step={5}
               />
-              <span>mm</span>
+              <span className="bg-primary text-primary-content">mm</span>
             </label>
           </div>
           <div className="form-control">
@@ -74,7 +74,7 @@ const Sizedropdown: React.FC = () => {
               <span className="label-text"></span>
             </label>
             <label className="input-group">
-              <span className="">Höjd </span>
+              <span className="bg-primary text-primary-content">Höjd </span>
               <input
                 className="input-md input-bordered"
                 type="number"
@@ -84,17 +84,17 @@ const Sizedropdown: React.FC = () => {
                 max={200}
                 step={5}
               />
-              <span>mm</span>
+              <span className="bg-primary text-primary-content">mm</span>
             </label>
           </div>
           <div className="form-control mt-4">
             <div className="input-group">
-              <span>Djup</span>
-              <select className="select select-bordered">
-                <option selected>1.0</option>
+              <span className="bg-primary text-primary-content">Djup</span>
+              <select defaultValue={1.0} className="select select-bordered">
+                <option>1.0</option>
                 <option>0.5</option>
               </select>
-              <span>mm</span>
+              <span className="bg-primary text-primary-content">mm</span>
             </div>
           </div>
         </div>
