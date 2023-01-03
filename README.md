@@ -13,6 +13,7 @@ The backend then compile the signs into files that get sent to the production.
 - [Sanity.io](https://www.sanity.io/) CMS system and database
 - [Redux.js](https://redux.js.org/) global state management
 - [Tailwind CSS](https://tailwindcss.com/) layout and styling
+- [Daisy UI] (https://daisyui.com/) tailwind css plugin
 - [Fabric.js](http://fabricjs.com/) canvas
 - [Mailersend API](https://www.mailersend.com/)
 - [Swish Payments API](https://developer.swish.nu/api)
