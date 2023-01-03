@@ -9,15 +9,7 @@ export default defineType({
       name: 'title',
       title: 'Product Titel',
       type: 'string',
-    }),
-    defineField({
-      name: 'slug',
-      title: 'Token',
-      type: 'slug',
-      options: {
-        source: 'title',
-        maxLength: 96,
-      },
+      validation: (Rule) => Rule.required().min(10).max(80),
     }),
     defineField({
       name: 'id',
@@ -28,6 +20,7 @@ export default defineType({
       name: 'description',
       title: 'Beskrivning av produkten',
       type: 'string',
+      validation: (Rule) => Rule.max(200),
     }),
     defineField({
       name: 'image',
@@ -36,7 +29,8 @@ export default defineType({
       options: {
         hotspot: true,
         accept: '.jpg, .png, .jpeg, .webp',
-      },  
+      },
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'categories',
@@ -70,25 +64,28 @@ export default defineType({
       name: 'price',
       title: 'Pris',
       type: 'number',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'adjustable',
       title: 'Anpassningsbar?',
       type: 'boolean',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'complete',
       title: 'Färdig design?',
       type: 'boolean',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'json',
       title: 'JSON fil',
       type: 'file',
+      hidden: (adjustable) => adjustable?.value === true,
       options: {
         accept: '.json',
       },
     }),
-    
-  ]
+  ],
 })

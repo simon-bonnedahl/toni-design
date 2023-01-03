@@ -7,6 +7,7 @@ import { getSignMetadata, saveSign, setSignSvg } from "../reducers/signSlice";
 import { addToCart, setShowModal } from "../reducers/cartSlice";
 import CartModal from "./modals/CartModal";
 import { uuid } from "uuidv4";
+import client, { urlFor } from "../sanity";
 const fabric = require("fabric").fabric;
 const { jsPDF } = require("jspdf");
 const { v4: uuidv4 } = require("uuid");
@@ -218,13 +219,21 @@ const Canvas: React.FC = () => {
     canvas.setActiveObject(textObject);
   };
 
-  const addImage = (canvas: any, image: any, updateBackend: boolean) => {
+  const addImage = async (canvas: any, image: any, updateBackend: boolean) => {
     console.log("Adding image", image);
+    console.log("Fetching image from sanity");
+    let query = `*[_type == 'asset' && id == '${image.imageId}']`;
+    let url = "";
+    await client.fetch(query).then((res: any) => {
+      console.log(res);
+      console.log("Got image from sanity", res[0].url);
+      url = urlFor(res[0].url).url();
+    });
     let id = image.id ? image.id : uuidv4();
 
     if (image.imageType === "image/svg+xml") {
       //Async load
-      fabric.loadSVGFromURL(image.url, function (objects: any, options: any) {
+      fabric.loadSVGFromURL(url, function (objects: any, options: any) {
         let svg = fabric.util.groupSVGElements(objects, options);
         svg.set({
           id: id,
@@ -595,7 +604,7 @@ const Canvas: React.FC = () => {
     if (canvas) {
       //New way of updating the canvas
       if (commands.length > commandsRecieved) {
-        let command = commands[commands.length - 1]; //Look at the latest commands
+        let command = commands[commands.length - 1]; //Look at the latest command
         handleCommand(command, canvas);
         setCommandsRecieved((commandsRecieved) => (commandsRecieved += 1));
         canvas.renderAll();
@@ -654,13 +663,21 @@ const Canvas: React.FC = () => {
   const handleAddToCart = (amount: number) => {
     console.log("Adding to cart", sign);
     canvas._objects[0].set({ shadow: null });
+    canvas._objects[0].set({
+      fill: "#ffffff",
+      stroke: "#ff0000",
+      strokeWidth: 2,
+    });
 
     let svg = canvas.toSVG();
+    console.log(svg);
+    let pixelData = canvas.toDataURL("image/jpeg", 1.0);
     let item = {
       id: sign.id,
       metadata: signMetaData,
       data: {
         svg: svg,
+        pixelData: pixelData,
       },
       visual: sign,
     };
@@ -673,10 +690,7 @@ const Canvas: React.FC = () => {
 
   const handleDownloadPdf = (canvas: any) => {
     canvas._objects[0].set({ shadow: null });
-    let pdf = new jsPDF();
-    let pixelData = canvas.toDataURL("image/jpeg", 1.0);
-    pdf.addImage(pixelData, "JPEG", 0, 0);
-    pdf.save("download.pdf");
+
     //dispatch(setDownloadPdf({ downloadPdf: false }));
     setShape(canvas, sign.shape, sign.width, sign.height, false);
   };

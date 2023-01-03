@@ -4,16 +4,46 @@ import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
 import { setSelectedOption } from "../../reducers/toolbarSlice";
 import { addCommand } from "../../reducers/editorSlice";
+import client, { urlFor } from "../../sanity";
+const { v4: uuidv4 } = require("uuid");
 
 const ImageModal: React.FC = () => {
   const dispatch = useDispatch();
-  const [image, setImage] = useState({ url: "", type: "" });
+  const [image, setImage] = useState<any>(null);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      setImage({ url: window.URL.createObjectURL(file), type: file.type });
+      let imgId = uuidv4();
+      client.assets
+        .upload("image", file, {
+          contentType: file.type,
+          filename: file.name,
+        })
+        .then((document) => {
+          console.log(document);
+          const doc = {
+            _type: "asset",
+            id: imgId,
+            url: {
+              _type: "image",
+              asset: {
+                _ref: document._id,
+              },
+            },
+          };
+          client.create(doc).then(() => {
+            console.log("Document created", doc);
+            setImage({
+              type: file.type,
+              imgId: imgId,
+            });
+          });
+        })
+        .catch((error) => {
+          console.log("Upload failed:", error.message);
+        });
     }
   };
 
@@ -22,9 +52,10 @@ const ImageModal: React.FC = () => {
       dispatch(
         addCommand({
           command: "addImage",
-          value: { url: image.url, imageType: image.type },
+          value: { imageType: image.type, imageId: image.imgId },
         })
       );
+    setImage(null);
     handleClose();
   };
 
@@ -49,6 +80,7 @@ const ImageModal: React.FC = () => {
           onChange={handleImageUpload}
         />
         <button
+          disabled={!image}
           onClick={() => handleAddImage()}
           className="ml-2 p-2 px-4 w-fit text-gray-900 text-sm border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500"
         >

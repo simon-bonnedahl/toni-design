@@ -6,6 +6,8 @@ const client = new sanityClient({
   dataset: "production",
   useCdn: true,
   apiVersion: "2021-10-21",
+  token:
+    "skJNNosvomyzSOErY8X96lSeWlhRkngSMPOVpnhM0zm3KwmrCh2iu63AfxSBv3Z0WlUm49ow80vuGTed8CO3UNp0i7gYjAdUKjXcQeZTNyRR5keZ4QOlOm1fPXPja3v0kA9vwRSYOoQB2iyi0Bwym1U72kM9ACDyNeG6Hbe4AzPIiZF2vX8l",
 });
 
 const builder = new ImageUrlBuilder(client);

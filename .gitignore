@@ -5,6 +5,8 @@
 /.pnp
 .pnp.js
 
+/order-files
+
 # testing
 /coverage
 
@@ -32,6 +34,7 @@ yarn-error.log*
 
 # vercel
 .vercel
+sanity.js
 
 # typescript
 *.tsbuildinfo
