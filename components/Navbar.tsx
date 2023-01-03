@@ -13,7 +13,9 @@ const Navbar: React.FC = () => {
   return (
     <div className="flex justify-between items-center w-full h-20 pl-12 pr-1 bg-base-300">
       {/*Logo*/}
-
+      <Link className="text-primary" href="/collections">
+        Collections
+      </Link>
       {/*Shopping cart*/}
       <div className="flex space-x-2 ">
         <FontAwesomeIcon
