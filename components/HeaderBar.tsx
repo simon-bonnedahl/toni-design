@@ -11,37 +11,37 @@ const HeaderBar: React.FC = () => {
   };
   const dispatch = useDispatch();
   return (
-    <div className="flex justify-end items-center w-full h-8 bg-blue-400 pl-12 pr-1 space-x-4 shadows-xl">
+    <div className="flex justify-end items-center w-full h-8 bg-base-300 pl-12 pr-1 space-x-4 shadows-xl">
       {buyerState === "private" ? (
-        <div className="text-white text-sm">
+        <div className="base-content text-sm">
           <span
             onClick={() => handleBuyerChange("private")}
-            className="font-bold hover:cursor-pointer"
+            className="font-bold hover:cursor-pointer base-content"
           >
-            Private
+            Privatperson
           </span>
           <span> / </span>
           <span
             onClick={() => handleBuyerChange("company")}
             className="hover:cursor-pointer"
           >
-            Company
+            Företag
           </span>
         </div>
       ) : (
-        <div className="text-white text-sm">
+        <div className="base-content text-sm">
           <span
             onClick={() => handleBuyerChange("private")}
             className="hover:cursor-pointer"
           >
-            Private
+            Privatperson
           </span>
           <span> / </span>
           <span
             onClick={() => handleBuyerChange("company")}
             className="font-bold hover:cursor-pointer"
           >
-            Company
+            Företag
           </span>
         </div>
       )}

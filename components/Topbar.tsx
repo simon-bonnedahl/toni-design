@@ -7,46 +7,59 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addCommand } from "../reducers/editorSlice";
 import { getSignVisual } from "../reducers/signSlice";
-import { setSelectedOption } from "../reducers/toolbarSlice";
+import Colordropdown from "./dropdowns/Colordropdown";
+import Imagedropdown from "./dropdowns/Imagedropdown";
+import Shapedropdown from "./dropdowns/Shapedropdown";
+import Sizedropdown from "./dropdowns/Sizedropdown";
+import Textdropdown from "./dropdowns/Textdrowdown";
 
 const Topbar: React.FC = () => {
   const sign = useSelector(getSignVisual);
   const dispatch = useDispatch();
 
-  const handleGoBack = () => {
-    dispatch(addCommand({ command: "goBack", value: null }));
-  };
-  const handleGoForward = () => {
-    dispatch(addCommand({ command: "goForward", value: null }));
-  };
-
   return (
-    <div className="flex flex-row justify-between w-screen h-10 shadow-lg z-50">
-      <div className="flex items-center h-full pl-4 space-x-2 w-fit ml-40">
+    <div className="flex flex-row justify-between w-screen shadow-lg z-50 bg-base-200">
+      <div className="flex items-center h-full pl-4 space-x-5">
+        <button className="btn btn-primary btn-outline ml-10">Börja om</button>
         <div
-          onClick={handleGoBack}
-          className="bg-white shadow-md rounded-full w-8 h-8 flex items-center justify-center hover:scale-110 ease-in-out duration-300 hover:cursor-pointer"
+          onClick={() =>
+            dispatch(addCommand({ command: "goBack", value: null }))
+          }
         >
-          <FontAwesomeIcon className="w-6 h-6" icon={faRotateBack} />
+          <FontAwesomeIcon
+            className="text-primary scale-125 hover:scale-150 ease-in-out duration-300 hover:cursor-pointer"
+            icon={faRotateBack}
+          />
         </div>
         <div
-          onClick={handleGoForward}
-          className="bg-white shadow-md rounded-full w-8 h-8 flex items-center justify-center  hover:scale-110 ease-in-out duration-300 hover:cursor-pointer"
+          onClick={() =>
+            dispatch(addCommand({ command: "goForward", value: null }))
+          }
         >
-          <FontAwesomeIcon className="w-6 h-6" icon={faRotateForward} />
+          <FontAwesomeIcon
+            className="text-primary scale-125 hover:scale-150 ease-in-out duration-300 hover:cursor-pointer"
+            icon={faRotateForward}
+          />
         </div>
       </div>
-
+      {/*Dropdowns*/}
+      <div className="flex space-x-2">
+        <Sizedropdown />
+        <Colordropdown />
+        <Shapedropdown />
+        <Textdropdown />
+        <Imagedropdown />
+      </div>
       {/*Size*/}
-      <div
-        onClick={() => dispatch(setSelectedOption({ selectedOption: 2 }))}
-        className="flex space-x-4 items-center h-full hover:cursor-pointer pr-6"
-      >
+      <div className="flex space-x-4 items-center h-full mr-10">
         <div>
-          Width: <span className="font-bold">{sign.width}</span> mm
+          Bredd: <span className="font-bold">{sign.width}</span> mm
         </div>
         <div>
-          Height: <span className="font-bold">{sign.height}</span> mm
+          Höjd: <span className="font-bold">{sign.height}</span> mm
+        </div>
+        <div>
+          Djup: <span className="font-bold">1</span> mm
         </div>
       </div>
     </div>

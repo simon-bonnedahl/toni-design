@@ -713,9 +713,9 @@ const Canvas: React.FC = () => {
   };
 
   return (
-    <div className="border border-gray w-full h-full relative">
+    <div className="w-full h-full relative">
       <FabricJSCanvas
-        className="sample-canvas w-full h-full bg-slate-200"
+        className="sample-canvas w-full h-full bg-base-100"
         onReady={init}
       />
       {selectedObject && (

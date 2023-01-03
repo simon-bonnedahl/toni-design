@@ -77,6 +77,23 @@ const SizeModal: React.FC = () => {
           </label>
         </div>
       </div>
+
+      <div className="form-control">
+        <label className="label">
+          <span className="label-text"></span>
+        </label>
+        <label className="input-group">
+          <span>Thickness</span>
+          <input
+            type="number"
+            placeholder="10"
+            value={height}
+            onChange={handleHeightChange}
+            className="input-md input-bordered"
+          />
+          <span>mm</span>
+        </label>
+      </div>
     </div>
   );
 };

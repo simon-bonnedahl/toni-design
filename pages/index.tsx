@@ -14,13 +14,12 @@ function Home() {
         <title>Toni Design</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex flex-col bg-gray-100 w-screen h-screen">
+      <main className="flex flex-col bg-base-100 w-screen h-screen">
         <HeaderBar />
         <Navbar />
         <Topbar />
         {/*Middel section*/}
         <div className="flex flex-1 max-h-[74%]">
-          <Toolbar />
           <Canvas />
         </div>
         <Bottombar />
