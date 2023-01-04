@@ -33,9 +33,10 @@ const Topbar: React.FC = () => {
           onClick={() =>
             dispatch(addCommand({ command: "goBack", value: null }))
           }
+          className=" hover:scale-125 ease-in-out duration-300 hover:cursor-pointer"
         >
           <FontAwesomeIcon
-            className="text-primary scale-125 hover:scale-150 ease-in-out duration-300 hover:cursor-pointer"
+            className="text-primary scale-150"
             icon={faRotateBack}
           />
         </div>
@@ -43,9 +44,10 @@ const Topbar: React.FC = () => {
           onClick={() =>
             dispatch(addCommand({ command: "goForward", value: null }))
           }
+          className=" hover:scale-125 ease-in-out duration-300 hover:cursor-pointer"
         >
           <FontAwesomeIcon
-            className="text-primary scale-125 hover:scale-150 ease-in-out duration-300 hover:cursor-pointer"
+            className="text-primary scale-150"
             icon={faRotateForward}
           />
         </div>

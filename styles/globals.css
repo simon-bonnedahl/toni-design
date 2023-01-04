@@ -22,12 +22,3 @@ input{
   border: 1px solid black
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: light;
-  }
-  body {
-    color: black;
-    background: white;
-  }
-}
