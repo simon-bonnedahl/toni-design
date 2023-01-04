@@ -21,8 +21,6 @@ const recipients = [
   //new Recipient("gravyr@tonireklam.se"),
 ];
 
-const svgURIs = [];
-
 const generateOrderId = () => {
   let orderId = "";
   for (let i = 0; i < 10; i++) {
@@ -76,51 +74,52 @@ const zipProductionFiles = (products: any) => {
   }
 };
 
-const compileFiles = (files: any) => {
-  let compiledFiles: any[] = [];
+const compileItems = (items: any) => {
+  let compiledItems: any[] = [];
   let addedIds: number[] = [];
-  for (let i = 0; i < files.length; i++) {
-    if (!addedIds.includes(files[i].id)) {
-      addedIds.push(files[i].id);
-      compiledFiles.push({ ...files[i], quantity: 1 });
+  for (let i = 0; i < items.length; i++) {
+    if (!addedIds.includes(items[i].id)) {
+      addedIds.push(items[i].id);
+      compiledItems.push({ ...items[i], quantity: 1 });
     } else {
-      for (let j = 0; j < compiledFiles.length; j++) {
-        if (compiledFiles[j].id === files[i].id) {
-          compiledFiles[j].quantity += 1;
+      for (let j = 0; j < compiledItems.length; j++) {
+        if (compiledItems[j].id === items[i].id) {
+          compiledItems[j].quantity += 1;
         }
       }
     }
   }
-  return compiledFiles;
+  return compiledItems;
 };
 
-const compileSummary = (body: any) => {
+const compileSummary = (items: any, total: number, orderData: any) => {
   let html = `<h1 style="text-align: center;">Order ${orderId}</h1>`;
 
-  for (let i = 0; i < body.length; i++) {
+  for (let i = 0; i < items.length; i++) {
     html += `
     <hr style="width: 100%"></hr>
     <div style="display:flex; justify-content: space-evenly;">
     <div>
-        <p><b>Produkt:</b> ${body[i].metadata.product} x ${body[i].quantity} </p>
-        <p><b>Material:</b> ${body[i].metadata.material}</p>      
-        <p><b>Storlek :</b> ${body[i].visual.width} x ${body[i].visual.height} </p>
-        <p><b>Form: </b> ${body[i].visual.shape}</p>
-        <p><b>Färgkombination: </b> ${body[i].metadata.colorCombination}</p>
-        <p><b>Fäst metod:</b> ${body[i].metadata.application}</p>          
+        <p><b>Produkt:</b> ${items[i].metadata.product} x ${items[i].quantity} </p>
+        <p><b>Material:</b> ${items[i].metadata.material}</p>      
+        <p><b>Storlek :</b> ${items[i].visual.width} x ${items[i].visual.height} </p>
+        <p><b>Form: </b> ${items[i].visual.shape}</p>
+        <p><b>Färgkombination: </b> ${items[i].metadata.colorCombination}</p>
+        <p><b>Fäst metod:</b> ${items[i].metadata.application}</p>          
     </div> 
-        <img src="${body[i].data.pixelData}" alt="order-image" style="width: 50%; height: auto; border: 1px solid white; border-radius: 5px"/>
+        <img src="${items[i].data.pixelData}" alt="order-image" style="width: 50%; height: auto; border: 1px solid white; border-radius: 5px"/>
     </div>`;
   }
   html += ` <hr style="width: 100%"></hr>
   <h2>Beställningsuppgifter</h2>
-    <p>Simon Bonnedahl</p>
-    <p>Testvägen 1a</p>
-    <p>12345, Testorten</p>      
-    <p>Sverige</p>
+    <p>${orderData.firstName} ${orderData.firstName}</p>
+    <p>${orderData.address}</p>
+    <p>${orderData.zipCode}, ${orderData.city}</p>      
+    <p>${orderData.country}</p>
     <br>
-    <p><b>Betalsätt: </b> Swish Payment</p>
-    <p><b>Slutbelopp:</b> 1000 kr</p>  
+    <p><b>Leverans: </b>${orderData.delivery} </p>
+    <p><b>Betalsätt: </b>${orderData.payment}</p>
+    <p><b>Slutbelopp:</b> ${total} kr</p>  
     <br>
   `;
   html += ` <hr style="width: 100%"></hr>
@@ -137,8 +136,9 @@ export default function handler(
   let body = req.body;
   switch (requestMethod) {
     case "POST":
-      let files = compileFiles(body);
-      let zip = zipProductionFiles(files);
+      console.log(body);
+      let items = compileItems(body.items);
+      let zip = zipProductionFiles(items);
       zip
         .generateNodeStream({ type: "nodebuffer", streamFiles: true })
         .pipe(fs.createWriteStream("order-files/files.zip"))
@@ -156,7 +156,7 @@ export default function handler(
             .setRecipients(recipients)
             .setAttachments(attachments)
             .setSubject("Order " + orderId + "")
-            .setHtml(compileSummary(files))
+            .setHtml(compileSummary(items, body.total, body.orderData))
             .setText("This is the text content");
 
           mailersend.send(emailParams);

@@ -18,10 +18,8 @@ function Home() {
   const [zipCode, setZipCode] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("Sverige");
-  const [delivery, setDelivery] = useState("");
-  const [payment, setPayment] = useState("");
-  const [terms, setTerms] = useState(false);
-  const [newsletter, setNewsletter] = useState(false);
+  const [deliveryMethod, setDeliveryMethod] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,9 +37,8 @@ function Home() {
       zipCode === "" ||
       city === "" ||
       country === "" ||
-      delivery === "" ||
-      payment === "" ||
-      terms === false
+      deliveryMethod === "" ||
+      paymentMethod === ""
     ) {
       setError("Alla fält måste vara ifyllda");
     } else {
@@ -50,7 +47,7 @@ function Home() {
   };
 
   const handlePlaceOrder = () => {
-    let customerData = {
+    let data = {
       firstName: firstName,
       lastName: lastName,
       email: email,
@@ -59,13 +56,11 @@ function Home() {
       zipCode: zipCode,
       city: city,
       country: country,
-      delivery: delivery,
-      payment: payment,
-      terms: terms,
-      newsletter: newsletter,
+      delivery: deliveryMethod,
+      payment: paymentMethod,
     };
 
-    let body = { items: items, total: total, customerData: customerData };
+    let body = { items: items, total: total, orderData: data };
     fetch("/api/ordermail", {
       method: "POST",
       headers: {
@@ -189,8 +184,6 @@ function Home() {
                   <input
                     className="checkbox checkbox-primary"
                     type="checkbox"
-                    checked={newsletter}
-                    onChange={(e) => setNewsletter(true)}
                   />
 
                   <label>
@@ -225,7 +218,7 @@ function Home() {
                         type="radio"
                         name="radio-9"
                         className="radio checked:bg-primary"
-                        checked
+                        onChange={() => setDeliveryMethod("Brev")}
                       />
                       <span className="label-text ml-4 text-lg">Brev</span>
                     </label>
@@ -241,7 +234,7 @@ function Home() {
                         type="radio"
                         name="radio-9"
                         className="radio checked:bg-primary"
-                        checked
+                        onChange={() => setDeliveryMethod("Spårbart paket")}
                       />
                       <span className="label-text ml-4 text-lg">
                         Spårbartpaket
@@ -268,7 +261,7 @@ function Home() {
                         type="radio"
                         name="radio-10"
                         className="radio checked:bg-primary"
-                        checked
+                        onChange={() => setPaymentMethod("Swish")}
                       />
                       <span className="label-text ml-4 text-lg">
                         Betala med Swish
@@ -283,7 +276,7 @@ function Home() {
                         type="radio"
                         name="radio-10"
                         className="radio checked:bg-primary"
-                        checked
+                        onChange={() => setPaymentMethod("Kort")}
                       />
                       <span className="label-text ml-4 text-lg">
                         Betala med kort
@@ -298,7 +291,7 @@ function Home() {
                         type="radio"
                         name="radio-10"
                         className="radio checked:bg-primary"
-                        checked
+                        onChange={() => setPaymentMethod("E-postfaktura")}
                       />
                       <span className="label-text ml-4 text-lg">
                         Betala med e-postfaktura
@@ -314,7 +307,7 @@ function Home() {
                         type="radio"
                         name="radio-10"
                         className="radio checked:bg-primary"
-                        checked
+                        onChange={() => setPaymentMethod("Papperfaktura")}
                       />
                       <span className="label-text ml-4 text-lg">
                         Betala med papperfaktura
