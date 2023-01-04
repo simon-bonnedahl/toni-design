@@ -9,6 +9,7 @@ import { addCommand } from "../reducers/editorSlice";
 import { getSignVisual } from "../reducers/signSlice";
 import Colordropdown from "./dropdowns/Colordropdown";
 import Imagedropdown from "./dropdowns/Imagedropdown";
+import Productdropdown from "./dropdowns/Productdropdown";
 import Shapedropdown from "./dropdowns/Shapedropdown";
 import Sizedropdown from "./dropdowns/Sizedropdown";
 import Textdropdown from "./dropdowns/Textdrowdown";
@@ -51,6 +52,7 @@ const Topbar: React.FC = () => {
       </div>
       {/*Dropdowns*/}
       <div className="flex space-x-2">
+        <Productdropdown />
         <Sizedropdown />
         <Colordropdown />
         <Shapedropdown />

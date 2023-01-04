@@ -45,8 +45,8 @@ const HeaderBar: React.FC = () => {
           </span>
         </div>
       )}
+      {typeof window !== "undefined" && <ThemeSwitch />}
 
-      <ThemeSwitch />
       <div>
         <iframe
           className="w-20 h-5"
