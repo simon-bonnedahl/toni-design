@@ -5,6 +5,7 @@ import {
   faShoppingCart,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectCartItems, setShowModal } from "../reducers/cartSlice";
@@ -18,6 +19,7 @@ const Bottombar: React.FC = () => {
   const [amount, setAmount] = useState(1);
 
   const items = useSelector(selectCartItems);
+  const router = useRouter();
 
   const handleDownloadJSON = () => {
     var dataStr =
@@ -30,21 +32,7 @@ const Bottombar: React.FC = () => {
   };
 
   const handleCheckout = async () => {
-    fetch("/api/ordermail", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(items),
-    }).then((res) => {
-      res.json();
-      console.log(res);
-      if (res.status == 200) {
-        alert("Order placed successfully");
-      } else {
-        alert("Something went wrong");
-      }
-    });
+    router.push("/checkout");
   };
 
   const handleAddToCart = () => {

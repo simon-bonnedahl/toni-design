@@ -4,6 +4,7 @@ import {
   faClose,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useRouter } from "next/router";
 import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectCartItems, selectCartTotal } from "../../reducers/cartSlice";
@@ -18,6 +19,7 @@ const CartModal: React.FC<Props> = ({ setShowCartModal }) => {
   const [groupedItemsInCart, setGroupedItemsInCart] = useState<any[]>([]);
 
   const total = useSelector(selectCartTotal);
+  const router = useRouter();
 
   useMemo(() => {
     const groupedItems = items.reduce((results: any[], item: any) => {
@@ -28,6 +30,9 @@ const CartModal: React.FC<Props> = ({ setShowCartModal }) => {
   }, [items]);
 
   const handleCheckout = async () => {
+    router.push("/checkout");
+
+    /*
     fetch("/api/ordermail", {
       method: "POST",
       headers: {
@@ -42,7 +47,7 @@ const CartModal: React.FC<Props> = ({ setShowCartModal }) => {
       } else {
         alert("Something went wrong");
       }
-    });
+    });*/
   };
 
   const round = (number: number, precision: number) => {
