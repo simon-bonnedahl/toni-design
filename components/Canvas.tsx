@@ -721,6 +721,7 @@ const Canvas: React.FC = () => {
         pixelData: pixelData,
       },
       visual: sign,
+      price: signMetaData.price,
     };
     for (let i = 0; i < amount; i++) {
       dispatch(addToCart(item));
