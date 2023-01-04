@@ -1,3 +1,4 @@
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -42,7 +43,7 @@ const Productdropdown: React.FC = () => {
         className="btn btn-primary m-1 flex space-x-2 btn-outline"
       >
         <p className="text-content-primary">Produkt</p>
-        <FontAwesomeIcon icon="chevron-down" />
+        <FontAwesomeIcon icon={faChevronDown} />
       </label>
       <div
         tabIndex={0}
@@ -76,6 +77,7 @@ const Productdropdown: React.FC = () => {
                     <label className="label cursor-pointer absolute bottom-0 right-0">
                       <span className="label-text">Vald</span>
                       <input
+                        readOnly
                         type="radio"
                         name="radio-10"
                         checked={product.name === selectedProduct}

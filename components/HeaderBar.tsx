@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectBuyer, setBuyer } from "../reducers/cartSlice";
 import ThemeSwitch from "./ThemeSwitch";
 const HeaderBar: React.FC = () => {
   const [buyerState, setBuyerState] = useState(useSelector(selectBuyer));
-
+  const [windowLoaded, setWindowLoaded] = useState(false);
   const handleBuyerChange = (b: string) => {
     setBuyerState(b);
     dispatch(setBuyer({ buyer: buyerState }));
   };
   const dispatch = useDispatch();
+  useEffect(() => setWindowLoaded(true), []);
   return (
     <div className="flex justify-end items-center w-full h-8 bg-base-300 pl-12 pr-1 space-x-4 shadows-xl">
       {buyerState === "private" ? (
@@ -45,7 +46,7 @@ const HeaderBar: React.FC = () => {
           </span>
         </div>
       )}
-      {typeof window !== "undefined" && <ThemeSwitch />}
+      {windowLoaded && <ThemeSwitch />}
 
       <div>
         <iframe

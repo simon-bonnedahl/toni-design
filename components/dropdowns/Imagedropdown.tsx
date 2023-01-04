@@ -8,13 +8,11 @@ import client from "../../sanity";
 const { v4: uuidv4 } = require("uuid");
 const Imagedropdown: React.FC = () => {
   const dispatch = useDispatch();
-  const [image, setImage] = useState<any>(null);
-
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      let imgId = uuidv4();
+      let imageId = uuidv4();
       client.assets
         .upload("image", file, {
           contentType: file.type,
@@ -23,7 +21,7 @@ const Imagedropdown: React.FC = () => {
         .then((document) => {
           const doc = {
             _type: "asset",
-            id: imgId,
+            id: imageId,
             url: {
               _type: "image",
               asset: {
@@ -33,27 +31,18 @@ const Imagedropdown: React.FC = () => {
           };
           client.create(doc).then(() => {
             console.log("Document created", doc);
-            setImage({
-              type: file.type,
-              imgId: imgId,
-            });
+            dispatch(
+              addCommand({
+                command: "addImage",
+                value: { imageType: "image", imageId: imageId },
+              })
+            );
           });
         })
         .catch((error) => {
           console.log("Upload failed:", error.message);
         });
     }
-  };
-
-  const handleAddImage = () => {
-    if (image)
-      dispatch(
-        addCommand({
-          command: "addImage",
-          value: { imageType: image.type, imageId: image.imgId },
-        })
-      );
-    setImage(null);
   };
 
   return (
@@ -77,11 +66,7 @@ const Imagedropdown: React.FC = () => {
             accept=".jpg, .jpeg, .png, .webp, .svg"
             onChange={handleImageUpload}
           />
-          <button
-            onClick={handleAddImage}
-            className="btn btn-primary w-fill mt-4"
-            disabled={!image}
-          >
+          <button className="btn btn-primary w-fill mt-4" disabled>
             Lägg till
           </button>
         </div>
