@@ -1,6 +1,6 @@
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { addCommand } from "../../reducers/editorSlice";
 
@@ -8,11 +8,13 @@ import client from "../../sanity";
 const { v4: uuidv4 } = require("uuid");
 const Imagedropdown: React.FC = () => {
   const dispatch = useDispatch();
+  const [image, setImage] = useState<any>(null);
+
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      let imageId = uuidv4();
+      let imgId = uuidv4();
       client.assets
         .upload("image", file, {
           contentType: file.type,
@@ -21,7 +23,7 @@ const Imagedropdown: React.FC = () => {
         .then((document) => {
           const doc = {
             _type: "asset",
-            id: imageId,
+            id: imgId,
             url: {
               _type: "image",
               asset: {
@@ -31,12 +33,10 @@ const Imagedropdown: React.FC = () => {
           };
           client.create(doc).then(() => {
             console.log("Document created", doc);
-            dispatch(
-              addCommand({
-                command: "addImage",
-                value: { imageType: "image", imageId: imageId },
-              })
-            );
+            setImage({
+              type: file.type,
+              imgId: imgId,
+            });
           });
         })
         .catch((error) => {
@@ -44,6 +44,16 @@ const Imagedropdown: React.FC = () => {
         });
     }
   };
+  useEffect(() => {
+    console.log(image);
+    if (image)
+      dispatch(
+        addCommand({
+          command: "addImage",
+          value: { imageType: image.type, imageId: image.imgId },
+        })
+      );
+  }, [image]);
 
   return (
     <div className="dropdown">

@@ -6,6 +6,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addToCart, removeFromCart } from "../reducers/cartSlice";
 
 interface Props {
   index: number;
@@ -20,6 +22,7 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
   const [totalPrice, setTotalPrice] = useState(
     item.metadata.price * itemQuantity
   );
+  const dispatch = useDispatch();
 
   if (image) {
     image.src = item.data.pixelData;
@@ -36,10 +39,12 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
   let signId = "sign-image-" + index;
 
   const handleDecreaseItemQuantity = () => {
+    dispatch(removeFromCart({ id: item.id }));
     setItemQuantity(itemQuantity - 1);
     setTotalPrice(totalPrice - item.metadata.price);
   };
   const handleIncreaseItemQuantity = () => {
+    dispatch(addToCart(item));
     setItemQuantity(itemQuantity + 1);
     setTotalPrice(totalPrice + item.metadata.price);
   };

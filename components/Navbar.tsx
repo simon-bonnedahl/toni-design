@@ -1,10 +1,17 @@
 import Link from "next/link";
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectCartItems } from "../reducers/cartSlice";
+import { addCommand } from "../reducers/editorSlice";
 
 const Navbar: React.FC = () => {
   const items = useSelector(selectCartItems);
+
+  const dispatch = useDispatch();
+
+  const handleCartClicked = () => {
+    dispatch(addCommand({ command: "toggleCart" }));
+  };
 
   return (
     <div className="navbar bg-base-200">
@@ -42,7 +49,11 @@ const Navbar: React.FC = () => {
             />
           </svg>
         </button>
-        <label tabIndex={0} className="btn btn-ghost btn-circle">
+        <button
+          onClick={handleCartClicked}
+          tabIndex={0}
+          className="btn btn-ghost btn-circle"
+        >
           <div className="indicator">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -62,7 +73,7 @@ const Navbar: React.FC = () => {
               {items.length}
             </span>
           </div>
-        </label>
+        </button>
       </div>
       <div className="dropdown dropdown-end">
         <label tabIndex={0} className="btn btn-ghost btn-circle avatar">

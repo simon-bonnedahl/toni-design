@@ -3,13 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 import ControlBox from "./modals/ControlBox";
 import { selectCommands } from "../reducers/editorSlice";
-import { getSignMetadata, saveSign, setSignSvg } from "../reducers/signSlice";
-import { addToCart, setShowModal } from "../reducers/cartSlice";
+import { getSignMetadata, saveSign } from "../reducers/signSlice";
+import { addToCart } from "../reducers/cartSlice";
 import CartModal from "./modals/CartModal";
-import { uuid } from "uuidv4";
 import client, { urlFor } from "../sanity";
 const fabric = require("fabric").fabric;
-const { jsPDF } = require("jspdf");
 const { v4: uuidv4 } = require("uuid");
 import { saveAs } from "file-saver";
 
@@ -39,7 +37,7 @@ const Canvas: React.FC = () => {
   const init = (canvas: any) => {
     setShape(canvas, sign.shape, sign.width, sign.height, true);
     setSize(canvas, sign.width, sign.height, true);
-    setColor(canvas, sign.color, true);
+    setColor(canvas, sign.color, sign.textColor, true);
     setEditorControls();
     canvas.renderAll();
     onReady(canvas);
@@ -166,26 +164,23 @@ const Canvas: React.FC = () => {
     }
   };
 
-  const setColor = (canvas: any, color: string, updateBackend: boolean) => {
+  const setColor = (
+    canvas: any,
+    back: string,
+    front: string,
+    updateBackend: boolean
+  ) => {
     let shape = canvas._objects[0];
-    if (shape) shape.set({ fill: color });
-
-    if (updateBackend) {
-      let newSign = { ...sign, color };
-      saveSignState(newSign);
-    }
-  };
-
-  const setTextColor = (canvas: any, color: string, updateBackend: boolean) => {
-    //loop through all elmenents and set the color of the text
+    if (shape) shape.set({ fill: back });
     for (let i = 1; i < canvas._objects.length; i++) {
       let text = canvas._objects[i];
       if (text.type === "i-text") {
-        text.set({ fill: color });
+        text.set({ fill: front });
       }
     }
+
     if (updateBackend) {
-      let newSign = { ...sign, textColor: color };
+      let newSign = { ...sign, color: back, textColor: front };
       saveSignState(newSign);
     }
   };
@@ -352,7 +347,7 @@ const Canvas: React.FC = () => {
     //update the visual
     canvas.clear();
     setShape(canvas, sign.shape, sign.width, sign.height, false);
-    setColor(canvas, sign.color, false);
+    setColor(canvas, sign.color, sign.textColor, false);
     setSize(canvas, sign.width, sign.height, false);
 
     recreateCanvas(canvas, sign.elements);
@@ -643,10 +638,10 @@ const Canvas: React.FC = () => {
         setSize(canvas, command.value.width, command.value.height, true);
         break;
       case "setColor":
-        setColor(canvas, command.value.frontColorValue, true);
-        setTextColor(canvas, command.value.backColorValue, true);
+        let front = command.value.frontColorValue;
+        let back = command.value.backColorValue;
+        setColor(canvas, front, back, true);
         break;
-
       case "goBack":
         let backIndex = historyIndex - 1;
         if (backIndex < 0) return;
@@ -676,9 +671,16 @@ const Canvas: React.FC = () => {
       case "addToCart":
         handleAddToCart(command.value);
         break;
+      case "toggleCart":
+        handleToggleCart();
+        break;
       default:
         return;
     }
+  };
+
+  const handleToggleCart = () => {
+    setShowCartModal(!showCartModal);
   };
 
   const handleReset = (canvas: any) => {
@@ -694,7 +696,7 @@ const Canvas: React.FC = () => {
     });
     setShape(canvas, "Rectangle", 250, 100, true);
     setSize(canvas, 250, 100, true);
-    setColor(canvas, "#ffffff", true);
+    setColor(canvas, "#ffffff", "#000000", true);
     setEditorControls();
     canvas.renderAll();
   };
@@ -728,7 +730,7 @@ const Canvas: React.FC = () => {
     }
     setShowCartModal(true);
     setShape(canvas, sign.shape, sign.width, sign.height, false);
-    setColor(canvas, sign.color, false);
+    setColor(canvas, sign.color, sign.textColor, false);
   };
 
   const handleDownloadJpeg = (canvas: any) => {
