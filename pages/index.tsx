@@ -19,7 +19,7 @@ function Home() {
         <Navbar />
         <Topbar />
         {/*Middel section*/}
-        <div className="flex flex-1 max-h-[74%]">
+        <div className="flex flex-1 max-h-[75%]">
           <Canvas />
         </div>
         <Bottombar />

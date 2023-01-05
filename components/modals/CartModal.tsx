@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectCartItems, selectCartTotal } from "../../reducers/cartSlice";
+import ErrorAlert from "../alerts/ErrorAlert";
 import CartRow from "../CartRow";
 
 interface Props {
@@ -20,6 +21,7 @@ const CartModal: React.FC<Props> = ({ setShowCartModal }) => {
 
   const total = useSelector(selectCartTotal);
   const router = useRouter();
+  const [error, setError] = useState("");
 
   useMemo(() => {
     const groupedItems = items.reduce((results: any[], item: any) => {
@@ -30,24 +32,12 @@ const CartModal: React.FC<Props> = ({ setShowCartModal }) => {
   }, [items]);
 
   const handleCheckout = async () => {
-    router.push("/checkout");
-
-    /*
-    fetch("/api/ordermail", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(items),
-    }).then((res) => {
-      res.json();
-      console.log(res);
-      if (res.status == 200) {
-        alert("Order placed successfully");
-      } else {
-        alert("Something went wrong");
-      }
-    });*/
+    if (items.length < 1) {
+      setError("Du har inget din varukorg");
+    } else {
+      setError("");
+      router.push("/checkout");
+    }
   };
 
   const round = (number: number, precision: number) => {
@@ -126,6 +116,11 @@ const CartModal: React.FC<Props> = ({ setShowCartModal }) => {
           </div>
         </div>
       </div>
+      {error && (
+        <div onClick={() => setError("")}>
+          <ErrorAlert text={error} />
+        </div>
+      )}
     </div>
   );
 };

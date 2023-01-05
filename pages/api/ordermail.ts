@@ -112,7 +112,7 @@ const compileSummary = (items: any, total: number, orderData: any) => {
   }
   html += ` <hr style="width: 100%"></hr>
   <h2>Beställningsuppgifter</h2>
-    <p>${orderData.firstName} ${orderData.firstName}</p>
+    <p>${orderData.firstName} ${orderData.lastName}</p>
     <p>${orderData.address}</p>
     <p>${orderData.zipCode}, ${orderData.city}</p>      
     <p>${orderData.country}</p>

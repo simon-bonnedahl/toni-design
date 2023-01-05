@@ -31,6 +31,7 @@
     "fabricjs-react": "^1.1.1",
     "file-saver": "^2.0.5",
     "fs": "^0.0.1-security",
+    "jquery": "^3.6.3",
     "jspdf": "^2.5.1",
     "jszip": "^3.10.1",
     "mailersend": "^1.4.5",

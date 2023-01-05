@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Head from "next/head";
 import HeaderBar from "../../components/HeaderBar";
 import Navbar from "../../components/Navbar";
@@ -7,6 +7,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faLock } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import { selectCartItems, selectCartTotal } from "../../reducers/cartSlice";
+import Success from "../../components/alerts/SuccessAlert";
+import ErrorAlert from "../../components/alerts/ErrorAlert";
+import SuccessAlert from "../../components/alerts/SuccessAlert";
 
 function Home() {
   //Setup statevariables for all checkout fields
@@ -18,31 +21,165 @@ function Home() {
   const [zipCode, setZipCode] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("Sverige");
-  const [deliveryMethod, setDeliveryMethod] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [error, setError] = useState("");
+  const [deliveryMethod, setDeliveryMethod] = useState("Ingen vald");
+  const [paymentMethod, setPaymentMethod] = useState(" ");
+  const [errors, setErrors] = useState({
+    firstName: true,
+    lastName: true,
+    email: true,
+    phone: true,
+    address: true,
+    zipCode: true,
+    city: true,
+    country: true,
+  });
   const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [alertHidden, setAlertHidden] = useState(false);
 
   const items = useSelector(selectCartItems);
   const total = useSelector(selectCartTotal);
 
-  const handleCheckFields = () => {
+  const validateFirstname = (name: string) => {
+    setFirstName(name);
+    if (name.length < 2) {
+      document.getElementById("firstname")?.classList.add("input-error");
+      setErrors({ ...errors, firstName: true });
+    } else {
+      document.getElementById("firstname")?.classList.remove("input-error");
+      setErrors({ ...errors, firstName: false });
+    }
+  };
+  const validateLastname = (name: string) => {
+    setLastName(name);
+    if (name.length < 2) {
+      document.getElementById("lastname")?.classList.add("input-error");
+      setErrors({ ...errors, lastName: true });
+    } else {
+      document.getElementById("lastname")?.classList.remove("input-error");
+      setErrors({ ...errors, lastName: false });
+    }
+  };
+
+  const validateEmail = (email: string) => {
+    const re = /\S+@\S+\.\S+/;
+    setEmail(email);
+    if (!re.test(email)) {
+      document.getElementById("email")?.classList.add("input-error");
+      setErrors({ ...errors, email: true });
+    } else {
+      document.getElementById("email")?.classList.remove("input-error");
+      setErrors({ ...errors, email: false });
+    }
+  };
+
+  const validatePhone = (phone: string) => {
+    setPhone(phone);
+    if (phone.length < 10) {
+      document.getElementById("phone")?.classList.add("input-error");
+      setErrors({ ...errors, phone: true });
+    } else {
+      document.getElementById("phone")?.classList.remove("input-error");
+      setErrors({ ...errors, phone: false });
+    }
+  };
+
+  const validateAddress = (address: string) => {
+    setAddress(address);
+    if (address.length < 5) {
+      document.getElementById("address")?.classList.add("input-error");
+      setErrors({ ...errors, address: true });
+    } else {
+      document.getElementById("address")?.classList.remove("input-error");
+      setErrors({ ...errors, address: false });
+    }
+  };
+  const validateZipCode = (zipCode: string) => {
+    setZipCode(zipCode);
+    if (zipCode.length < 5) {
+      document.getElementById("zipCode")?.classList.add("input-error");
+      setErrors({ ...errors, zipCode: true });
+    } else {
+      document.getElementById("zipCode")?.classList.remove("input-error");
+      setErrors({ ...errors, zipCode: false });
+    }
+  };
+  const validateCity = (city: string) => {
+    setCity(city);
+    if (city.length < 2) {
+      document.getElementById("city")?.classList.add("input-error");
+      setErrors({ ...errors, city: true });
+    } else {
+      document.getElementById("city")?.classList.remove("input-error");
+      setErrors({ ...errors, city: false });
+    }
+  };
+
+  const allFieldsValid = () => {
     if (
-      firstName === "" ||
-      lastName === "" ||
-      email === "" ||
-      phone === "" ||
-      address === "" ||
-      zipCode === "" ||
-      city === "" ||
-      country === "" ||
-      deliveryMethod === "" ||
-      paymentMethod === ""
+      errors.firstName ||
+      errors.lastName ||
+      errors.email ||
+      errors.phone ||
+      errors.address ||
+      errors.zipCode ||
+      errors.city
     ) {
-      setError("Alla fält måste vara ifyllda");
+      //add input error class to the field that is not valid and focus that field
+      if (errors.firstName) {
+        document.getElementById("firstname")?.classList.add("input-error");
+        document.getElementById("firstname")?.focus();
+      }
+      if (errors.lastName) {
+        document.getElementById("lastname")?.classList.add("input-error");
+        document.getElementById("lastname")?.focus();
+      }
+      if (errors.email) {
+        document.getElementById("email")?.classList.add("input-error");
+      }
+      if (errors.phone) {
+        document.getElementById("phone")?.classList.add("input-error");
+      }
+      if (errors.address) {
+        document.getElementById("address")?.classList.add("input-error");
+      }
+      if (errors.zipCode) {
+        document.getElementById("zipCode")?.classList.add("input-error");
+      }
+      if (errors.city) {
+        document.getElementById("city")?.classList.add("input-error");
+      }
+      setError("Fyll i alla fält");
+      setAlertHidden(false);
+      return false;
     } else {
       setError("");
+      return true;
+    }
+  };
+
+  const handleCheckFields = () => {
+    if (allFieldsValid()) {
+      //disable the iformation form and focus delivery
+      document.getElementById("information")?.classList.add("opacity-40");
+      document
+        .getElementById("information")
+        ?.classList.add("pointer-events-none");
+
+      //scroll down to delivery choice
+      document.getElementById("delivery-choice")?.scrollIntoView({
+        behavior: "smooth",
+      });
+      document
+        .getElementById("delivery-choice")
+        ?.classList.remove("opacity-40");
+      document
+        .getElementById("delivery-choice")
+        ?.classList.remove("pointer-events-none");
+      document.getElementById("payment-choice")?.classList.remove("opacity-40");
+      document
+        .getElementById("payment-choice")
+        ?.classList.remove("pointer-events-none");
     }
   };
 
@@ -71,11 +208,17 @@ function Home() {
       res.json();
       console.log(res);
       if (res.status == 200) {
-        alert("Order placed successfully");
+        setSuccess("Beställningen är bekräftad");
+        setAlertHidden(false);
       } else {
-        alert("Something went wrong");
+        setError("Något gick fel");
+        setAlertHidden(false);
       }
     });
+  };
+
+  const hideAlert = () => {
+    setAlertHidden(true);
   };
 
   return (
@@ -87,82 +230,95 @@ function Home() {
       <main className="flex flex-col bg-base-100 w-screen overflow-scroll">
         <HeaderBar />
         <Navbar />
-        <div className=" h-screen mx-96 mt-20 flex-col space-y-6">
+        <div className="w-full mt-20 flex flex-col space-y-10 items-center">
           <h1 className="text-4xl">Kassa</h1>
+
+          {/*Form*/}
+
           {/*Information*/}
-          <div className="border border-primary w-7/12 rounded-md">
+          <div
+            id="information"
+            className="border border-primary w-5/12 rounded-xl"
+          >
             <div className="p-8">
               <div className="flex flex-col space-y-4">
                 <h2 className="text-2xl">1. Din Information</h2>
                 <div className="flex flex-col">
                   <label>* Förnamn</label>
                   <input
+                    id="firstname"
                     className="input input-bordered input-primary w-full max-w"
                     type="text"
                     value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    onChange={(e) => validateFirstname(e.target.value)}
                     required
                   />
                 </div>
                 <div className="flex flex-col">
                   <label>* Efternamn</label>
                   <input
+                    id="lastname"
                     className="input input-bordered input-primary w-full max-w"
                     type="text"
                     value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    onChange={(e) => validateLastname(e.target.value)}
                     required
                   />
                 </div>
                 <div className="flex flex-col">
                   <label>* E-post</label>
                   <input
+                    id="email"
                     className="input input-bordered input-primary w-full max-w"
                     type="text"
                     required
                     placeholder="Används för kvitto och orderinformation"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => validateEmail(e.target.value)}
                   />
                 </div>
                 <div className="flex flex-col">
                   <label>* Telefon</label>
                   <input
+                    id="phone"
                     className="input input-bordered input-primary w-full max-w-xs"
                     type="text"
                     placeholder="Används för avisering"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={(e) => validatePhone(e.target.value)}
                     required
                   />
                 </div>
                 <div className="flex flex-col">
                   <label>* Adress</label>
                   <input
+                    id="address"
                     className="input input-bordered input-primary w-full max-w-xs"
                     type="text"
                     value={address}
-                    onChange={(e) => setAddress(e.target.value)}
+                    onChange={(e) => validateAddress(e.target.value)}
                     required
                   />
                 </div>
                 <div className="flex flex-col">
                   <label>* Postnummer</label>
                   <input
+                    id="zipCode"
                     className="input input-bordered input-primary w-full max-w-xs"
                     type="text"
                     value={zipCode}
-                    onChange={(e) => setZipCode(e.target.value)}
+                    onChange={(e) => validateZipCode(e.target.value)}
                     required
                   />
                 </div>
                 <div className="flex flex-col">
                   <label>* Stad</label>
                   <input
+                    id="city"
                     className="input input-bordered input-primary w-full max-w-xs"
                     type="text"
                     value={city}
-                    onChange={(e) => setCity(e.target.value)}
+                    onChange={(e) => validateCity(e.target.value)}
                     required
                   />
                 </div>
@@ -206,8 +362,10 @@ function Home() {
             </div>
           </div>
           {/*Leverans*/}
-
-          <div className="border border-primary w-7/12 rounded-md">
+          <div
+            id="delivery-choice"
+            className="border border-primary w-5/12 rounded-xl pointer-events-none opacity-40"
+          >
             <div className="p-8 flex-col space-y-5">
               <div className="flex flex-col space-y-4">
                 <h2 className="text-2xl">2. Leveransätt</h2>
@@ -237,7 +395,7 @@ function Home() {
                         onChange={() => setDeliveryMethod("Spårbart paket")}
                       />
                       <span className="label-text ml-4 text-lg">
-                        Spårbartpaket
+                        Spårbart paket
                       </span>
                     </label>
                   </div>
@@ -250,7 +408,10 @@ function Home() {
             </div>
           </div>
           {/*Betalsätt*/}
-          <div className="border border-primary w-7/12 rounded-md">
+          <div
+            id="payment-choice"
+            className="border border-primary w-5/12 justify-between flex rounded-xl relative pointer-events-none opacity-40"
+          >
             <div className="p-8 flex-col space-y-5">
               <div className="flex flex-col space-y-4">
                 <h2 className="text-2xl">3. Betalsätt</h2>
@@ -262,6 +423,7 @@ function Home() {
                         name="radio-10"
                         className="radio checked:bg-primary"
                         onChange={() => setPaymentMethod("Swish")}
+                        disabled
                       />
                       <span className="label-text ml-4 text-lg">
                         Betala med Swish
@@ -277,6 +439,7 @@ function Home() {
                         name="radio-10"
                         className="radio checked:bg-primary"
                         onChange={() => setPaymentMethod("Kort")}
+                        disabled
                       />
                       <span className="label-text ml-4 text-lg">
                         Betala med kort
@@ -292,6 +455,7 @@ function Home() {
                         name="radio-10"
                         className="radio checked:bg-primary"
                         onChange={() => setPaymentMethod("E-postfaktura")}
+                        checked
                       />
                       <span className="label-text ml-4 text-lg">
                         Betala med e-postfaktura
@@ -318,18 +482,64 @@ function Home() {
                 </div>
               </div>
             </div>
+            {/*Summary*/}
+            <div className="p-8 flex-col space-y-5 w-72 absolute -right-80 border border-primary rounded-xl">
+              <div className="flex flex-col space-y-4">
+                <h2 className="text-2xl">Sammanställning</h2>
+                <div className="flex justify-between">
+                  <p>Dina varor</p>
+                  <p>{total} kr</p>
+                </div>
+                <div className="flex justify-between">
+                  <div className="flex flex-col">
+                    <p>Leverans</p>
+                    <p className="text-xs">{deliveryMethod} </p>
+                  </div>
+                  <p>39.00 kr</p>
+                </div>
+                <hr />
+                <div className="flex justify-between">
+                  <p>Pris exkl.moms</p>
+                  <p>{total + 39}</p>
+                </div>
+                <div className="flex justify-between">
+                  <p>Moms(25%)</p>
+                  <p>{total * 0.25}</p>
+                </div>
+                <hr />
+
+                <div className="flex justify-between pb-5">
+                  <p>Totalt</p>
+                  <p>{total * 1.25 + 39} kr</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <button className="btn btn-info w-7/12" onClick={handlePlaceOrder}>
+          {/*Betalknapp*/}
+          <button className="btn btn-info w-5/12" onClick={handlePlaceOrder}>
             <FontAwesomeIcon className="scale-125" icon={faLock} />
             <span className="ml-4 text-info-content">Slutför köp</span>
           </button>
-          <p className="text-sm w-7/12">
+          <p className="text-sm w-5/12">
             Genom att lägga en bestllning godkänner du våra köpvillkor och
             informationen i vår intigritetspolicy.
           </p>
-          {/*Footer*/}
-          <div className="h-screen"></div>
         </div>
+        {/*Footer*/}
+
+        {success && (
+          <div onClick={() => setSuccess("")}>
+            <SuccessAlert text={success} />
+          </div>
+        )}
+
+        {error && (
+          <div onClick={() => setError("")}>
+            <ErrorAlert text={error} />
+          </div>
+        )}
+
+        <div className=" h-screen w-screen"></div>
       </main>
     </div>
   );

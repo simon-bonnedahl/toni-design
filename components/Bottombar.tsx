@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectCartItems, setShowModal } from "../reducers/cartSlice";
 import { addCommand } from "../reducers/editorSlice";
 import { getSignJSON, getSignMetadata } from "../reducers/signSlice";
+import ErrorAlert from "./alerts/ErrorAlert";
 
 const Bottombar: React.FC = () => {
   const price = useSelector(getSignMetadata).price;
@@ -19,6 +20,7 @@ const Bottombar: React.FC = () => {
   const [amount, setAmount] = useState(1);
 
   const items = useSelector(selectCartItems);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleDownloadJSON = () => {
@@ -32,7 +34,12 @@ const Bottombar: React.FC = () => {
   };
 
   const handleCheckout = async () => {
-    router.push("/checkout");
+    if (items.length < 1) {
+      setError("Du har inget din varukorg");
+    } else {
+      setError("");
+      router.push("/checkout");
+    }
   };
 
   const handleAddToCart = () => {
@@ -40,29 +47,29 @@ const Bottombar: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-row w-full h-20 items-center bg-base-300 justify-between px-4 ">
+    <div className="fixed bottom-0 flex flex-row w-full h-20 items-center bg-base-300 justify-between px-4 ">
       <div className="flex space-x-4">
         <button
-          className="btn btn-primary primary-content"
+          className="btn btn-primary primary-content btn-outline"
           onClick={() =>
             dispatch(addCommand({ command: "saveSign", value: "SVG" }))
           }
         >
-          <label>Download SVG</label>
+          <label>SVG</label>
         </button>
         <button
-          className="btn btn-primary primary-content"
+          className="btn btn-primary primary-content btn-outline"
           onClick={() =>
             dispatch(addCommand({ command: "saveSign", value: "PDF" }))
           }
         >
-          Download PDF
+          JPEG
         </button>
         <button
-          className="btn btn-primary primary-content"
+          className="btn btn-primary btn-outline primary-content"
           onClick={handleDownloadJSON}
         >
-          Download JSON
+          JSON
         </button>
       </div>
       {/*Add to cart*/}
@@ -117,6 +124,11 @@ const Bottombar: React.FC = () => {
             />
           </button>
         </div>
+        {error && (
+          <div onClick={() => setError("")}>
+            <ErrorAlert text={error} />
+          </div>
+        )}
       </div>
     </div>
   );
