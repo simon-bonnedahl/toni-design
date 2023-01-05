@@ -21,15 +21,6 @@ const recipients = [
   //new Recipient("gravyr@tonireklam.se"),
 ];
 
-const generateOrderId = () => {
-  let orderId = "";
-  for (let i = 0; i < 10; i++) {
-    orderId += Math.floor(Math.random() * 10);
-  }
-  return orderId;
-};
-const orderId = generateOrderId();
-
 const zipProductionFiles = (products: any) => {
   // Svg
   const zip = new JSZip();
@@ -92,8 +83,13 @@ const compileItems = (items: any) => {
   return compiledItems;
 };
 
-const compileSummary = (items: any, total: number, orderData: any) => {
-  let html = `<h1 style="text-align: center;">Order ${orderId}</h1>`;
+const compileSummary = (
+  items: any,
+  total: number,
+  orderData: any,
+  orderId: number
+) => {
+  let html = `<h1 style="text-align: center;">Order #${orderId}</h1>`;
 
   for (let i = 0; i < items.length; i++) {
     html += `
@@ -116,6 +112,7 @@ const compileSummary = (items: any, total: number, orderData: any) => {
     <p>${orderData.address}</p>
     <p>${orderData.zipCode}, ${orderData.city}</p>      
     <p>${orderData.country}</p>
+    <p>${orderData.phone}</p>
     <br>
     <p><b>Leverans: </b>${orderData.delivery} </p>
     <p><b>Betalsätt: </b>${orderData.payment}</p>
@@ -130,7 +127,7 @@ const compileSummary = (items: any, total: number, orderData: any) => {
 
 export default function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<any>
 ) {
   let requestMethod = req.method;
   let body = req.body;
@@ -147,23 +144,20 @@ export default function handler(
           let attachments = [
             new Attachment(
               fs.readFileSync("order-files/files.zip", { encoding: "base64" }),
-              "order-" + orderId + ".zip",
+              "order-" + body.id + ".zip",
               "attachment"
             ),
           ];
           let emailParams = new EmailParams()
             .setFrom("order@simonbonnedahl.dev")
             .setRecipients(recipients)
-            .setAttachments(attachments)
-            .setSubject("Order " + orderId + "")
-            .setHtml(compileSummary(items, body.total, body.orderData))
+
+            .setSubject("Order " + body.id + "")
+            .setHtml(compileSummary(items, body.total, body.orderData, body.id))
             .setText("This is the text content");
 
           mailersend.send(emailParams);
           res.status(200).json({ complete: true });
         });
-
-    default:
-      res.status(200).json({ complete: true });
   }
 }

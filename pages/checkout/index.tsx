@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import Head from "next/head";
 import HeaderBar from "../../components/HeaderBar";
 import Navbar from "../../components/Navbar";
@@ -7,9 +7,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faLock } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import { selectCartItems, selectCartTotal } from "../../reducers/cartSlice";
-import Success from "../../components/alerts/SuccessAlert";
 import ErrorAlert from "../../components/alerts/ErrorAlert";
 import SuccessAlert from "../../components/alerts/SuccessAlert";
+import { useRouter } from "next/router";
+import client from "../../sanity";
 
 function Home() {
   //Setup statevariables for all checkout fields
@@ -35,10 +36,14 @@ function Home() {
   });
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  const [alertHidden, setAlertHidden] = useState(false);
 
   const items = useSelector(selectCartItems);
   const total = useSelector(selectCartTotal);
+  const router = useRouter();
+
+  const [orders, setOrders] = useState([]);
+
+  client.fetch(`*[_type == "order"]`).then((res) => setOrders(res));
 
   const validateFirstname = (name: string) => {
     setFirstName(name);
@@ -150,7 +155,6 @@ function Home() {
         document.getElementById("city")?.classList.add("input-error");
       }
       setError("Fyll i alla fält");
-      setAlertHidden(false);
       return false;
     } else {
       setError("");
@@ -197,7 +201,12 @@ function Home() {
       payment: paymentMethod,
     };
 
-    let body = { items: items, total: total, orderData: data };
+    let body = {
+      items: items,
+      total: total,
+      orderData: data,
+      id: orders.length + 1,
+    };
     fetch("/api/ordermail", {
       method: "POST",
       headers: {
@@ -206,19 +215,26 @@ function Home() {
       body: JSON.stringify(body),
     }).then((res) => {
       res.json();
-      console.log(res);
       if (res.status == 200) {
         setSuccess("Beställningen är bekräftad");
-        setAlertHidden(false);
+        setTimeout(() => {
+          //add the order to the database
+          const doc = {
+            _type: "order",
+            id: orders.length + 1,
+            total: total,
+            orderData: data,
+          };
+
+          client.create(doc).then(() => {
+            console.log("Document created", doc);
+          });
+          router.push("/receipt");
+        }, 2000);
       } else {
         setError("Något gick fel");
-        setAlertHidden(false);
       }
     });
-  };
-
-  const hideAlert = () => {
-    setAlertHidden(true);
   };
 
   return (
@@ -455,7 +471,6 @@ function Home() {
                         name="radio-10"
                         className="radio checked:bg-primary"
                         onChange={() => setPaymentMethod("E-postfaktura")}
-                        checked
                       />
                       <span className="label-text ml-4 text-lg">
                         Betala med e-postfaktura
