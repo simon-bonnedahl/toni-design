@@ -61,6 +61,7 @@ const Colordropdown: React.FC = () => {
   return (
     <div className="dropdown">
       <label
+        onClick={() => dispatch(addCommand({ command: "closeCart" }))}
         tabIndex={0}
         className="btn btn-primary m-1 flex space-x-2 btn-outline"
       >

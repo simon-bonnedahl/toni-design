@@ -38,6 +38,7 @@ const Textdropdown: React.FC = () => {
   return (
     <div className="dropdown">
       <label
+        onClick={() => dispatch(addCommand({ command: "closeCart" }))}
         tabIndex={0}
         className="btn btn-primary btn-outline m-1 flex space-x-2"
       >

@@ -5,9 +5,12 @@ import {
   faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addToCart, removeFromCart } from "../reducers/cartSlice";
+import { addCommand, clearCommands } from "../reducers/editorSlice";
+import { setSign } from "../reducers/signSlice";
 
 interface Props {
   index: number;
@@ -47,6 +50,18 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
     dispatch(addToCart(item));
     setItemQuantity(itemQuantity + 1);
     setTotalPrice(totalPrice + item.metadata.price);
+  };
+  const handleRemoveItem = () => {
+    for (let i = 0; i < itemQuantity; i++) {
+      dispatch(removeFromCart({ id: item.id }));
+    }
+  };
+  const handleOpenSign = () => {
+    console.log(item);
+    dispatch(setSign({ sign: item }));
+
+    dispatch(addCommand({ command: "reCreate", value: item.visual }));
+    //handleRemoveItem();
   };
 
   let className = "w-full flex rounded items-center text-base-content";
@@ -102,10 +117,16 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
         <span className="font-bold font-lg">{Math.round(totalPrice)} kr</span>
       </div>
       <div className="w-1/12  flex justify-around">
-        <div className="hover:cursor-pointer hover:scale-125 ease-in-out duration-300">
+        <div
+          onClick={handleOpenSign}
+          className="hover:cursor-pointer hover:scale-125 ease-in-out duration-300"
+        >
           <FontAwesomeIcon className="scale-150" icon={faEdit} color="gray" />
         </div>
-        <div className="hover:cursor-pointer hover:scale-125 ease-in-out duration-300">
+        <div
+          onClick={handleRemoveItem}
+          className="hover:cursor-pointer hover:scale-125 ease-in-out duration-300"
+        >
           <FontAwesomeIcon
             className="scale-150"
             icon={faTrashCan}

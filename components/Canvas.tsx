@@ -656,6 +656,7 @@ const Canvas: React.FC = () => {
         break;
       case "reCreate":
         recreateSign(canvas, command.value, false);
+        setShowCartModal(false);
         break;
       case "saveSign":
         if (command.value === "SVG") {
@@ -672,15 +673,14 @@ const Canvas: React.FC = () => {
         handleAddToCart(command.value);
         break;
       case "toggleCart":
-        handleToggleCart();
+        setShowCartModal(!showCartModal);
+        break;
+      case "closeCart":
+        setShowCartModal(false);
         break;
       default:
         return;
     }
-  };
-
-  const handleToggleCart = () => {
-    setShowCartModal(!showCartModal);
   };
 
   const handleReset = (canvas: any) => {
