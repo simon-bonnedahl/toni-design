@@ -1,4 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { time } from "console";
 import type { NextApiRequest, NextApiResponse } from "next";
 const Recipient = require("mailersend").Recipient;
 const EmailParams = require("mailersend").EmailParams;
@@ -6,7 +7,6 @@ const MailerSend = require("mailersend");
 const Attachment = require("mailersend").Attachment;
 var fs = require("fs");
 const { jsPDF } = require("jspdf");
-
 const JSZip = require("jszip");
 
 const mailersend = new MailerSend({
@@ -21,23 +21,74 @@ const recipients = [
   //new Recipient("gravyr@tonireklam.se"),
 ];
 
-const zipProductionFiles = (products: any) => {
-  // Svg
-  const zip = new JSZip();
+const writeSvgs = async (products: any) => {
   for (let i = 0; i < products.length; i++) {
     if (products[i].data.svg.length > 0) {
-      fs.writeFileSync(
-        "tmp/file-" + i + ".svg",
+      fs.writeFile(
+        process.cwd() + "/tmp/file-" + i + ".svg",
         products[i].data.svg,
         function (err: any) {
-          if (err) throw err;
+          if (err) {
+            return console.log(err);
+          }
         }
       );
+    }
+  }
+  console.log("Done 1");
+};
+const zipSvgs = async (products: any, zip: any) => {
+  const svg = zip.folder("svg");
+  for (let i = 0; i < products.length; i++) {
+    if (products[i].data.svg.length > 0) {
+      svg.file(
+        "file-" + i + ".svg",
+        fs.readFileSync(process.cwd() + "/tmp/file-" + i + ".svg")
+      );
+    }
+  }
+  zip
+    .generateNodeStream({ type: "nodebuffer", streamFiles: true })
+    .pipe(fs.createWriteStream("tmp/files.zip"))
+    .on("finish", function () {
+      console.log("Done with files");
+      let attachments = [
+        new Attachment(
+          fs.readFileSync("tmp/files.zip", { encoding: "base64" }),
+          "order-" + "test" + ".zip",
+          "attachment"
+        ),
+      ];
+      let emailParams = new EmailParams()
+        .setFrom("order@simonbonnedahl.dev")
+        .setRecipients(recipients)
+        .setAttachments(attachments)
+        .setSubject("Order " + "test" + "")
+        .setHtml("test")
+        .setText("This is the text content");
+
+      mailersend.send(emailParams);
+    });
+};
+
+const zipProductionFiles = async (products: any) => {
+  // Svg
+  const zip = new JSZip();
+  writeSvgs(products);
+  setTimeout(() => {
+    zipSvgs(products, zip);
+    console.log("Svgs zipped");
+  }, 1000);
+
+  //timeout so that the svgs have time to be written before we return the zip
+};
+
+/*
       const svg = zip.folder("svg");
       for (let i = 0; i < products.length; i++) {
         svg.file(
           "file-" + i + ".svg",
-          fs.readFileSync("tmp/file-" + i + ".svg")
+          fs.readFileSync(process.cwd() + "/tmp/file-" + i + ".svg")
         );
       }
       // Pdf
@@ -49,21 +100,48 @@ const zipProductionFiles = (products: any) => {
         pdf.addImage(pixelData, "JPEG", 0, 0);
         combined.addImage(pixelData, "JPEG", 0, y);
         y += products[i].visual.height;
-        pdf.save("tmp/file-" + i + ".pdf");
+        pdf.save(process.cwd() + "/tmp/file-" + i + ".pdf");
       }
-      combined.save("tmp/combined.pdf");
+      combined.save(process.cwd() + "/tmp/combined.pdf");
       const pdf = zip.folder("pdf");
       for (let i = 0; i < products.length; i++) {
         pdf.file(
           "file-" + i + ".pdf",
-          fs.readFileSync("tmp/file-" + i + ".pdf")
+          fs.readFileSync(process.cwd() + "/tmp/file-" + i + ".pdf")
         );
       }
 
-      zip.file("combined.pdf", fs.readFileSync("tmp/combined.pdf"));
+      zip.file(
+        "combined.pdf",
+        fs.readFileSync(process.cwd() + "/tmp/combined.pdf")
+      );
     }
-  }
-  return zip;
+  }*/
+
+const sendMail = async (body: any) => {
+  const compiledItems = compileItems(body.items);
+  const compiledSummary = compileSummary(
+    compiledItems,
+    body.total,
+    body.orderData,
+    body.orderId
+  );
+  await zipProductionFiles(compiledItems);
+  /*
+  const attachment = new Attachment(
+    zipBuffer,
+    "order-" + body.orderId + ".zip",
+    "attachment"
+  );
+  const emailParams = new EmailParams()
+    .setFrom("order@simonbonnedahl.dev")
+    .setFromName("Simon Bonnedahl")
+    .setRecipients(recipients)
+    .setAttachments([attachment])
+    .setSubject("Order #" + body.orderId)
+    .setHtml(compiledSummary);
+
+  mailersend.send(emailParams);*/
 };
 
 const compileItems = (items: any) => {
@@ -138,7 +216,7 @@ const compileSummary = (
   return html;
 };
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
 ) {
@@ -150,30 +228,9 @@ export default function handler(
       if (body.items.length === 0) {
         res.status(400).json({ message: "No items in order" });
       }
-      let items = compileItems(body.items);
-      let zip = zipProductionFiles(items);
-      zip
-        .generateNodeStream({ type: "nodebuffer", streamFiles: true })
-        .pipe(fs.createWriteStream("tmp/files.zip"))
-        .on("finish", function () {
-          console.log("Done with files");
-          let attachments = [
-            new Attachment(
-              fs.readFileSync("tmp/files.zip", { encoding: "base64" }),
-              "order-" + body.id + ".zip",
-              "attachment"
-            ),
-          ];
-          let emailParams = new EmailParams()
-            .setFrom("order@simonbonnedahl.dev")
-            .setRecipients(recipients)
-            .setAttachments(attachments)
-            .setSubject("Order " + body.id + "")
-            .setHtml(compileSummary(items, body.total, body.orderData, body.id))
-            .setText("This is the text content");
-
-          mailersend.send(emailParams);
-          res.status(200).json({ message: "Successful" });
-        });
+      sendMail(body).then(() => {
+        console.log("Sent mail");
+        res.status(200).json({ message: "Successful" });
+      });
   }
 }
