@@ -1,5 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
+import product from "../../sanity/schemas/product";
 const Recipient = require("mailersend").Recipient;
 const EmailParams = require("mailersend").EmailParams;
 const MailerSend = require("mailersend");
@@ -25,44 +26,45 @@ const zipProductionFiles = (products: any) => {
   // Svg
   const zip = new JSZip();
   for (let i = 0; i < products.length; i++) {
-    fs.writeFileSync(
-      "order-files/file-" + i + ".svg",
-      products[i].data.svg,
-      function (err: any) {
-        if (err) throw err;
+    if (products[i].data.svg.length > 0) {
+      fs.writeFileSync(
+        "order-files/file-" + i + ".svg",
+        products[i].data.svg,
+        function (err: any) {
+          if (err) throw err;
+        }
+      );
+      const svg = zip.folder("svg");
+      for (let i = 0; i < products.length; i++) {
+        svg.file(
+          "file-" + i + ".svg",
+          fs.readFileSync("order-files/file-" + i + ".svg")
+        );
       }
-    );
-    const svg = zip.folder("svg");
-    for (let i = 0; i < products.length; i++) {
-      svg.file(
-        "file-" + i + ".svg",
-        fs.readFileSync("order-files/file-" + i + ".svg")
-      );
-    }
-    // Pdf
-    let combined = new jsPDF({ orientation: "p", format: "a2", unit: "mm" });
-    let y = 0;
-    for (let i = 0; i < products.length; i++) {
-      let pixelData = products[i].data.pixelData;
-      let pdf = new jsPDF({ orientation: "l", unit: "mm", format: "a3" });
-      pdf.addImage(pixelData, "JPEG", 0, 0);
-      combined.addImage(pixelData, "JPEG", 0, y);
-      y += products[i].visual.height;
-      pdf.save("order-files/file-" + i + ".pdf");
-    }
-    combined.save("order-files/combined.pdf");
-    const pdf = zip.folder("pdf");
-    for (let i = 0; i < products.length; i++) {
-      pdf.file(
-        "file-" + i + ".pdf",
-        fs.readFileSync("order-files/file-" + i + ".pdf")
-      );
-    }
+      // Pdf
+      let combined = new jsPDF({ orientation: "p", format: "a2", unit: "mm" });
+      let y = 0;
+      for (let i = 0; i < products.length; i++) {
+        let pixelData = products[i].data.pixelData;
+        let pdf = new jsPDF({ orientation: "l", unit: "mm", format: "a3" });
+        pdf.addImage(pixelData, "JPEG", 0, 0);
+        combined.addImage(pixelData, "JPEG", 0, y);
+        y += products[i].visual.height;
+        pdf.save("order-files/file-" + i + ".pdf");
+      }
+      combined.save("order-files/combined.pdf");
+      const pdf = zip.folder("pdf");
+      for (let i = 0; i < products.length; i++) {
+        pdf.file(
+          "file-" + i + ".pdf",
+          fs.readFileSync("order-files/file-" + i + ".pdf")
+        );
+      }
 
-    zip.file("combined.pdf", fs.readFileSync("order-files/combined.pdf"));
-
-    return zip;
+      zip.file("combined.pdf", fs.readFileSync("order-files/combined.pdf"));
+    }
   }
+  return zip;
 };
 
 const compileItems = (items: any) => {
@@ -92,27 +94,39 @@ const compileSummary = (
   let html = `<h1 style="text-align: center;">Order #${orderId}</h1>`;
 
   for (let i = 0; i < items.length; i++) {
-    html += `
+    let img = "";
+    if (items[i].data.svg) {
+      img = `<img src="${items[i].data.pixelData}" alt="order-image" style="width:125%; height: auto;"/>`;
+    } else {
+      img = `<img src="${items[i].data.pixelData}" alt="order-image" style="width:auto; height: 50%;"/>`;
+    }
+    html +=
+      `
     <hr style="width: 100%"></hr>
     <div style="display:flex; justify-content: space-evenly;">
-    <div>
-        <p><b>Produkt:</b> ${items[i].metadata.product} x ${items[i].quantity} </p>
-        <p><b>Material:</b> ${items[i].metadata.material}</p>      
-        <p><b>Storlek :</b> ${items[i].visual.width} x ${items[i].visual.height} </p>
-        <p><b>Form: </b> ${items[i].visual.shape}</p>
-        <p><b>Färgkombination: </b> ${items[i].metadata.colorCombination}</p>
-        <p><b>Fäst metod:</b> ${items[i].metadata.application}</p>          
-    </div> 
-        <img src="${items[i].data.pixelData}" alt="order-image" style="width: 50%; height: auto; border: 1px solid white; border-radius: 5px"/>
+      <div>
+          <p><b>Produkt:</b> ${items[i].metadata.product} x ${items[i].quantity} </p>
+          <p><b>Material:</b> ${items[i].metadata.material}</p>      
+          <p><b>Storlek :</b> ${items[i].visual.width} x ${items[i].visual.height} </p>
+          <p><b>Form: </b> ${items[i].visual.shape}</p>
+          <p><b>Färgkombination: </b> ${items[i].metadata.colorCombination}</p>
+          <p><b>Fäst metod:</b> ${items[i].metadata.application}</p>          
+      </div> 
+      <div style="display:flex; justify-content: center; align-items:center; width:250px; height:250px; border: 1px solid white; border-radius: 5px;">` +
+      img +
+      `
+      </div>
     </div>`;
   }
   html += ` <hr style="width: 100%"></hr>
   <h2>Beställningsuppgifter</h2>
     <p>${orderData.firstName} ${orderData.lastName}</p>
+    <p>${orderData.email}</p>
     <p>${orderData.address}</p>
     <p>${orderData.zipCode}, ${orderData.city}</p>      
     <p>${orderData.country}</p>
     <p>${orderData.phone}</p>
+    <p>${orderData.company}</p>
     <br>
     <p><b>Leverans: </b>${orderData.delivery} </p>
     <p><b>Betalsätt: </b>${orderData.payment}</p>
@@ -154,7 +168,7 @@ export default function handler(
           let emailParams = new EmailParams()
             .setFrom("order@simonbonnedahl.dev")
             .setRecipients(recipients)
-
+            .setAttachments(attachments)
             .setSubject("Order " + body.id + "")
             .setHtml(compileSummary(items, body.total, body.orderData, body.id))
             .setText("This is the text content");

@@ -38,7 +38,7 @@ function Home() {
               price={product.price}
               width={product.width}
               height={product.height}
-              adjustable={product.adjustable}
+              type={product.productType}
               material={product.material}
               json={product.jsonURL}
             />

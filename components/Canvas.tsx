@@ -283,7 +283,10 @@ const Canvas: React.FC = () => {
           x: toMillimeter(pos.x),
           y: toMillimeter(pos.y),
         });
-        saveSignState(state);
+        if (updateBackend) {
+          saveSignState(state);
+        }
+
         console.log("Add image command result:", state);
       });
     } else {
@@ -324,8 +327,10 @@ const Canvas: React.FC = () => {
           x: toMillimeter(pos.x),
           y: toMillimeter(pos.y),
         });
-        saveSignState(state);
-        console.log("Add image command result:", state);
+        if (updateBackend) {
+          saveSignState(state);
+          console.log("Add image command result:", state);
+        }
       };
       console.log("Loading image from url", url);
       i.src = url;

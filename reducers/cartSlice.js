@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   items: [],
   showModal: false,
-  buyer: "private",
+  customer: "private",
 };
 
 export const cartSlice = createSlice({
@@ -28,8 +28,8 @@ export const cartSlice = createSlice({
       state.items = [];
     },
 
-    setBuyer: (state, action) => {
-      state.buyer = action.payload.buyer;
+    setCustomer: (state, action) => {
+      state.customer = action.payload.customer;
     },
     setShowModal: (state, action) => {
       state.showModal = action.payload.showModal;
@@ -38,15 +38,20 @@ export const cartSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { addToCart, removeFromCart, setBuyer, setShowModal, clearCart } =
-  cartSlice.actions;
+export const {
+  addToCart,
+  removeFromCart,
+  setCustomer,
+  setShowModal,
+  clearCart,
+} = cartSlice.actions;
 
 export const selectCartItems = (state) => state.cart.items;
 
 export const selectCartItemsWithId = (state, id) =>
   state.cart.items.filter((item) => item.id === id);
 
-export const selectBuyer = (state) => state.cart.buyer;
+export const selectCustomer = (state) => state.cart.customer;
 
 export const isCartModalOpen = (state) => state.cart.showModal;
 

@@ -14,7 +14,7 @@ interface Props {
   price: number;
   width: number;
   height: number;
-  adjustable: boolean;
+  type: string;
   material: string;
   json: string;
 }
@@ -24,13 +24,16 @@ const ProductCard: React.FC<Props> = ({
   price,
   width,
   height,
-  adjustable,
+  type,
   material,
   json,
 }) => {
   const [jsonObj, setJsonObj] = React.useState<any>({});
   const router = useRouter();
   const dispatch = useDispatch();
+
+  let cardImage = urlFor(image).height(200).url();
+  let cartImage = urlFor(image).height(100).url();
 
   const id = uuid();
   if (json) {
@@ -53,53 +56,11 @@ const ProductCard: React.FC<Props> = ({
     var img = new Image();
     img.crossOrigin = "Anonymous";
     img.onload = function () {
-      var canvas = document.createElement("canvas"),
-        ctx = canvas.getContext("2d"),
-        oc = document.createElement("canvas"),
-        octx = oc.getContext("2d");
-
-      canvas.width = 80; // cart Row height
-      canvas.height = (canvas.width * img.height) / img.width;
-
-      var cur = {
-        width: Math.floor(img.width * 0.5),
-        height: Math.floor(img.height * 0.5),
-      };
-
-      oc.width = cur.width;
-      oc.height = cur.height;
-
-      octx?.drawImage(img, 0, 0, cur.width, cur.height);
-
-      while (cur.width * 0.5 > width) {
-        cur = {
-          width: Math.floor(cur.width * 0.5),
-          height: Math.floor(cur.height * 0.5),
-        };
-        octx?.drawImage(
-          oc,
-          0,
-          0,
-          cur.width * 2,
-          cur.height * 2,
-          0,
-          0,
-          cur.width,
-          cur.height
-        );
-      }
-
-      ctx?.drawImage(
-        oc,
-        0,
-        0,
-        cur.width,
-        cur.height,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
+      var canvas = document.createElement("canvas");
+      var context = canvas.getContext("2d");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      context?.drawImage(img, 0, 0);
 
       var dataURL = canvas.toDataURL("image/jpeg");
       let item = null;
@@ -122,9 +83,14 @@ const ProductCard: React.FC<Props> = ({
         item = {
           id: id,
           metadata: {
+            material: "",
+            application: "",
+            colorCombination: "",
             price: price,
+            product: title,
           },
           data: {
+            svg: "",
             pixelData: dataURL,
           },
           visual: {
@@ -138,13 +104,12 @@ const ProductCard: React.FC<Props> = ({
       dispatch(addToCart(item));
       console.log("item", item);
     };
-    console.log(urlFor(image).url());
-    img.src = urlFor(image).url();
+    img.src = cartImage;
   };
   return (
     <div className="card w-80 bg-base-300 shadow-xl">
       <figure className="px-10 h-64">
-        <img src={urlFor(image).url()} alt="Product" />
+        <img src={cardImage} alt="Product" />
       </figure>
       <div className="card-body items-center text-center">
         <h2 className="card-title">{title}</h2>
@@ -155,27 +120,30 @@ const ProductCard: React.FC<Props> = ({
 
         <div className="card-actions">
           <div className="flex flex-col">
-            <button
-              onClick={handleAddToCart}
-              className="btn btn-info btn-outline"
-            >
-              Lägg till i varukorg
-              <FontAwesomeIcon
-                className="text-content-info ml-2"
-                icon={faShoppingCart}
-              />
-            </button>
-            <button
-              disabled={!adjustable}
-              onClick={handleOpenSign}
-              className="btn btn-success btn-outline mt-2"
-            >
-              Anpassa
-              <FontAwesomeIcon
-                className="text-content-info ml-2"
-                icon={faPen}
-              />
-            </button>
+            {type == "adjustable" && (
+              <button
+                onClick={handleOpenSign}
+                className="btn btn-success btn-outline mt-2"
+              >
+                Anpassa
+                <FontAwesomeIcon
+                  className="text-content-info ml-2"
+                  icon={faPen}
+                />
+              </button>
+            )}
+            {type == "complete" && (
+              <button
+                onClick={handleAddToCart}
+                className="btn btn-info btn-outline"
+              >
+                Lägg till i varukorg
+                <FontAwesomeIcon
+                  className="text-content-info ml-2"
+                  icon={faShoppingCart}
+                />
+              </button>
+            )}
           </div>
         </div>
       </div>

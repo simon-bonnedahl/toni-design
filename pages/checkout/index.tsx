@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import HeaderBar from "../../components/HeaderBar";
 import Navbar from "../../components/Navbar";
@@ -10,6 +10,7 @@ import {
   clearCart,
   selectCartItems,
   selectCartTotal,
+  selectCustomer,
 } from "../../reducers/cartSlice";
 import ErrorAlert from "../../components/alerts/ErrorAlert";
 import SuccessAlert from "../../components/alerts/SuccessAlert";
@@ -24,6 +25,7 @@ function Home() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [company, setCompany] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("Sverige");
@@ -44,8 +46,10 @@ function Home() {
 
   const items = useSelector(selectCartItems);
   const total = useSelector(selectCartTotal);
+  const customer = useSelector(selectCustomer);
   const router = useRouter();
   const dispatch = useDispatch();
+
   const validateFirstname = (name: string) => {
     setFirstName(name);
     if (name.length < 2) {
@@ -199,7 +203,6 @@ function Home() {
       setError("Välj leverans");
       return;
     }
-    console.log(deliveryMethod);
     if (paymentMethod == "") {
       setError("Välj betalsätt");
       return;
@@ -216,6 +219,7 @@ function Home() {
       country: country,
       delivery: deliveryMethod,
       payment: paymentMethod,
+      company: company,
     };
     let orders = await client.fetch(`*[_type == "order"]`);
 
@@ -317,6 +321,21 @@ function Home() {
                     onChange={(e) => validateEmail(e.target.value)}
                   />
                 </div>
+                {customer === "company" && (
+                  <div className="flex flex-col">
+                    <label>Företagsnamn</label>
+                    <input
+                      id="company"
+                      className="input input-bordered input-primary w-full max-w-xs"
+                      type="text"
+                      placeholder="Valfritt"
+                      value={company}
+                      onChange={(e) => setCompany(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+
                 <div className="flex flex-col">
                   <label>* Telefon</label>
                   <input

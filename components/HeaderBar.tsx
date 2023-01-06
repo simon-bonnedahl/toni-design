@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectBuyer, setBuyer } from "../reducers/cartSlice";
+import { selectCustomer, setCustomer } from "../reducers/cartSlice";
 import ThemeSwitch from "./ThemeSwitch";
 const HeaderBar: React.FC = () => {
-  const [buyerState, setBuyerState] = useState(useSelector(selectBuyer));
+  const [customerState, setCustomerState] = useState(
+    useSelector(selectCustomer)
+  );
   const [windowLoaded, setWindowLoaded] = useState(false);
-  const handleBuyerChange = (b: string) => {
-    setBuyerState(b);
-    dispatch(setBuyer({ buyer: buyerState }));
+  const handleCustomerChange = (c: string) => {
+    setCustomerState(c);
+    dispatch(setCustomer({ customer: c }));
   };
   const dispatch = useDispatch();
   useEffect(() => setWindowLoaded(true), []);
@@ -56,17 +58,17 @@ const HeaderBar: React.FC = () => {
 
   return (
     <div className="flex justify-end items-center w-full h-8 bg-base-300 pl-12 pr-1 space-x-4 shadows-xl">
-      {buyerState === "private" ? (
+      {customerState === "private" ? (
         <div className="base-content text-sm">
           <span
-            onClick={() => handleBuyerChange("private")}
+            onClick={() => handleCustomerChange("private")}
             className="font-bold hover:cursor-pointer base-content"
           >
             Privatperson
           </span>
           <span> / </span>
           <span
-            onClick={() => handleBuyerChange("company")}
+            onClick={() => handleCustomerChange("company")}
             className="hover:cursor-pointer"
           >
             Företag
@@ -75,14 +77,14 @@ const HeaderBar: React.FC = () => {
       ) : (
         <div className="base-content text-sm">
           <span
-            onClick={() => handleBuyerChange("private")}
+            onClick={() => handleCustomerChange("private")}
             className="hover:cursor-pointer"
           >
             Privatperson
           </span>
           <span> / </span>
           <span
-            onClick={() => handleBuyerChange("company")}
+            onClick={() => handleCustomerChange("company")}
             className="font-bold hover:cursor-pointer"
           >
             Företag
