@@ -239,6 +239,7 @@ const Canvas: React.FC = () => {
     await client.fetch(query).then((res: any) => {
       console.log("Got image from sanity", res[0].url);
       url = urlFor(res[0].url).url();
+      console.log(url);
     });
     let id = image.id ? image.id : uuidv4();
 
@@ -246,8 +247,11 @@ const Canvas: React.FC = () => {
       //Async load
       fabric.loadSVGFromURL(url, function (objects: any, options: any) {
         let svg = fabric.util.groupSVGElements(objects, options);
+        let scale = sign.width / svg.width;
         svg.set({
           id: id,
+          scaleX: scale,
+          scaleY: scale,
         });
 
         canvas.add(svg);
@@ -284,15 +288,18 @@ const Canvas: React.FC = () => {
       });
     } else {
       let imgElement = document.createElement("img");
-      imgElement.src = image.url;
+      imgElement.src = url;
       //Create the image to gain the width and height
       let i = new Image();
       i.onload = function () {
         //Then only reason to create the image is to get the width and height
         let img = new fabric.Image(imgElement);
 
+        let scale = sign.width / i.width;
         img.set({
           id: id,
+          scaleX: scale,
+          scaleY: scale,
         });
 
         canvas.add(img);
@@ -320,7 +327,8 @@ const Canvas: React.FC = () => {
         saveSignState(state);
         console.log("Add image command result:", state);
       };
-      i.src = image.url;
+      console.log("Loading image from url", url);
+      i.src = url;
     }
   };
 
@@ -647,12 +655,14 @@ const Canvas: React.FC = () => {
         if (backIndex < 0) return;
         setHistoryIndex(backIndex);
         recreateSign(canvas, signHistory[backIndex]);
+        setShowCartModal(false);
         break;
       case "goForward":
         let forwardIndex = historyIndex + 1;
         if (forwardIndex > signHistory.length - 1) return;
         setHistoryIndex(forwardIndex);
         recreateSign(canvas, signHistory[forwardIndex], false);
+        setShowCartModal(false);
         break;
       case "reCreate":
         recreateSign(canvas, command.value, false);
@@ -668,6 +678,7 @@ const Canvas: React.FC = () => {
         break;
       case "reset":
         handleReset(canvas);
+        setShowCartModal(false);
         break;
       case "addToCart":
         handleAddToCart(command.value);

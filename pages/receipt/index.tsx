@@ -6,14 +6,14 @@ function Home() {
   return (
     <div>
       <Head>
-        <title>Collections</title>
+        <title>Kvitto</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex flex-col bg-base-100 w-screen h-screen">
         <HeaderBar />
         <Navbar />
 
-        <h1>RECEIPT</h1>
+        <h1>Kvitto</h1>
       </main>
     </div>
   );

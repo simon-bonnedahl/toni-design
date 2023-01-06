@@ -23,7 +23,7 @@ function Home() {
   return (
     <div>
       <Head>
-        <title>Collections</title>
+        <title>Checkout</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex flex-col bg-base-100 w-screen h-screen">

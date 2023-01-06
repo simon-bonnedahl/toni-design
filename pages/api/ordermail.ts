@@ -134,6 +134,9 @@ export default function handler(
   switch (requestMethod) {
     case "POST":
       console.log(body);
+      if (body.items.length === 0) {
+        res.status(400).json({ message: "No items in order" });
+      }
       let items = compileItems(body.items);
       let zip = zipProductionFiles(items);
       zip
@@ -157,7 +160,7 @@ export default function handler(
             .setText("This is the text content");
 
           mailersend.send(emailParams);
-          res.status(200).json({ complete: true });
+          res.status(200).json({ message: "Successful" });
         });
   }
 }

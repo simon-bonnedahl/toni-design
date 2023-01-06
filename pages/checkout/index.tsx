@@ -5,12 +5,17 @@ import Navbar from "../../components/Navbar";
 import countriesEurope from "../../utils/countriesEurope";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faLock } from "@fortawesome/free-solid-svg-icons";
-import { useSelector } from "react-redux";
-import { selectCartItems, selectCartTotal } from "../../reducers/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  clearCart,
+  selectCartItems,
+  selectCartTotal,
+} from "../../reducers/cartSlice";
 import ErrorAlert from "../../components/alerts/ErrorAlert";
 import SuccessAlert from "../../components/alerts/SuccessAlert";
 import { useRouter } from "next/router";
 import client from "../../sanity";
+import Footer from "../../components/Footer";
 
 function Home() {
   //Setup statevariables for all checkout fields
@@ -22,8 +27,8 @@ function Home() {
   const [zipCode, setZipCode] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("Sverige");
-  const [deliveryMethod, setDeliveryMethod] = useState("Ingen vald");
-  const [paymentMethod, setPaymentMethod] = useState(" ");
+  const [deliveryMethod, setDeliveryMethod] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [errors, setErrors] = useState({
     firstName: true,
     lastName: true,
@@ -40,11 +45,7 @@ function Home() {
   const items = useSelector(selectCartItems);
   const total = useSelector(selectCartTotal);
   const router = useRouter();
-
-  const [orders, setOrders] = useState([]);
-
-  client.fetch(`*[_type == "order"]`).then((res) => setOrders(res));
-
+  const dispatch = useDispatch();
   const validateFirstname = (name: string) => {
     setFirstName(name);
     if (name.length < 2) {
@@ -184,10 +185,26 @@ function Home() {
       document
         .getElementById("payment-choice")
         ?.classList.remove("pointer-events-none");
+
+      document.getElementById("payment-button")?.classList.remove("opacity-40");
+      document
+        .getElementById("payment-button")
+        ?.classList.remove("pointer-events-none");
     }
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
+    //validate delivery and payment
+    if (deliveryMethod == "") {
+      setError("Välj leverans");
+      return;
+    }
+    console.log(deliveryMethod);
+    if (paymentMethod == "") {
+      setError("Välj betalsätt");
+      return;
+    }
+
     let data = {
       firstName: firstName,
       lastName: lastName,
@@ -200,6 +217,7 @@ function Home() {
       delivery: deliveryMethod,
       payment: paymentMethod,
     };
+    let orders = await client.fetch(`*[_type == "order"]`);
 
     let body = {
       items: items,
@@ -216,6 +234,7 @@ function Home() {
     }).then((res) => {
       res.json();
       if (res.status == 200) {
+        setError("");
         setSuccess("Beställningen är bekräftad");
         setTimeout(() => {
           //add the order to the database
@@ -224,15 +243,20 @@ function Home() {
             id: orders.length + 1,
             total: total,
             orderData: data,
+            //items how?
           };
 
           client.create(doc).then(() => {
-            console.log("Document created", doc);
+            console.log("Order created", doc);
           });
           router.push("/receipt");
+          //clear the cart
+          dispatch(clearCart());
         }, 2000);
+      } else if (res.status == 400) {
+        setError("Något gick fel, se till att du har varor i kundvagnen");
       } else {
-        setError("Något gick fel");
+        setError("Något gick fel, prova igen senare");
       }
     });
   };
@@ -240,7 +264,7 @@ function Home() {
   return (
     <div>
       <Head>
-        <title>Toni Design</title>
+        <title>Kassa</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex flex-col bg-base-100 w-screen overflow-scroll">
@@ -531,7 +555,11 @@ function Home() {
             </div>
           </div>
           {/*Betalknapp*/}
-          <button className="btn btn-info w-5/12" onClick={handlePlaceOrder}>
+          <button
+            id="payment-button"
+            className="btn btn-info w-5/12 opacity-40 pointer-events-none"
+            onClick={handlePlaceOrder}
+          >
             <FontAwesomeIcon className="scale-125" icon={faLock} />
             <span className="ml-4 text-info-content">Slutför köp</span>
           </button>
@@ -541,6 +569,7 @@ function Home() {
           </p>
         </div>
         {/*Footer*/}
+        <Footer />
 
         {success && (
           <div onClick={() => setSuccess("")}>
@@ -553,8 +582,6 @@ function Home() {
             <ErrorAlert text={error} />
           </div>
         )}
-
-        <div className=" h-screen w-screen"></div>
       </main>
     </div>
   );
