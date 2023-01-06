@@ -229,9 +229,16 @@ export default async function handler(
       if (body.items.length === 0) {
         res.status(400).json({ message: "No items in order" });
       }
-      sendMail(body).then(() => {
-        console.log("Sent mail");
-        res.status(200).json({ message: "Successful" });
-      });
+      let emailParams = new EmailParams()
+        .setFrom("order@simonbonnedahl.dev")
+        .setRecipients(recipients)
+
+        .setSubject("Order " + "test" + "")
+        .setHtml("test")
+        .setText("This is the text content");
+
+      mailersend.send(emailParams);
+
+      res.status(200).json({ message: "Successful" });
   }
 }
