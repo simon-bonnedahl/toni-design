@@ -20,6 +20,7 @@ interface Props {
 
 const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
   let image = document.createElement("img");
+  console.log(item);
 
   const [itemQuantity, setItemQuantity] = useState(quantity);
   const [totalPrice, setTotalPrice] = useState(

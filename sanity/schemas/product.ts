@@ -9,7 +9,7 @@ export default defineType({
       name: 'title',
       title: 'Product Titel',
       type: 'string',
-      validation: (Rule) => Rule.required().max(30),
+      validation: (Rule) => Rule.min(5).max(30),
     }),
     defineField({
       name: 'id',
@@ -54,11 +54,13 @@ export default defineType({
       name: 'width',
       title: 'Bredd (mm)',
       type: 'number',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'height',
       title: 'Höjd (mm)',
       type: 'number',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'price',
@@ -67,17 +69,19 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'adjustable',
-      title: 'Anpassningsbar?',
-      type: 'boolean',
+      name: 'productType',
+      title: 'Produkttyp',
+      type: 'string',
       validation: (Rule) => Rule.required(),
+      options: {
+        layout: 'radio',
+        list: [
+          {title: 'Anpassningsbar', value: 'adjustable'},
+          {title: 'Färdig produkt', value: 'complete'},
+        ],
+      },
     }),
-    defineField({
-      name: 'complete',
-      title: 'Färdig design?',
-      type: 'boolean',
-      validation: (Rule) => Rule.required(),
-    }),
+
     defineField({
       name: 'json',
       title: 'JSON fil',

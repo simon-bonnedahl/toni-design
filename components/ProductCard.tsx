@@ -3,6 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch } from "react-redux";
+import { uuid } from "uuidv4";
+import { addToCart } from "../reducers/cartSlice";
 import { addCommand, clearCommands } from "../reducers/editorSlice";
 import { setSign } from "../reducers/signSlice";
 import { urlFor } from "../sanity";
@@ -30,6 +32,7 @@ const ProductCard: React.FC<Props> = ({
   const router = useRouter();
   const dispatch = useDispatch();
 
+  const id = uuid();
   if (json) {
     fetch(json).then((res) => {
       res.json().then((data) => {
@@ -45,7 +48,99 @@ const ProductCard: React.FC<Props> = ({
     router.push("/");
   };
 
-  const handleAddToCart = () => {};
+  const handleAddToCart = () => {
+    //make the image url to image data
+    var img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = function () {
+      var canvas = document.createElement("canvas"),
+        ctx = canvas.getContext("2d"),
+        oc = document.createElement("canvas"),
+        octx = oc.getContext("2d");
+
+      canvas.width = 80; // cart Row height
+      canvas.height = (canvas.width * img.height) / img.width;
+
+      var cur = {
+        width: Math.floor(img.width * 0.5),
+        height: Math.floor(img.height * 0.5),
+      };
+
+      oc.width = cur.width;
+      oc.height = cur.height;
+
+      octx?.drawImage(img, 0, 0, cur.width, cur.height);
+
+      while (cur.width * 0.5 > width) {
+        cur = {
+          width: Math.floor(cur.width * 0.5),
+          height: Math.floor(cur.height * 0.5),
+        };
+        octx?.drawImage(
+          oc,
+          0,
+          0,
+          cur.width * 2,
+          cur.height * 2,
+          0,
+          0,
+          cur.width,
+          cur.height
+        );
+      }
+
+      ctx?.drawImage(
+        oc,
+        0,
+        0,
+        cur.width,
+        cur.height,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+      var dataURL = canvas.toDataURL("image/jpeg");
+      let item = null;
+      if (jsonObj.visual) {
+        item = {
+          id: id,
+          metadata: {
+            ...jsonObj.metadata,
+          },
+          data: {
+            ...jsonObj.data,
+            pixelData: dataURL,
+          },
+          visual: {
+            ...jsonObj.visual,
+          },
+          price: price,
+        };
+      } else {
+        item = {
+          id: id,
+          metadata: {
+            price: price,
+          },
+          data: {
+            pixelData: dataURL,
+          },
+          visual: {
+            width: width,
+            height: height,
+          },
+          price: price,
+        };
+      }
+
+      dispatch(addToCart(item));
+      console.log("item", item);
+    };
+    console.log(urlFor(image).url());
+    img.src = urlFor(image).url();
+  };
   return (
     <div className="card w-80 bg-base-300 shadow-xl">
       <figure className="px-10 h-64">
