@@ -27,7 +27,7 @@ const zipProductionFiles = (products: any) => {
   for (let i = 0; i < products.length; i++) {
     if (products[i].data.svg.length > 0) {
       fs.writeFileSync(
-        "order-files/file-" + i + ".svg",
+        "tmp/file-" + i + ".svg",
         products[i].data.svg,
         function (err: any) {
           if (err) throw err;
@@ -37,7 +37,7 @@ const zipProductionFiles = (products: any) => {
       for (let i = 0; i < products.length; i++) {
         svg.file(
           "file-" + i + ".svg",
-          fs.readFileSync("order-files/file-" + i + ".svg")
+          fs.readFileSync("tmp/file-" + i + ".svg")
         );
       }
       // Pdf
@@ -49,18 +49,18 @@ const zipProductionFiles = (products: any) => {
         pdf.addImage(pixelData, "JPEG", 0, 0);
         combined.addImage(pixelData, "JPEG", 0, y);
         y += products[i].visual.height;
-        pdf.save("order-files/file-" + i + ".pdf");
+        pdf.save("tmp/file-" + i + ".pdf");
       }
-      combined.save("order-files/combined.pdf");
+      combined.save("tmp/combined.pdf");
       const pdf = zip.folder("pdf");
       for (let i = 0; i < products.length; i++) {
         pdf.file(
           "file-" + i + ".pdf",
-          fs.readFileSync("order-files/file-" + i + ".pdf")
+          fs.readFileSync("tmp/file-" + i + ".pdf")
         );
       }
 
-      zip.file("combined.pdf", fs.readFileSync("order-files/combined.pdf"));
+      zip.file("combined.pdf", fs.readFileSync("tmp/combined.pdf"));
     }
   }
   return zip;
@@ -154,12 +154,12 @@ export default function handler(
       let zip = zipProductionFiles(items);
       zip
         .generateNodeStream({ type: "nodebuffer", streamFiles: true })
-        .pipe(fs.createWriteStream("order-files/files.zip"))
+        .pipe(fs.createWriteStream("tmp/files.zip"))
         .on("finish", function () {
           console.log("Done with files");
           let attachments = [
             new Attachment(
-              fs.readFileSync("order-files/files.zip", { encoding: "base64" }),
+              fs.readFileSync("tmp/files.zip", { encoding: "base64" }),
               "order-" + body.id + ".zip",
               "attachment"
             ),
