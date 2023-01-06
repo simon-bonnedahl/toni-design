@@ -10,7 +10,8 @@ const { jsPDF } = require("jspdf");
 const JSZip = require("jszip");
 
 const mailersend = new MailerSend({
-  api_key: process.env.MAILERSEND_API_KEY,
+  api_key:
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiYmJjOGRlMjRhMmU4Y2I0ZmM5ZTkyZjQ0MmQ4ODAyZmIyZDY1M2U0N2MzM2E3ZTEwNzdlM2E3MGRiZTMwYTJlZjAwZTUyNWU0ZWFmYWY1ZjEiLCJpYXQiOjE2NzI2NjU1MjcuNzgyNzgsIm5iZiI6MTY3MjY2NTUyNy43ODI3ODMsImV4cCI6NDgyODMzOTEyNy43NzQ3NjQsInN1YiI6IjUxNTA2Iiwic2NvcGVzIjpbImVtYWlsX2Z1bGwiLCJkb21haW5zX2Z1bGwiLCJhY3Rpdml0eV9mdWxsIiwiYW5hbHl0aWNzX2Z1bGwiLCJ0b2tlbnNfZnVsbCIsIndlYmhvb2tzX2Z1bGwiLCJ0ZW1wbGF0ZXNfZnVsbCIsInN1cHByZXNzaW9uc19mdWxsIiwic21zX2Z1bGwiLCJlbWFpbF92ZXJpZmljYXRpb25fZnVsbCIsImluYm91bmRzX2Z1bGwiLCJyZWNpcGllbnRzX2Z1bGwiXX0.J_fCAexGiiInAB1r15a5zp54ZyEhBiYXYRQYDm00nUIQxJwKcjCtwFhidvYGaQ00sVsf7P5g_GjKNQWOGDYiHaNDvRWSSolb12Y0OzcSFHwfCPDlEPGktcS2DpL1g7GzdCzORO50Bx_-3B5b0L8U52piGx5dnScJlrrQpwL15Q1bphu478Rrpoa7YIcy6SrsBMILrNc-TtYz2k6elTzSUNIe_zXVmJ7RFJQ_EQu5u9YLLk7sTNF4oEzDt5TsYe9mu8NlAg5XJsz_ZgU28-0d729IOMGEn_pLRCpr4uGMkjh6aPVr6uPrY1D6phuun4cE8FJFtA6uWXsVpXSs6PQVl1B5Y9TiNIErE4ubt5Gpgbwq0LS3G0CKDPihAPNT5O9wDl4ZJ0-WsXUZXAumiddaczW4svO5R_AsXIvEn4Qa0Si7BCBFS6QlKLP8Y2QrvhtgS2xCyfalUr2PUpOdgUO3mUwBtiuILjZg6z6SbEjQA7jpKrsHxFp3csjtMNApvlQuMlhshlOYkcze8lXMXLNRj4CngRs1W55ZeDNWCvvMlc3THJ897wm5jjwQXiWchFuSEmekgDOcALXu2jmz66Dn5eS8ImCRvFphGFxSIKhomOrDcS3bgD2Igc00X5QTa3Cv4EaS5pt2YjtusaDaF_6CnvoNYPSNlP1yEdtaFXf7WaE",
 });
 
 type Data = {
@@ -62,7 +63,7 @@ const zipSvgs = async (products: any, zip: any) => {
       let emailParams = new EmailParams()
         .setFrom("order@simonbonnedahl.dev")
         .setRecipients(recipients)
-        .setAttachments(attachments)
+
         .setSubject("Order " + "test" + "")
         .setHtml("test")
         .setText("This is the text content");
