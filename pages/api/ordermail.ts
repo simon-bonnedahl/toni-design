@@ -62,20 +62,6 @@ const zipSvgs = async (products: any, zip: any, res: any) => {
           "attachment"
         ),
       ];
-      let emailParams = new EmailParams()
-        .setFrom("order@simonbonnedahl.dev")
-        .setRecipients(recipients)
-
-        .setSubject("Order " + "test" + "")
-        .setHtml("test")
-        .setText("This is the text content");
-
-      mailersend.send(emailParams).then((response: any) => {
-        console.log(response);
-        res
-          .status(200)
-          .json(JSON.stringify({ message: "Success", response: response }));
-      });
     });
 };
 
@@ -134,7 +120,7 @@ const sendMail = async (body: any, res: any) => {
     body.orderData,
     body.orderId
   );
-  await zipProductionFiles(compiledItems, res);
+  zipProductionFiles(compiledItems, res);
   /*
   const attachment = new Attachment(
     zipBuffer,
@@ -236,6 +222,17 @@ export default async function handler(
       if (body.items.length === 0) {
         res.status(400).json({ message: "No items in order", response: false });
       }
-      sendMail(body, res);
+      let emailParams = new EmailParams()
+        .setFrom("order@simonbonnedahl.dev")
+        .setRecipients(recipients)
+
+        .setSubject("Order " + "test" + "")
+        .setHtml("test")
+        .setText("This is the text content");
+
+      mailersend.send(emailParams).then((response: any) => {
+        console.log(response);
+        res.status(200).json({ message: "Success", response: response });
+      });
   }
 }
