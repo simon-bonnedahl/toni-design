@@ -39,4 +39,3 @@ sanity.js
 *.tsbuildinfo
 next-env.d.ts
 sendgrid.env
-sendgrid.env

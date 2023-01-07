@@ -1,28 +1,16 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { time } from "console";
 import type { NextApiRequest, NextApiResponse } from "next";
-const Recipient = require("mailersend").Recipient;
-const EmailParams = require("mailersend").EmailParams;
-const MailerSend = require("mailersend");
 const Attachment = require("mailersend").Attachment;
 var fs = require("fs");
 const { jsPDF } = require("jspdf");
 const JSZip = require("jszip");
-const axios = require("axios");
 const sgMail = require("@sendgrid/mail");
-const mailersend = new MailerSend({
-  api_key:
-    "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiYmJjOGRlMjRhMmU4Y2I0ZmM5ZTkyZjQ0MmQ4ODAyZmIyZDY1M2U0N2MzM2E3ZTEwNzdlM2E3MGRiZTMwYTJlZjAwZTUyNWU0ZWFmYWY1ZjEiLCJpYXQiOjE2NzI2NjU1MjcuNzgyNzgsIm5iZiI6MTY3MjY2NTUyNy43ODI3ODMsImV4cCI6NDgyODMzOTEyNy43NzQ3NjQsInN1YiI6IjUxNTA2Iiwic2NvcGVzIjpbImVtYWlsX2Z1bGwiLCJkb21haW5zX2Z1bGwiLCJhY3Rpdml0eV9mdWxsIiwiYW5hbHl0aWNzX2Z1bGwiLCJ0b2tlbnNfZnVsbCIsIndlYmhvb2tzX2Z1bGwiLCJ0ZW1wbGF0ZXNfZnVsbCIsInN1cHByZXNzaW9uc19mdWxsIiwic21zX2Z1bGwiLCJlbWFpbF92ZXJpZmljYXRpb25fZnVsbCIsImluYm91bmRzX2Z1bGwiLCJyZWNpcGllbnRzX2Z1bGwiXX0.J_fCAexGiiInAB1r15a5zp54ZyEhBiYXYRQYDm00nUIQxJwKcjCtwFhidvYGaQ00sVsf7P5g_GjKNQWOGDYiHaNDvRWSSolb12Y0OzcSFHwfCPDlEPGktcS2DpL1g7GzdCzORO50Bx_-3B5b0L8U52piGx5dnScJlrrQpwL15Q1bphu478Rrpoa7YIcy6SrsBMILrNc-TtYz2k6elTzSUNIe_zXVmJ7RFJQ_EQu5u9YLLk7sTNF4oEzDt5TsYe9mu8NlAg5XJsz_ZgU28-0d729IOMGEn_pLRCpr4uGMkjh6aPVr6uPrY1D6phuun4cE8FJFtA6uWXsVpXSs6PQVl1B5Y9TiNIErE4ubt5Gpgbwq0LS3G0CKDPihAPNT5O9wDl4ZJ0-WsXUZXAumiddaczW4svO5R_AsXIvEn4Qa0Si7BCBFS6QlKLP8Y2QrvhtgS2xCyfalUr2PUpOdgUO3mUwBtiuILjZg6z6SbEjQA7jpKrsHxFp3csjtMNApvlQuMlhshlOYkcze8lXMXLNRj4CngRs1W55ZeDNWCvvMlc3THJ897wm5jjwQXiWchFuSEmekgDOcALXu2jmz66Dn5eS8ImCRvFphGFxSIKhomOrDcS3bgD2Igc00X5QTa3Cv4EaS5pt2YjtusaDaF_6CnvoNYPSNlP1yEdtaFXf7WaE",
-});
 
 type Data = {
   message: string;
   response: {};
 };
-const recipients = [
-  new Recipient("simbo803@student.liu.se"),
-  //new Recipient("gravyr@tonireklam.se"),
-];
 
 const writeSvgs = async (products: any) => {
   for (let i = 0; i < products.length; i++) {
@@ -222,17 +210,23 @@ export default async function handler(
       if (body.items.length === 0) {
         res.status(400).json({ message: "No items in order", response: false });
       }
-      let emailParams = new EmailParams()
-        .setFrom("order@simonbonnedahl.dev")
-        .setRecipients(recipients)
-
-        .setSubject("Order " + "test" + "")
-        .setHtml("test")
-        .setText("This is the text content");
-
-      mailersend.send(emailParams).then((response: any) => {
-        console.log(response);
-        res.status(200).json({ message: "Success", response: response });
-      });
+      const sgMail = require("@sendgrid/mail");
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      const msg = {
+        to: "simbo803@student.liu.se", // Change to your recipient
+        from: "contact@simonbonnedahl.dev", // Change to your verified sender
+        subject: "Sending with SendGrid is Fun",
+        text: "and easy to do anywhere, even with Node.js",
+        html: "<strong>and easy to do anywhere, even with Node.js</strong>",
+      };
+      sgMail
+        .send(msg)
+        .then(() => {
+          console.log("Email sent");
+          res.status(200).json({ message: "Email sent", response: true });
+        })
+        .catch((error: any) => {
+          console.error(error);
+        });
   }
 }
