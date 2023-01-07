@@ -227,6 +227,7 @@ export default async function handler(
         })
         .catch((error: any) => {
           console.error(error);
+          res.status(400).json({ message: "Email not sent", response: false });
         });
   }
 }
