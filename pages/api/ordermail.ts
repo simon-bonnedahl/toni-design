@@ -1,11 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-const Attachment = require("mailersend").Attachment;
 const { jsPDF } = require("jspdf");
 const JSZip = require("jszip");
 const sgMail = require("@sendgrid/mail");
 const fs = require("fs");
-const path = require("path");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 type Data = {
@@ -16,25 +14,29 @@ type Data = {
 const writeSvgs = async (products: any) => {
   for (let i = 0; i < products.length; i++) {
     if (products[i].data.svg.length > 0) {
-      let filePath = path.join("/tmp", "file-" + i + ".svg");
-      fs.writeFileSync(filePath, JSON.stringify(products[i].data.svg));
+      fs.writeFileSync(
+        process.cwd() + "/tmp/file-" + i + ".svg",
+        products[i].data.svg,
+        function (err: any) {
+          if (err) {
+            return console.log(err);
+          }
+        }
+      );
     }
   }
-  console.log("Svgs written");
+  console.log("Svgs written to ", process.cwd() + "/tmp");
 };
 
 const readSvgs = async (products: any) => {
   let attachments = [];
   for (let i = 0; i < products.length; i++) {
     if (products[i].data.svg.length > 0) {
-      let filePath = path.join("/tmp", "file-" + i + ".svg");
       attachments.push({
-        content: fs
-          .readFileSync(filePath, function (err: any, data: any) {
-            if (err) throw err;
-            return data;
-          })
-          .toString("base64"),
+        content: fs.readFileSync(
+          process.cwd() + "/tmp/file-" + i + ".svg",
+          "utf8"
+        ),
         filename: "svg-" + (i + 1) + ".svg",
         type: "application/svg",
         disposition: "attachment",
@@ -199,34 +201,49 @@ export default async function handler(
       // zipProductionFiles(compiledItems);
 
       writeSvgs(compiledItems).then(() => {
-        readSvgs(compiledItems).then((attachments) => {
-          console.log(attachments);
-          const msg = {
-            to: "simbo803@student.liu.se", // Change to your recipient
-            from: "contact@simonbonnedahl.dev", // Change to your verified sender
-            subject: "Order #" + body.id,
-            text: "Order #" + body.id,
-            attachments: attachments,
-            html: compileSummary(
-              compiledItems,
-              body.total,
-              body.orderData,
-              body.id
-            ),
-          };
-          sgMail
-            .send(msg)
-            .then(() => {
-              console.log("Email sent");
-              res.status(200).json({ message: "Email sent", response: true });
-            })
-            .catch((error: any) => {
-              console.error(error);
-              res
-                .status(400)
-                .json({ message: "Email not sent", response: false });
+        console.log("Reading svgs");
+        let attachments = [];
+        for (let i = 0; i < compiledItems.length; i++) {
+          if (compiledItems[i].data.svg.length > 0) {
+            attachments.push({
+              content: fs
+                .readFileSync(process.cwd() + "/tmp/file-" + i + ".svg")
+                .toString("base64"),
+              filename: "svg-" + (i + 1) + ".svg",
+              type: "application/svg",
+              disposition: "attachment",
             });
-        });
+          }
+        }
+        const msg = {
+          to: "simbo803@student.liu.se", // Change to your recipient
+          from: "contact@simonbonnedahl.dev", // Change to your verified sender
+          subject: "Order #" + body.id,
+          text: "Order #" + body.id,
+          attachments: attachments,
+          html: compileSummary(
+            compiledItems,
+            body.total,
+            body.orderData,
+            body.id
+          ),
+        };
+        console.log("Seding email", msg);
+
+        sgMail
+          .send(msg)
+          .then(() => {
+            console.log("Email sent");
+            res.status(200).json({ message: "Email sent", response: true });
+          })
+          .catch((error: any) => {
+            console.error(error);
+            res
+              .status(400)
+              .json({ message: "Email not sent", response: false });
+          });
       });
+
+    //let attachments = readSvgs(compiledItems);
   }
 }
