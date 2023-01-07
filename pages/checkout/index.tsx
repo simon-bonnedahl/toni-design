@@ -236,9 +236,8 @@ function Home() {
       },
       body: JSON.stringify(body),
     }).then((res) => {
-      res.json().then((res) => {
-        console.log(res);
-      });
+      console.log(res);
+      res.json();
       console.log(res);
       if (res.status == 200) {
         setError("");

@@ -72,7 +72,9 @@ const zipSvgs = async (products: any, zip: any, res: any) => {
 
       mailersend.send(emailParams).then((response: any) => {
         console.log(response);
-        res.status(200).json({ message: "Success", response: response });
+        res
+          .status(200)
+          .json(JSON.stringify({ message: "Success", response: response }));
       });
     });
 };
@@ -234,25 +236,6 @@ export default async function handler(
       if (body.items.length === 0) {
         res.status(400).json({ message: "No items in order", response: false });
       }
-      //sendMail(body, res);
-
-      sgMail.setApiKey(
-        "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"
-      );
-      const msg = {
-        to: "simon2.bonnedahl@gmail.com", // Change to your recipient
-        from: "contact@simonbonnedahl.dev", // Change to your verified sender
-        subject: "Sending with SendGrid is Fun",
-        text: "and easy to do anywhere, even with Node.js",
-        html: "<strong>and easy to do anywhere, even with Node.js</strong>",
-      };
-      sgMail
-        .send(msg)
-        .then(() => {
-          console.log("Email sent");
-        })
-        .catch((error: any) => {
-          console.error(error);
-        });
+      sendMail(body, res);
   }
 }
