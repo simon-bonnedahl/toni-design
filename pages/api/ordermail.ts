@@ -210,14 +210,20 @@ export default async function handler(
       if (body.items.length === 0) {
         res.status(400).json({ message: "No items in order", response: false });
       }
+      let compiledItems = compileItems(body.items);
       const sgMail = require("@sendgrid/mail");
       sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       const msg = {
         to: "simbo803@student.liu.se", // Change to your recipient
         from: "contact@simonbonnedahl.dev", // Change to your verified sender
-        subject: "Sending with SendGrid is Fun",
-        text: "and easy to do anywhere, even with Node.js",
-        html: "<strong>and easy to do anywhere, even with Node.js</strong>",
+        subject: "Order #" + body.orderId,
+        text: "Order #" + body.orderId,
+        html: compileSummary(
+          compiledItems,
+          body.total,
+          body.orderData,
+          body.orderId
+        ),
       };
       sgMail
         .send(msg)
