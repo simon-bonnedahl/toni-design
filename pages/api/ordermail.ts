@@ -178,45 +178,41 @@ export default async function handler(
         res.status(400).json({ message: "No items in order", response: false });
       }
       let compiledItems = compileItems(body.items);
-      zipProductionFiles(compiledItems);
+      //zipProductionFiles(compiledItems);
 
-      setTimeout(() => {
-        let attachment = fs
-          .readFileSync(process.cwd() + "/tmp/files.zip")
-          .toString("base64");
+      let attachment = fs
+        .readFileSync(process.cwd() + "/tmp/files.zip")
+        .toString("base64");
 
-        const msg = {
-          to: "simbo803@student.liu.se", // Change to your recipient
-          from: "contact@simonbonnedahl.dev", // Change to your verified sender
-          subject: "Order #" + body.id,
-          text: "Order #" + body.id,
-          attachments: [
-            {
-              content: attachment,
-              filename: "order-" + body.id + ".zip",
-              type: "application/zip",
-              disposition: "attachment",
-            },
-          ],
-          html: compileSummary(
-            compiledItems,
-            body.total,
-            body.orderData,
-            body.id
-          ),
-        };
-        sgMail
-          .send(msg)
-          .then(() => {
-            console.log("Email sent");
-            res.status(200).json({ message: "Email sent", response: true });
-          })
-          .catch((error: any) => {
-            console.error(error);
-            res
-              .status(400)
-              .json({ message: "Email not sent", response: false });
-          });
-      }, 2000);
+      const msg = {
+        to: "simbo803@student.liu.se", // Change to your recipient
+        from: "contact@simonbonnedahl.dev", // Change to your verified sender
+        subject: "Order #" + body.id,
+        text: "Order #" + body.id,
+        attachments: [
+          {
+            content: attachment,
+            filename: "order-" + body.id + ".zip",
+            type: "application/zip",
+            disposition: "attachment",
+          },
+        ],
+        html: compileSummary(
+          compiledItems,
+          body.total,
+          body.orderData,
+          body.id
+        ),
+      };
+      sgMail
+        .send(msg)
+        .then(() => {
+          console.log("Email sent");
+          res.status(200).json({ message: "Email sent", response: true });
+        })
+        .catch((error: any) => {
+          console.error(error);
+          res.status(400).json({ message: "Email not sent", response: false });
+        });
   }
 }
