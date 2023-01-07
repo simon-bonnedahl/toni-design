@@ -1,5 +1,4 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { waitForDebugger } from "inspector";
 import type { NextApiRequest, NextApiResponse } from "next";
 const Attachment = require("mailersend").Attachment;
 const { jsPDF } = require("jspdf");
@@ -16,9 +15,14 @@ type Data = {
 const writeSvgs = async (products: any) => {
   for (let i = 0; i < products.length; i++) {
     if (products[i].data.svg.length > 0) {
-      fs.writeFileSync(
+      fs.writeFile(
         process.cwd() + "/tmp/file-" + i + ".svg",
-        products[i].data.svg
+        products[i].data.svg,
+        function (err: any) {
+          if (err) {
+            return console.log(err);
+          }
+        }
       );
     }
   }
@@ -161,9 +165,6 @@ const compileSummary = (
   return html;
 };
 
-const wait = (ms: number) =>
-  new Promise((resolve, reject) => setTimeout(resolve, ms));
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
@@ -180,14 +181,18 @@ export default async function handler(
 
       // zipProductionFiles(compiledItems);
 
-      writeSvgs(compiledItems);
+      fs.writeFileSync(
+        process.cwd() + "/tmp/file-" + 0 + ".svg",
+        compiledItems[0].data.svg,
+        function (err: any) {
+          if (err) {
+            return console.log(err);
+          }
+        }
+      );
 
-      let attachment1 = fs
+      let attachment = fs
         .readFileSync(process.cwd() + "/tmp/file-0.svg")
-        .toString("base64");
-
-      let attachment2 = fs
-        .readFileSync(process.cwd() + "/tmp/file-1.svg")
         .toString("base64");
 
       const msg = {
@@ -197,14 +202,8 @@ export default async function handler(
         text: "Order #" + body.id,
         attachments: [
           {
-            content: attachment1,
-            filename: "file-" + "1" + ".svg",
-            type: "application/svg",
-            disposition: "attachment",
-          },
-          {
-            content: attachment2,
-            filename: "order-" + "2" + ".svg",
+            content: attachment,
+            filename: "order-" + body.id + ".svg",
             type: "application/svg",
             disposition: "attachment",
           },
