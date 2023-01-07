@@ -1,4 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { waitForDebugger } from "inspector";
 import type { NextApiRequest, NextApiResponse } from "next";
 const Attachment = require("mailersend").Attachment;
 const { jsPDF } = require("jspdf");
@@ -15,14 +16,9 @@ type Data = {
 const writeSvgs = async (products: any) => {
   for (let i = 0; i < products.length; i++) {
     if (products[i].data.svg.length > 0) {
-      fs.writeFile(
+      fs.writeFileSync(
         process.cwd() + "/tmp/file-" + i + ".svg",
-        products[i].data.svg,
-        function (err: any) {
-          if (err) {
-            return console.log(err);
-          }
-        }
+        products[i].data.svg
       );
     }
   }
@@ -165,6 +161,9 @@ const compileSummary = (
   return html;
 };
 
+const wait = (ms: number) =>
+  new Promise((resolve, reject) => setTimeout(resolve, ms));
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
@@ -178,10 +177,19 @@ export default async function handler(
         res.status(400).json({ message: "No items in order", response: false });
       }
       let compiledItems = compileItems(body.items);
-      zipProductionFiles(compiledItems);
 
-      let attachment = fs
-        .readFileSync(process.cwd() + "/tmp/files.zip")
+      // zipProductionFiles(compiledItems);
+
+      writeSvgs(compiledItems);
+
+      await wait(1000);
+
+      let attachment1 = fs
+        .readFileSync(process.cwd() + "/tmp/file-0.svg")
+        .toString("base64");
+
+      let attachment2 = fs
+        .readFileSync(process.cwd() + "/tmp/file-1.svg")
         .toString("base64");
 
       const msg = {
@@ -191,9 +199,15 @@ export default async function handler(
         text: "Order #" + body.id,
         attachments: [
           {
-            content: attachment,
-            filename: "order-" + body.id + ".zip",
-            type: "application/zip",
+            content: attachment1,
+            filename: "file-" + "1" + ".svg",
+            type: "application/svg",
+            disposition: "attachment",
+          },
+          {
+            content: attachment2,
+            filename: "order-" + "2" + ".svg",
+            type: "application/svg",
             disposition: "attachment",
           },
         ],
