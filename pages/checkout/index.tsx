@@ -242,6 +242,7 @@ function Home() {
       if (res.status == 200) {
         setError("");
         setSuccess("Beställningen är bekräftad");
+        /*
         setTimeout(() => {
           //add the order to the database
           const doc = {
@@ -258,7 +259,7 @@ function Home() {
           router.push("/receipt");
           //clear the cart
           dispatch(clearCart());
-        }, 2000);
+        }, 2000);*/
       } else if (res.status == 400) {
         setError("Något gick fel, se till att du har varor i kundvagnen");
       } else {

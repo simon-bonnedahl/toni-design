@@ -15,7 +15,7 @@ type Data = {
 const writeSvgs = async (products: any) => {
   for (let i = 0; i < products.length; i++) {
     if (products[i].data.svg.length > 0) {
-      fs.writeFile(
+      fs.writeFileSync(
         process.cwd() + "/tmp/file-" + i + ".svg",
         products[i].data.svg,
         function (err: any) {
@@ -28,6 +28,31 @@ const writeSvgs = async (products: any) => {
   }
   console.log("Svgs written");
 };
+
+const readSvgs = async (products: any) => {
+  let attachments = [];
+  for (let i = 0; i < products.length; i++) {
+    if (products[i].data.svg.length > 0) {
+      attachments.push({
+        content: fs
+          .readFileSync(
+            process.cwd() + "/tmp/file-" + i + ".svg",
+            function (err: any, data: any) {
+              if (err) throw err;
+              return data;
+            }
+          )
+          .toString("base64"),
+        filename: "svg-" + (i + 1) + ".svg",
+        type: "application/svg",
+        disposition: "attachment",
+      });
+    }
+  }
+  console.log("Svgs read");
+  return attachments;
+};
+
 const zipSvgs = async (products: any, zip: any) => {
   const svg = zip.folder("svg");
   for (let i = 0; i < products.length; i++) {
@@ -181,49 +206,35 @@ export default async function handler(
 
       // zipProductionFiles(compiledItems);
 
-      fs.writeFileSync(
-        process.cwd() + "/tmp/file-" + 0 + ".svg",
-        compiledItems[0].data.svg,
-        function (err: any) {
-          if (err) {
-            return console.log(err);
-          }
-        }
-      );
-
-      let attachment = fs
-        .readFileSync(process.cwd() + "/tmp/file-0.svg")
-        .toString("base64");
-
-      const msg = {
-        to: "simbo803@student.liu.se", // Change to your recipient
-        from: "contact@simonbonnedahl.dev", // Change to your verified sender
-        subject: "Order #" + body.id,
-        text: "Order #" + body.id,
-        attachments: [
-          {
-            content: attachment,
-            filename: "order-" + body.id + ".svg",
-            type: "application/svg",
-            disposition: "attachment",
-          },
-        ],
-        html: compileSummary(
-          compiledItems,
-          body.total,
-          body.orderData,
-          body.id
-        ),
-      };
-      sgMail
-        .send(msg)
-        .then(() => {
-          console.log("Email sent");
-          res.status(200).json({ message: "Email sent", response: true });
-        })
-        .catch((error: any) => {
-          console.error(error);
-          res.status(400).json({ message: "Email not sent", response: false });
+      writeSvgs(compiledItems).then(() => {
+        readSvgs(compiledItems).then((attachments) => {
+          console.log(attachments);
+          const msg = {
+            to: "simbo803@student.liu.se", // Change to your recipient
+            from: "contact@simonbonnedahl.dev", // Change to your verified sender
+            subject: "Order #" + body.id,
+            text: "Order #" + body.id,
+            attachments: attachments,
+            html: compileSummary(
+              compiledItems,
+              body.total,
+              body.orderData,
+              body.id
+            ),
+          };
+          sgMail
+            .send(msg)
+            .then(() => {
+              console.log("Email sent");
+              res.status(200).json({ message: "Email sent", response: true });
+            })
+            .catch((error: any) => {
+              console.error(error);
+              res
+                .status(400)
+                .json({ message: "Email not sent", response: false });
+            });
         });
+      });
   }
 }
