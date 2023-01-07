@@ -182,8 +182,6 @@ export default async function handler(
 
       writeSvgs(compiledItems);
 
-      await wait(1000);
-
       let attachment1 = fs
         .readFileSync(process.cwd() + "/tmp/file-0.svg")
         .toString("base64");
