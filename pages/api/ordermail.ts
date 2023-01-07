@@ -1,11 +1,11 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { time } from "console";
 import type { NextApiRequest, NextApiResponse } from "next";
 const Attachment = require("mailersend").Attachment;
-var fs = require("fs");
 const { jsPDF } = require("jspdf");
 const JSZip = require("jszip");
 const sgMail = require("@sendgrid/mail");
+const fs = require("fs");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 type Data = {
   message: string;
@@ -26,9 +26,9 @@ const writeSvgs = async (products: any) => {
       );
     }
   }
-  console.log("Done 1");
+  console.log("Svgs written");
 };
-const zipSvgs = async (products: any, zip: any, res: any) => {
+const zipSvgs = async (products: any, zip: any) => {
   const svg = zip.folder("svg");
   for (let i = 0; i < products.length; i++) {
     if (products[i].data.svg.length > 0) {
@@ -38,31 +38,23 @@ const zipSvgs = async (products: any, zip: any, res: any) => {
       );
     }
   }
-  zip
-    .generateNodeStream({ type: "nodebuffer", streamFiles: true })
-    .pipe(fs.createWriteStream("tmp/files.zip"))
-    .on("finish", function () {
-      console.log("Done with files");
-      let attachments = [
-        new Attachment(
-          fs.readFileSync("tmp/files.zip", { encoding: "base64" }),
-          "order-" + "test" + ".zip",
-          "attachment"
-        ),
-      ];
-    });
+  console.log("Svgs zipped");
 };
 
-const zipProductionFiles = async (products: any, res: any) => {
+const zipProductionFiles = async (products: any) => {
   // Svg
   const zip = new JSZip();
   writeSvgs(products);
   setTimeout(() => {
-    zipSvgs(products, zip, res);
-    console.log("Svgs zipped");
-  }, 1000);
+    zipSvgs(products, zip);
 
-  //timeout so that the svgs have time to be written before we return the zip
+    zip
+      .generateNodeStream({ type: "nodebuffer", streamFiles: true })
+      .pipe(fs.createWriteStream(process.cwd() + "/tmp/files.zip"))
+      .on("finish", function () {
+        console.log("Zip written");
+      });
+  }, 1000);
 };
 
 /*
@@ -100,32 +92,6 @@ const zipProductionFiles = async (products: any, res: any) => {
     }
   }*/
 
-const sendMail = async (body: any, res: any) => {
-  const compiledItems = compileItems(body.items);
-  const compiledSummary = compileSummary(
-    compiledItems,
-    body.total,
-    body.orderData,
-    body.orderId
-  );
-  zipProductionFiles(compiledItems, res);
-  /*
-  const attachment = new Attachment(
-    zipBuffer,
-    "order-" + body.orderId + ".zip",
-    "attachment"
-  );
-  const emailParams = new EmailParams()
-    .setFrom("order@simonbonnedahl.dev")
-    .setFromName("Simon Bonnedahl")
-    .setRecipients(recipients)
-    .setAttachments([attachment])
-    .setSubject("Order #" + body.orderId)
-    .setHtml(compiledSummary);
-
-  mailersend.send(emailParams);*/
-};
-
 const compileItems = (items: any) => {
   let compiledItems: any[] = [];
   let addedIds: number[] = [];
@@ -141,6 +107,7 @@ const compileItems = (items: any) => {
       }
     }
   }
+  console.log("Compiled items");
   return compiledItems;
 };
 
@@ -211,42 +178,45 @@ export default async function handler(
         res.status(400).json({ message: "No items in order", response: false });
       }
       let compiledItems = compileItems(body.items);
-      const sgMail = require("@sendgrid/mail");
-      const fs = require("fs");
+      zipProductionFiles(compiledItems);
 
-      let attachment = fs
-        .readFileSync(process.cwd() + "/tmp/files.zip")
-        .toString("base64");
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-      const msg = {
-        to: "simbo803@student.liu.se", // Change to your recipient
-        from: "contact@simonbonnedahl.dev", // Change to your verified sender
-        subject: "Order #" + body.id,
-        text: "Order #" + body.id,
-        attachments: [
-          {
-            content: attachment,
-            filename: "order-" + body.id + ".zip",
-            type: "application/zip",
-            disposition: "attachment",
-          },
-        ],
-        html: compileSummary(
-          compiledItems,
-          body.total,
-          body.orderData,
-          body.orderId
-        ),
-      };
-      sgMail
-        .send(msg)
-        .then(() => {
-          console.log("Email sent");
-          res.status(200).json({ message: "Email sent", response: true });
-        })
-        .catch((error: any) => {
-          console.error(error);
-          res.status(400).json({ message: "Email not sent", response: false });
-        });
+      setTimeout(() => {
+        let attachment = fs
+          .readFileSync(process.cwd() + "/tmp/files.zip")
+          .toString("base64");
+
+        const msg = {
+          to: "simbo803@student.liu.se", // Change to your recipient
+          from: "contact@simonbonnedahl.dev", // Change to your verified sender
+          subject: "Order #" + body.id,
+          text: "Order #" + body.id,
+          attachments: [
+            {
+              content: attachment,
+              filename: "order-" + body.id + ".zip",
+              type: "application/zip",
+              disposition: "attachment",
+            },
+          ],
+          html: compileSummary(
+            compiledItems,
+            body.total,
+            body.orderData,
+            body.id
+          ),
+        };
+        sgMail
+          .send(msg)
+          .then(() => {
+            console.log("Email sent");
+            res.status(200).json({ message: "Email sent", response: true });
+          })
+          .catch((error: any) => {
+            console.error(error);
+            res
+              .status(400)
+              .json({ message: "Email not sent", response: false });
+          });
+      }, 2000);
   }
 }
