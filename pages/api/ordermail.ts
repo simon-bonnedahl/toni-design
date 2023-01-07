@@ -178,7 +178,7 @@ export default async function handler(
         res.status(400).json({ message: "No items in order", response: false });
       }
       let compiledItems = compileItems(body.items);
-      //zipProductionFiles(compiledItems);
+      zipProductionFiles(compiledItems);
 
       let attachment = fs
         .readFileSync(process.cwd() + "/tmp/files.zip")
