@@ -43,6 +43,7 @@ function Home() {
   });
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const items = useSelector(selectCartItems);
   const total = useSelector(selectCartTotal);
@@ -242,7 +243,7 @@ function Home() {
       if (res.status == 200) {
         setError("");
         setSuccess("Beställningen är bekräftad");
-        /*
+        setLoading(true);
         setTimeout(() => {
           //add the order to the database
           const doc = {
@@ -256,10 +257,11 @@ function Home() {
           client.create(doc).then(() => {
             console.log("Order created", doc);
           });
+          setLoading(false);
           router.push("/receipt");
           //clear the cart
           dispatch(clearCart());
-        }, 2000);*/
+        }, 1000);
       } else if (res.status == 400) {
         setError("Något gick fel, se till att du har varor i kundvagnen");
       } else {
