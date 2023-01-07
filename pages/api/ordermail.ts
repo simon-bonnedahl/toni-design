@@ -5,6 +5,7 @@ const { jsPDF } = require("jspdf");
 const JSZip = require("jszip");
 const sgMail = require("@sendgrid/mail");
 const fs = require("fs");
+const path = require("path");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 type Data = {
@@ -15,15 +16,8 @@ type Data = {
 const writeSvgs = async (products: any) => {
   for (let i = 0; i < products.length; i++) {
     if (products[i].data.svg.length > 0) {
-      fs.writeFileSync(
-        process.cwd() + "/tmp/file-" + i + ".svg",
-        products[i].data.svg,
-        function (err: any) {
-          if (err) {
-            return console.log(err);
-          }
-        }
-      );
+      let filePath = path.join("/tmp", "file-" + i + ".svg");
+      fs.writeFileSync(filePath, JSON.stringify(products[i].data.svg));
     }
   }
   console.log("Svgs written");
@@ -33,15 +27,13 @@ const readSvgs = async (products: any) => {
   let attachments = [];
   for (let i = 0; i < products.length; i++) {
     if (products[i].data.svg.length > 0) {
+      let filePath = path.join("/tmp", "file-" + i + ".svg");
       attachments.push({
         content: fs
-          .readFileSync(
-            process.cwd() + "/tmp/file-" + i + ".svg",
-            function (err: any, data: any) {
-              if (err) throw err;
-              return data;
-            }
-          )
+          .readFileSync(filePath, function (err: any, data: any) {
+            if (err) throw err;
+            return data;
+          })
           .toString("base64"),
         filename: "svg-" + (i + 1) + ".svg",
         type: "application/svg",
