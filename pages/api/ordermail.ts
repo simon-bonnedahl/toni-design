@@ -16,7 +16,8 @@ const mailersend = new MailerSend({
 });
 
 type Data = {
-  complete: boolean;
+  message: string;
+  response: {};
 };
 const recipients = [
   new Recipient("simbo803@student.liu.se"),
@@ -39,7 +40,7 @@ const writeSvgs = async (products: any) => {
   }
   console.log("Done 1");
 };
-const zipSvgs = async (products: any, zip: any) => {
+const zipSvgs = async (products: any, zip: any, res: any) => {
   const svg = zip.folder("svg");
   for (let i = 0; i < products.length; i++) {
     if (products[i].data.svg.length > 0) {
@@ -69,16 +70,19 @@ const zipSvgs = async (products: any, zip: any) => {
         .setHtml("test")
         .setText("This is the text content");
 
-      mailersend.send(emailParams);
+      mailersend.send(emailParams).then((response: any) => {
+        console.log(response);
+        res.status(200).json({ message: "Success", response: response });
+      });
     });
 };
 
-const zipProductionFiles = async (products: any) => {
+const zipProductionFiles = async (products: any, res: any) => {
   // Svg
   const zip = new JSZip();
   writeSvgs(products);
   setTimeout(() => {
-    zipSvgs(products, zip);
+    zipSvgs(products, zip, res);
     console.log("Svgs zipped");
   }, 1000);
 
@@ -120,7 +124,7 @@ const zipProductionFiles = async (products: any) => {
     }
   }*/
 
-const sendMail = async (body: any) => {
+const sendMail = async (body: any, res: any) => {
   const compiledItems = compileItems(body.items);
   const compiledSummary = compileSummary(
     compiledItems,
@@ -128,7 +132,7 @@ const sendMail = async (body: any) => {
     body.orderData,
     body.orderId
   );
-  await zipProductionFiles(compiledItems);
+  await zipProductionFiles(compiledItems, res);
   /*
   const attachment = new Attachment(
     zipBuffer,
@@ -220,7 +224,7 @@ const compileSummary = (
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<any>
+  res: NextApiResponse<Data>
 ) {
   let requestMethod = req.method;
   let body = req.body;
@@ -228,14 +232,15 @@ export default async function handler(
     case "POST":
       console.log(body);
       if (body.items.length === 0) {
-        res.status(400).json({ message: "No items in order" });
+        res.status(400).json({ message: "No items in order", response: false });
       }
+      //sendMail(body, res);
 
       sgMail.setApiKey(
-        "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"
+        "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"
       );
       const msg = {
-        to: "simbo803@student.liu.se", // Change to your recipient
+        to: "simon2.bonnedahl@gmail.com", // Change to your recipient
         from: "contact@simonbonnedahl.dev", // Change to your verified sender
         subject: "Sending with SendGrid is Fun",
         text: "and easy to do anywhere, even with Node.js",
@@ -249,7 +254,5 @@ export default async function handler(
         .catch((error: any) => {
           console.error(error);
         });
-
-      res.status(200).json({ message: "Successful" });
   }
 }

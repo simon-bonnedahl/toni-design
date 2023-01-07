@@ -236,7 +236,10 @@ function Home() {
       },
       body: JSON.stringify(body),
     }).then((res) => {
-      res.json();
+      res.json().then((res) => {
+        console.log(res);
+      });
+      console.log(res);
       if (res.status == 200) {
         setError("");
         setSuccess("Beställningen är bekräftad");
