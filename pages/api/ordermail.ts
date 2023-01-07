@@ -15,7 +15,7 @@ const writeSvgs = async (products: any) => {
   for (let i = 0; i < products.length; i++) {
     if (products[i].data.svg.length > 0) {
       fs.writeFileSync(
-        process.cwd() + "/tmp/file-" + i + ".svg",
+        "../../tmp/file-" + i + ".svg",
         products[i].data.svg,
         function (err: any) {
           if (err) {
@@ -207,7 +207,7 @@ export default async function handler(
           if (compiledItems[i].data.svg.length > 0) {
             attachments.push({
               content: fs
-                .readFileSync(process.cwd() + "/tmp/file-" + i + ".svg")
+                .readFileSync("../../tmp/file-" + i + ".svg")
                 .toString("base64"),
               filename: "svg-" + (i + 1) + ".svg",
               type: "application/svg",
