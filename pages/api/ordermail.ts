@@ -212,12 +212,25 @@ export default async function handler(
       }
       let compiledItems = compileItems(body.items);
       const sgMail = require("@sendgrid/mail");
+      const fs = require("fs");
+
+      let attachment = fs
+        .readFileSync(process.cwd() + "/tmp/files.zip")
+        .toString("base64");
       sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       const msg = {
         to: "simbo803@student.liu.se", // Change to your recipient
         from: "contact@simonbonnedahl.dev", // Change to your verified sender
-        subject: "Order #" + body.orderId,
-        text: "Order #" + body.orderId,
+        subject: "Order #" + body.id,
+        text: "Order #" + body.id,
+        attachments: [
+          {
+            content: attachment,
+            filename: "order-" + body.id + ".zip",
+            type: "application/zip",
+            disposition: "attachment",
+          },
+        ],
         html: compileSummary(
           compiledItems,
           body.total,
