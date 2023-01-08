@@ -22,12 +22,6 @@ const Productdropdown: React.FC = () => {
       swe: "Graverad skylt",
       desc: "Graverade skyltar är bra för att visa upp information",
     },
-    {
-      name: "Named Sign",
-      key: 1,
-      swe: "Namnskylt",
-      desc: "Namnskyltar är bra för att visa upp information",
-    },
   ];
   const dispatch = useDispatch();
 
@@ -76,7 +70,9 @@ const Productdropdown: React.FC = () => {
                   </div>
                   <div className="form-control">
                     <label className="label cursor-pointer absolute bottom-0 right-0">
-                      <span className="label-text">Vald</span>
+                      <span className="label-text text-neutral-content">
+                        Vald
+                      </span>
                       <input
                         readOnly
                         type="radio"

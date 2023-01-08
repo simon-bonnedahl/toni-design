@@ -230,6 +230,7 @@ function Home() {
       orderData: data,
       id: orders.length + 1,
     };
+    setLoading(true);
     fetch("/api/ordermail", {
       method: "POST",
       headers: {
@@ -243,7 +244,7 @@ function Home() {
       if (res.status == 200) {
         setError("");
         setSuccess("Beställningen är bekräftad");
-        setLoading(true);
+
         setTimeout(() => {
           //add the order to the database
           const doc = {
@@ -263,8 +264,10 @@ function Home() {
           dispatch(clearCart());
         }, 1000);
       } else if (res.status == 400) {
+        setLoading(false);
         setError("Något gick fel, se till att du har varor i kundvagnen");
       } else {
+        setLoading(false);
         setError("Något gick fel, prova igen senare");
       }
     });
@@ -581,6 +584,7 @@ function Home() {
           {/*Betalknapp*/}
           <button
             id="payment-button"
+            disabled={loading}
             className="btn btn-info w-5/12 opacity-40 pointer-events-none"
             onClick={handlePlaceOrder}
           >

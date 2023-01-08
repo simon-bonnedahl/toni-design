@@ -1,21 +1,25 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 const { jsPDF } = require("jspdf");
 const JSZip = require("jszip");
 const sgMail = require("@sendgrid/mail");
 const fs = require("fs");
+
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 type Data = {
   message: string;
   response: {};
 };
+const recipent = "simbo803@student.liu.se";
+const sender = "contact@simonbonnedahl.dev";
+
+const filePath = "../../tmp/";
 
 const writeSvgs = async (products: any) => {
   for (let i = 0; i < products.length; i++) {
     if (products[i].data.svg.length > 0) {
       fs.writeFileSync(
-        "../../tmp/file-" + i + ".svg",
+        filePath + "file-" + (i + 1) + ".svg",
         products[i].data.svg,
         function (err: any) {
           if (err) {
@@ -34,49 +38,14 @@ const zipSvgs = async (products: any) => {
   for (let i = 0; i < products.length; i++) {
     if (products[i].data.svg.length > 0) {
       svg.file(
-        "file-" + i + ".svg",
-        fs.readFileSync("../../tmp/file-" + i + ".svg")
+        "file-" + (i + 1) + ".svg",
+        fs.readFileSync(filePath + "file-" + (i + 1) + ".svg")
       );
     }
   }
   console.log("Svgs zipped");
   return zip;
 };
-
-/*
-      const svg = zip.folder("svg");
-      for (let i = 0; i < products.length; i++) {
-        svg.file(
-          "file-" + i + ".svg",
-          fs.readFileSync(process.cwd() + "/tmp/file-" + i + ".svg")
-        );
-      }
-      // Pdf
-      let combined = new jsPDF({ orientation: "p", format: "a2", unit: "mm" });
-      let y = 0;
-      for (let i = 0; i < products.length; i++) {
-        let pixelData = products[i].data.pixelData;
-        let pdf = new jsPDF({ orientation: "l", unit: "mm", format: "a3" });
-        pdf.addImage(pixelData, "JPEG", 0, 0);
-        combined.addImage(pixelData, "JPEG", 0, y);
-        y += products[i].visual.height;
-        pdf.save(process.cwd() + "/tmp/file-" + i + ".pdf");
-      }
-      combined.save(process.cwd() + "/tmp/combined.pdf");
-      const pdf = zip.folder("pdf");
-      for (let i = 0; i < products.length; i++) {
-        pdf.file(
-          "file-" + i + ".pdf",
-          fs.readFileSync(process.cwd() + "/tmp/file-" + i + ".pdf")
-        );
-      }
-
-      zip.file(
-        "combined.pdf",
-        fs.readFileSync(process.cwd() + "/tmp/combined.pdf")
-      );
-    }
-  }*/
 
 const compileItems = (items: any) => {
   let compiledItems: any[] = [];
@@ -170,18 +139,18 @@ export default async function handler(
         zipSvgs(compiledItems).then((zip) => {
           zip
             .generateNodeStream({ type: "nodebuffer", streamFiles: true })
-            .pipe(fs.createWriteStream("../../tmp/order-" + body.id + ".zip"))
+            .pipe(fs.createWriteStream(filePath + "order-" + body.id + ".zip"))
             .on("finish", function () {
               console.log("Zip written");
               const msg = {
-                to: "simbo803@student.liu.se", // Change to your recipient
-                from: "contact@simonbonnedahl.dev", // Change to your verified sender
+                to: recipent,
+                from: sender,
                 subject: "Order #" + body.id,
                 text: "Order #" + body.id,
                 attachments: [
                   {
                     content: fs
-                      .readFileSync("../../tmp/order-" + body.id + ".zip")
+                      .readFileSync(filePath + "order-" + body.id + ".zip")
                       .toString("base64"),
                     filename: "order-" + body.id + ".zip",
                     type: "application/zip",
@@ -214,6 +183,4 @@ export default async function handler(
         });
       });
   }
-
-  //let attachments = readSvgs(compiledItems);
 }
