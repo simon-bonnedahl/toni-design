@@ -6,10 +6,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { addToCart, removeFromCart } from "../reducers/cartSlice";
-import { addCommand, clearCommands } from "../reducers/editorSlice";
+import { addCommand } from "../reducers/editorSlice";
 import { setSign } from "../reducers/signSlice";
 
 interface Props {
@@ -20,7 +20,7 @@ interface Props {
 
 const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
   let image = document.createElement("img");
-  console.log(item);
+  const router = useRouter();
 
   const [itemQuantity, setItemQuantity] = useState(quantity);
   const [totalPrice, setTotalPrice] = useState(
@@ -60,6 +60,7 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
   const handleOpenSign = () => {
     console.log(item);
     dispatch(setSign({ sign: item }));
+    router.push("/");
 
     dispatch(addCommand({ command: "reCreate", value: item.visual }));
     //handleRemoveItem();

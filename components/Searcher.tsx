@@ -13,7 +13,13 @@ const Searcher: React.FC = () => {
 
   const handleSearch = (search: string) => {
     let results: any[] = [];
-    let query = `*[_type == 'product' && title match '${search}']`;
+    let query = `*[_type == 'product' && title match "${search}*"]`;
+
+    client.fetch(query).then((data: any) => {
+      setSearchResults(results.concat(data));
+    });
+
+    query = `*[_type == 'category' && title match "${search}*"]`;
 
     client.fetch(query).then((data: any) => {
       setSearchResults(results.concat(data));

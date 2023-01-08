@@ -17,7 +17,6 @@ const Bottombar: React.FC = () => {
   const price = useSelector(getSignMetadata).price;
   const json = useSelector(getSignJSON);
   const dispatch = useDispatch();
-  const [amount, setAmount] = useState(1);
 
   const items = useSelector(selectCartItems);
   const [error, setError] = useState("");
@@ -43,7 +42,11 @@ const Bottombar: React.FC = () => {
   };
 
   const handleAddToCart = () => {
-    dispatch(addCommand({ command: "addToCart", value: amount }));
+    let b = document.getElementById("cart-button");
+    console.log(b);
+    b?.focus();
+
+    dispatch(addCommand({ command: "addToCart", value: 1 }));
   };
 
   return (

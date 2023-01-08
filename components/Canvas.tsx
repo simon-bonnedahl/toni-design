@@ -781,7 +781,6 @@ const Canvas: React.FC = () => {
           handleAlignRight={handleAlignObjectRight}
         />
       )}
-      {showCartModal && <CartModal setShowCartModal={setShowCartModal} />}
     </div>
   );
 };

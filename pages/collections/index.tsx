@@ -6,6 +6,7 @@ import Navbar from "../../components/Navbar";
 import ProductCard from "../../components/ProductCard";
 import ResultFeed from "../../components/ResultFeed";
 import SideNav from "../../components/SideNav";
+import Footer from "../../components/Footer";
 
 function Home() {
   const [products, setProducts] = useState<any[]>([]);
@@ -35,6 +36,7 @@ function Home() {
           <SideNav />
           <ResultFeed products={products} />
         </div>
+        <Footer />
       </main>
     </div>
   );
