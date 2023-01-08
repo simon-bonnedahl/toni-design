@@ -1,8 +1,14 @@
 /** @type {import('next').NextConfig} */
+require("dotenv").config();
+
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   output: "standalone",
+  env: {
+    SANITY_TOKEN: process.env.SANITY_TOKEN,
+    SANITY_PROJECT_ID: process.env.SANITY_PROJECT_ID,
+  },
 };
 
 if (
