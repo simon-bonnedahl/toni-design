@@ -4,6 +4,8 @@ import client from "../../sanity";
 import HeaderBar from "../../components/HeaderBar";
 import Navbar from "../../components/Navbar";
 import ProductCard from "../../components/ProductCard";
+import ResultFeed from "../../components/ResultFeed";
+import SideNav from "../../components/SideNav";
 
 function Home() {
   const [products, setProducts] = useState<any[]>([]);
@@ -29,20 +31,9 @@ function Home() {
       <main className="flex flex-col bg-base-100 w-screen">
         <HeaderBar />
         <Navbar />
-        <div className="grid grid-cols-4 gap-4 p-4">
-          {products.map((product) => (
-            <ProductCard
-              key={product._id}
-              title={product.title}
-              image={product.image}
-              price={product.price}
-              width={product.width}
-              height={product.height}
-              type={product.productType}
-              material={product.material}
-              json={product.jsonURL}
-            />
-          ))}
+        <div className="flex">
+          <SideNav />
+          <ResultFeed products={products} />
         </div>
       </main>
     </div>
