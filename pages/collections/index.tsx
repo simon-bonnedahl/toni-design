@@ -26,7 +26,7 @@ function Home() {
         <title>Checkout</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex flex-col bg-base-100 w-screen h-screen">
+      <main className="flex flex-col bg-base-100 w-screen">
         <HeaderBar />
         <Navbar />
         <div className="grid grid-cols-4 gap-4 p-4">
