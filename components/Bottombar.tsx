@@ -42,9 +42,7 @@ const Bottombar: React.FC = () => {
   };
 
   const handleAddToCart = () => {
-    let b = document.getElementById("cart-button");
-    console.log(b);
-    b?.focus();
+    document.getElementById("cart-button")?.focus();
 
     dispatch(addCommand({ command: "addToCart", value: 1 }));
   };

@@ -71,15 +71,15 @@ const Imagedropdown: React.FC = () => {
       >
         <div className="card-body">
           <h3 className="card-title text-neutral-content">Lägg till en bild</h3>
+          <p className="text-neutral-content">
+            Du kan endast använda dig av bilder i vektoriserat format
+          </p>
           <input
             type="file"
             className="file-input file-input-bordered file-input-primary w-full max-w-xs"
-            accept=".jpg, .jpeg, .png, .webp, .svg"
+            accept=".svg"
             onChange={handleImageUpload}
           />
-          <button className="btn btn-primary w-fill mt-4" disabled>
-            Lägg till
-          </button>
         </div>
       </div>
     </div>

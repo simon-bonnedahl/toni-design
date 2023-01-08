@@ -86,6 +86,7 @@ const Productdropdown: React.FC = () => {
               );
             })}
           </div>
+          <p className="text-neutral-content">Kommer fler senare</p>
         </div>
       </div>
     </div>

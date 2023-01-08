@@ -34,7 +34,10 @@ function Home() {
         <Navbar />
         <div className="flex">
           <SideNav />
-          <ResultFeed products={products} />
+          <div className="flex flex-col p-4">
+            <h1>Nuvarande kategori</h1>
+            <ResultFeed products={products} />
+          </div>
         </div>
         <Footer />
       </main>

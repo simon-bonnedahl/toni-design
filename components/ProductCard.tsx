@@ -101,14 +101,14 @@ const ProductCard: React.FC<Props> = ({
         };
       }
 
+      document.getElementById("cart-button")?.focus();
       dispatch(addToCart(item));
-      console.log("item", item);
     };
     img.src = cartImage;
   };
   return (
-    <div className="card w-80 bg-base-300 shadow-xl">
-      <figure className="px-10 h-64">
+    <div className="card w-72 bg-base-300 shadow-xl">
+      <figure className="px-10 h-48 mt-5">
         <img src={cardImage} alt="Product" />
       </figure>
       <div className="card-body items-center text-center">
@@ -123,7 +123,7 @@ const ProductCard: React.FC<Props> = ({
             {type == "adjustable" && (
               <button
                 onClick={handleOpenSign}
-                className="btn btn-success btn-outline mt-2"
+                className="btn btn-success btn-outline mt-2 w-56"
               >
                 Anpassa
                 <FontAwesomeIcon
@@ -135,7 +135,7 @@ const ProductCard: React.FC<Props> = ({
             {type == "complete" && (
               <button
                 onClick={handleAddToCart}
-                className="btn btn-info btn-outline"
+                className="btn btn-info btn-outline w-56"
               >
                 Lägg till i varukorg
                 <FontAwesomeIcon

@@ -1,8 +1,8 @@
 import {defineField, defineType} from 'sanity'
 
 export default defineType({
-  name: 'category',
-  title: 'Kategorier',
+  name: 'subCategory',
+  title: 'Sub-kategorier',
   type: 'document',
   fields: [
     defineField({
@@ -23,21 +23,7 @@ export default defineType({
         hotspot: true,
         accept: '.jpg, .png, .jpeg, .webp',
       },
-    }),
-    defineField({
-      name: 'subCategories',
-      title: 'Sub-kategorier',
-      type: 'array',
-      of: [
-        {
-          type: 'reference',
-          to: [
-            {
-              type: 'subCategory',
-            },
-          ],
-        },
-      ],
+      validation: (Rule) => Rule.required(),
     }),
   ],
 })

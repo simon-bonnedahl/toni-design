@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectCartItems, selectCartTotal } from "../reducers/cartSlice";
+import ErrorAlert from "./alerts/ErrorAlert";
 import CartRow from "./CartRow";
 
 const Cart: React.FC = () => {

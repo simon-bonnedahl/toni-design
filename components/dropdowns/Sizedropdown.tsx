@@ -57,9 +57,11 @@ const Sizedropdown: React.FC = () => {
               <span className="label-text"></span>
             </label>
             <label className="input-group">
-              <span className="bg-primary text-primary-content">Bredd</span>
+              <span className="bg-primary text-primary-content w-28">
+                Bredd
+              </span>
               <input
-                className="input-md input-bordered"
+                className="input-md input-bordered w-full"
                 type="number"
                 value={width}
                 onChange={handleWidthChange}
@@ -75,9 +77,11 @@ const Sizedropdown: React.FC = () => {
               <span className="label-text"></span>
             </label>
             <label className="input-group">
-              <span className="bg-primary text-primary-content">Höjd </span>
+              <span className="bg-primary text-primary-content w-28">
+                Höjd{" "}
+              </span>
               <input
-                className="input-md input-bordered"
+                className="input-md input-bordered w-full"
                 type="number"
                 value={height}
                 onChange={handleHeightChange}
@@ -91,7 +95,10 @@ const Sizedropdown: React.FC = () => {
           <div className="form-control mt-4">
             <div className="input-group">
               <span className="bg-primary text-primary-content">Djup</span>
-              <select defaultValue={1.0} className="select select-bordered">
+              <select
+                defaultValue={1.0}
+                className="select select-bordered w-7/12"
+              >
                 <option>1.0</option>
                 <option>0.5</option>
               </select>
