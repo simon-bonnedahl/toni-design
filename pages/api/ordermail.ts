@@ -107,7 +107,8 @@ const compileSummary = (
     <p>${orderData.zipCode}, ${orderData.city}</p>      
     <p>${orderData.country}</p>
     <p>${orderData.phone}</p>
-    <p>${orderData.company}</p>
+    <br>
+    <p><b>Företag: </b>${orderData.company}</p>
     <br>
     <p><b>Leverans: </b>${orderData.delivery} </p>
     <p><b>Betalsätt: </b>${orderData.payment}</p>
@@ -120,6 +121,39 @@ const compileSummary = (
   return html;
 };
 
+const sendMail = async (
+  body: any,
+  compiledItems: any,
+  res: NextApiResponse<Data>
+) => {
+  const msg = {
+    to: recipent,
+    from: sender,
+    subject: "Order #" + body.id,
+    text: "Order #" + body.id,
+    attachments: [
+      {
+        content: fs.readFileSync(filePath + "files.zip").toString("base64"),
+        filename: "order-" + body.id + ".zip",
+        type: "application/zip",
+        disposition: "attachment",
+      },
+    ],
+    html: compileSummary(compiledItems, body.total, body.orderData, body.id),
+  };
+
+  sgMail
+    .send(msg)
+    .then(() => {
+      console.log("Email sent");
+      res.status(200).json({ message: "Email sent", response: true });
+    })
+    .catch((error: any) => {
+      console.error(error);
+      res.status(400).json({ message: "Email not sent", response: false });
+    });
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
@@ -128,59 +162,18 @@ export default async function handler(
   let body = req.body;
   switch (requestMethod) {
     case "POST":
-      console.log(body);
       if (body.items.length === 0) {
-        res.status(400).json({ message: "No items in order", response: false });
+        res.status(400).json({ message: "No items in cart", response: false });
       }
       let compiledItems = compileItems(body.items);
-
-      // zipProductionFiles(compiledItems);
-      writeSvgs(compiledItems).then(() => {
-        zipSvgs(compiledItems).then((zip) => {
-          zip
-            .generateNodeStream({ type: "nodebuffer", streamFiles: true })
-            .pipe(fs.createWriteStream(filePath + "order-" + body.id + ".zip"))
-            .on("finish", function () {
-              console.log("Zip written");
-              const msg = {
-                to: recipent,
-                from: sender,
-                subject: "Order #" + body.id,
-                text: "Order #" + body.id,
-                attachments: [
-                  {
-                    content: fs
-                      .readFileSync(filePath + "order-" + body.id + ".zip")
-                      .toString("base64"),
-                    filename: "order-" + body.id + ".zip",
-                    type: "application/zip",
-                    disposition: "attachment",
-                  },
-                ],
-                html: compileSummary(
-                  compiledItems,
-                  body.total,
-                  body.orderData,
-                  body.id
-                ),
-              };
-
-              sgMail
-                .send(msg)
-                .then(() => {
-                  console.log("Email sent");
-                  res
-                    .status(200)
-                    .json({ message: "Email sent", response: true });
-                })
-                .catch((error: any) => {
-                  console.error(error);
-                  res
-                    .status(400)
-                    .json({ message: "Email not sent", response: false });
-                });
-            });
+      await writeSvgs(compiledItems);
+      let zip = await zipSvgs(compiledItems);
+      zip
+        .generateNodeStream({ type: "nodebuffer", streamFiles: true })
+        .pipe(fs.createWriteStream(filePath + "files.zip"))
+        .on("finish", () => {
+          console.log("Zip written");
+          sendMail(body, compiledItems, res);
         });
-      });
   }
 }
