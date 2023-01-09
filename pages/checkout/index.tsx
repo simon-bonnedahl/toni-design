@@ -11,6 +11,7 @@ import {
   selectCartItems,
   selectCartTotal,
   selectCustomer,
+  setCustomer,
 } from "../../reducers/cartSlice";
 import ErrorAlert from "../../components/alerts/ErrorAlert";
 import SuccessAlert from "../../components/alerts/SuccessAlert";
@@ -29,6 +30,8 @@ function Home() {
   const [zipCode, setZipCode] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("Sverige");
+  const [reference, setReference] = useState("");
+  const [orgNumber, setOrgNumber] = useState("");
 
   const [errors, setErrors] = useState({
     firstName: true,
@@ -39,6 +42,9 @@ function Home() {
     zipCode: true,
     city: true,
     country: true,
+    company: true,
+    orgNumber: true,
+    reference: true,
   });
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -47,6 +53,7 @@ function Home() {
   const items = useSelector(selectCartItems);
   const total = useSelector(selectCartTotal);
   const customer = useSelector(selectCustomer);
+  const [customerState, setCustomerState] = useState(customer);
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -62,7 +69,11 @@ function Home() {
       info: " Leveranstid 3-6 vardagar, 129.00 kr inkl.moms, Spårbar försändelse",
     },
   ];
-  const [deliveryMethod, setDeliveryMethod] = useState(deliveryMethods[0]);
+  const [deliveryMethod, setDeliveryMethod] = useState({
+    name: "",
+    price: 0,
+    info: "",
+  });
   const paymentMethods = [
     {
       name: "E-postfaktura",
@@ -75,7 +86,11 @@ function Home() {
       info: " Leveranstid 3-6 vardagar, 129.00 kr inkl.moms, Spårbar försändelse",
     },
   ];
-  const [paymentMethod, setPaymentMethod] = useState(paymentMethods[0]);
+  const [paymentMethod, setPaymentMethod] = useState({
+    name: "",
+    price: 0,
+    info: "",
+  });
   const validateFirstname = (name: string) => {
     setFirstName(name);
     if (name.length < 2) {
@@ -150,6 +165,38 @@ function Home() {
       setErrors({ ...errors, city: false });
     }
   };
+  const validateCompany = (company: string) => {
+    setCompany(company);
+    if (company.length < 2) {
+      document.getElementById("company")?.classList.add("input-error");
+      setErrors({ ...errors, company: true });
+    } else {
+      document.getElementById("company")?.classList.remove("input-error");
+      setErrors({ ...errors, company: false });
+    }
+  };
+
+  const validateOrgNumber = (orgNumber: string) => {
+    setOrgNumber(orgNumber);
+    if (orgNumber.length < 2) {
+      document.getElementById("orgNumber")?.classList.add("input-error");
+      setErrors({ ...errors, orgNumber: true });
+    } else {
+      document.getElementById("orgNumber")?.classList.remove("input-error");
+      setErrors({ ...errors, orgNumber: false });
+    }
+  };
+
+  const validateReference = (reference: string) => {
+    setReference(reference);
+    if (reference.length < 2) {
+      document.getElementById("reference")?.classList.add("input-error");
+      setErrors({ ...errors, reference: true });
+    } else {
+      document.getElementById("reference")?.classList.remove("input-error");
+      setErrors({ ...errors, reference: false });
+    }
+  };
 
   const allFieldsValid = () => {
     if (
@@ -159,7 +206,10 @@ function Home() {
       errors.phone ||
       errors.address ||
       errors.zipCode ||
-      errors.city
+      errors.city ||
+      errors.company ||
+      errors.reference ||
+      errors.orgNumber
     ) {
       //add input error class to the field that is not valid and focus that field
       if (errors.firstName) {
@@ -184,6 +234,15 @@ function Home() {
       }
       if (errors.city) {
         document.getElementById("city")?.classList.add("input-error");
+      }
+      if (errors.company) {
+        document.getElementById("company")?.classList.add("input-error");
+      }
+      if (errors.orgNumber) {
+        document.getElementById("orgNumber")?.classList.add("input-error");
+      }
+      if (errors.reference) {
+        document.getElementById("reference")?.classList.add("input-error");
       }
       setError("Fyll i alla fält");
       return false;
@@ -220,6 +279,9 @@ function Home() {
       document
         .getElementById("payment-button")
         ?.classList.remove("pointer-events-none");
+
+      document.getElementById("switch")?.classList.add("opacity-40");
+      document.getElementById("switch")?.classList.add("pointer-events-none");
     }
   };
 
@@ -275,7 +337,7 @@ function Home() {
           const doc = {
             _type: "order",
             id: orders.length + 1,
-            total: total,
+            total: total + paymentMethod.price + deliveryMethod.price,
             orderData: data,
             //items how?
           };
@@ -296,6 +358,33 @@ function Home() {
       }
     });
   };
+  useEffect(() => {
+    setCustomerState(customer);
+    if (customer === "private") {
+      setErrors({
+        ...errors,
+        company: false,
+        orgNumber: false,
+        reference: false,
+        firstName: true,
+        lastName: true,
+      });
+    } else {
+      setErrors({
+        ...errors,
+        firstName: false,
+        lastName: false,
+        company: true,
+        orgNumber: true,
+        reference: true,
+      });
+    }
+  }, [customer]);
+
+  const handleCustomerChange = (c: string) => {
+    setCustomerState(c);
+    dispatch(setCustomer({ customer: c }));
+  };
 
   return (
     <div>
@@ -308,9 +397,42 @@ function Home() {
         <Navbar />
         <div className="w-full mt-20 flex flex-col space-y-10 items-center">
           <h1 className="text-4xl">Kassa</h1>
-
+          <div className="absolute left-[62vw]" id="switch">
+            {customerState === "private" ? (
+              <div className="base-content text-lg">
+                <span
+                  onClick={() => handleCustomerChange("private")}
+                  className="font-bold hover:cursor-pointer base-content"
+                >
+                  Privatperson
+                </span>
+                <span> / </span>
+                <span
+                  onClick={() => handleCustomerChange("company")}
+                  className="hover:cursor-pointer"
+                >
+                  Företag
+                </span>
+              </div>
+            ) : (
+              <div className="base-content text-lg">
+                <span
+                  onClick={() => handleCustomerChange("private")}
+                  className="hover:cursor-pointer"
+                >
+                  Privatperson
+                </span>
+                <span> / </span>
+                <span
+                  onClick={() => handleCustomerChange("company")}
+                  className="font-bold hover:cursor-pointer"
+                >
+                  Företag
+                </span>
+              </div>
+            )}
+          </div>
           {/*Form*/}
-
           {/*Information*/}
           <div
             id="information"
@@ -319,28 +441,71 @@ function Home() {
             <div className="p-8">
               <div className="flex flex-col space-y-4">
                 <h2 className="text-2xl">1. Din Information</h2>
-                <div className="flex flex-col">
-                  <label>* Förnamn</label>
-                  <input
-                    id="firstname"
-                    className="input input-bordered input-primary w-full max-w"
-                    type="text"
-                    value={firstName}
-                    onChange={(e) => validateFirstname(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label>* Efternamn</label>
-                  <input
-                    id="lastname"
-                    className="input input-bordered input-primary w-full max-w"
-                    type="text"
-                    value={lastName}
-                    onChange={(e) => validateLastname(e.target.value)}
-                    required
-                  />
-                </div>
+
+                {customer === "company" && (
+                  <div>
+                    <div className="flex flex-col">
+                      <label>* Företagsnamn</label>
+                      <input
+                        id="company"
+                        className="input input-bordered input-primary w-full max-w"
+                        type="text"
+                        value={company}
+                        onChange={(e) => validateCompany(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label>* Org-nummer</label>
+                      <input
+                        id="orgNumber"
+                        className="input input-bordered input-primary w-full max-w"
+                        type="text"
+                        required
+                        value={orgNumber}
+                        onChange={(e) => validateOrgNumber(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label>* Referens</label>
+                      <input
+                        id="reference"
+                        className="input input-bordered input-primary w-full max-w"
+                        type="text"
+                        required
+                        value={reference}
+                        onChange={(e) => validateReference(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {customer === "private" && (
+                  <div>
+                    <div className="flex flex-col">
+                      <label>* Förnamn</label>
+                      <input
+                        id="firstname"
+                        className="input input-bordered input-primary w-full max-w"
+                        type="text"
+                        value={firstName}
+                        onChange={(e) => validateFirstname(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label>* Efternamn</label>
+                      <input
+                        id="lastname"
+                        className="input input-bordered input-primary w-full max-w"
+                        type="text"
+                        value={lastName}
+                        onChange={(e) => validateLastname(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                )}
                 <div className="flex flex-col">
                   <label>* E-post</label>
                   <input
@@ -353,20 +518,6 @@ function Home() {
                     onChange={(e) => validateEmail(e.target.value)}
                   />
                 </div>
-                {customer === "company" && (
-                  <div className="flex flex-col">
-                    <label>Företagsnamn</label>
-                    <input
-                      id="company"
-                      className="input input-bordered input-primary w-full max-w-xs"
-                      type="text"
-                      placeholder="Valfritt"
-                      value={company}
-                      onChange={(e) => setCompany(e.target.value)}
-                      required
-                    />
-                  </div>
-                )}
 
                 <div className="flex flex-col">
                   <label>* Telefon</label>
@@ -467,7 +618,6 @@ function Home() {
                         type="radio"
                         name="radio-9"
                         className="radio checked:bg-primary"
-                        checked
                         onChange={() => setDeliveryMethod(deliveryMethods[0])}
                       />
                       <span className="label-text ml-4 text-lg">
@@ -542,7 +692,6 @@ function Home() {
                       <input
                         type="radio"
                         name="radio-10"
-                        checked
                         className="radio checked:bg-primary"
                         onChange={() => setPaymentMethod(paymentMethods[0])}
                       />

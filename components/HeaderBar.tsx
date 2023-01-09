@@ -3,16 +3,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectCustomer, setCustomer } from "../reducers/cartSlice";
 import ThemeSwitch from "./ThemeSwitch";
 const HeaderBar: React.FC = () => {
-  const [customerState, setCustomerState] = useState(
-    useSelector(selectCustomer)
-  );
+  const customer = useSelector(selectCustomer);
+  const [customerState, setCustomerState] = useState(customer);
   const [windowLoaded, setWindowLoaded] = useState(false);
   const handleCustomerChange = (c: string) => {
     setCustomerState(c);
     dispatch(setCustomer({ customer: c }));
   };
   const dispatch = useDispatch();
-  useEffect(() => setWindowLoaded(true), []);
+  useEffect(() => {
+    setWindowLoaded(true);
+    setCustomerState(customer);
+  }, [customer]);
 
   const [themeIndex, setThemeIndex] = useState(0);
 
