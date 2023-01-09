@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useLocalStorage } from "use-hooks";
 
 const ThemeSwitch: React.FC = () => {

@@ -1,14 +1,12 @@
 import {
   faArrowRight,
-  faMinus,
-  faPlus,
   faShoppingCart,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectCartItems, setShowModal } from "../reducers/cartSlice";
+import { selectCartItems } from "../reducers/cartSlice";
 import { addCommand } from "../reducers/editorSlice";
 import { getSignJSON, getSignMetadata } from "../reducers/signSlice";
 import ErrorAlert from "./alerts/ErrorAlert";

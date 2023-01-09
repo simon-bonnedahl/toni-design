@@ -1,10 +1,9 @@
-import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectCartItems, selectCartTotal } from "../reducers/cartSlice";
-import ErrorAlert from "./alerts/ErrorAlert";
 import CartRow from "./CartRow";
 
 const Cart: React.FC = () => {
@@ -93,10 +92,6 @@ const Cart: React.FC = () => {
           <div className="flex flex-col mt-4 border-t-2 border-base-content text-base-content items-end">
             <div className="flex flex-col w-64 mt-4 space-y-1">
               <div className="flex justify-between">
-                <span className="">Frakt:</span>
-                <span className="">39,20 kr</span>
-              </div>
-              <div className="flex justify-between">
                 <span className="font-bold">Pris exkl. moms:</span>
                 <span className="font-bold">{round(total, 2)} kr</span>
               </div>
@@ -106,9 +101,7 @@ const Cart: React.FC = () => {
               </div>
               <div className="flex justify-between">
                 <span className="font-bold">Totalt inkl. moms:</span>
-                <span className="font-bold">
-                  {round(total * 1.25 + 39.2, 2)} kr
-                </span>
+                <span className="font-bold">{round(total * 1.25, 2)} kr</span>
               </div>
             </div>
             <div className="flex items-center justify-end space-x-2 w-full mt-4">

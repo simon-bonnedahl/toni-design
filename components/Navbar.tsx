@@ -1,7 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { selectCartItems } from "../reducers/cartSlice";
+import { useDispatch } from "react-redux";
 import { addCommand } from "../reducers/editorSlice";
 import Cart from "./Cart";
 import Searcher from "./Searcher";

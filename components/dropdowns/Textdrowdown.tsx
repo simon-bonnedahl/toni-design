@@ -1,13 +1,11 @@
 import { faFileText } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addCommand } from "../../reducers/editorSlice";
 import { getSignVisual } from "../../reducers/signSlice";
 
 const Textdropdown: React.FC = () => {
   const textColor = useSelector(getSignVisual).textColor;
-  console.log(useSelector(getSignVisual));
 
   const fonts = [
     "Arial",

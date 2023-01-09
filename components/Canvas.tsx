@@ -5,7 +5,6 @@ import ControlBox from "./modals/ControlBox";
 import { selectCommands } from "../reducers/editorSlice";
 import { getSignMetadata, saveSign } from "../reducers/signSlice";
 import { addToCart } from "../reducers/cartSlice";
-import CartModal from "./modals/CartModal";
 import client, { urlFor } from "../sanity";
 const fabric = require("fabric").fabric;
 const { v4: uuidv4 } = require("uuid");

@@ -1,9 +1,4 @@
-import {
-  faDroplet,
-  faExpand,
-  faPaintRoller,
-  faT,
-} from "@fortawesome/free-solid-svg-icons";
+import { faDroplet, faT } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,7 +7,6 @@ import {
   getSignMetadata,
   getSignVisual,
   setSignColorCombination,
-  setSignTextColor,
 } from "../../reducers/signSlice";
 import client from "../../sanity";
 

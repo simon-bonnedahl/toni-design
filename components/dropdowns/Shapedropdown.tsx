@@ -1,29 +1,7 @@
-import {
-  faCircle,
-  faCube,
-  faDroplet,
-  faExpand,
-  faPaintRoller,
-  faQuestion,
-  faUsersRectangle,
-} from "@fortawesome/free-solid-svg-icons";
-import {
-  IconLookup,
-  IconDefinition,
-  findIconDefinition,
-  library,
-} from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addCommand } from "../../reducers/editorSlice";
-import {
-  getSignMetadata,
-  getSignVisual,
-  setSignColorCombination,
-} from "../../reducers/signSlice";
-import client from "../../sanity";
-import { faRectangleTimes } from "@fortawesome/free-regular-svg-icons";
+import { getSignVisual } from "../../reducers/signSlice";
 
 const Shapedropdown: React.FC = () => {
   const [selectedShape, setSelectedShape] = useState(
