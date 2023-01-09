@@ -260,7 +260,6 @@ function Home() {
           });
           setLoading(false);
           router.push("/receipt");
-          //clear the cart
           dispatch(clearCart());
         }, 1000);
       } else if (res.status == 400) {

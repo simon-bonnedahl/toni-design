@@ -1,8 +1,13 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 import ControlBox from "./modals/ControlBox";
-import { selectCommands } from "../reducers/editorSlice";
+import { clearCommands, selectCommands } from "../reducers/editorSlice";
 import { getSignMetadata, saveSign } from "../reducers/signSlice";
 import { addToCart } from "../reducers/cartSlice";
 import client, { urlFor } from "../sanity";
@@ -172,9 +177,17 @@ const Canvas: React.FC = () => {
     let shape = canvas._objects[0];
     if (shape) shape.set({ fill: back });
     for (let i = 1; i < canvas._objects.length; i++) {
-      let text = canvas._objects[i];
-      if (text.type === "i-text") {
-        text.set({ fill: front });
+      let object = canvas._objects[i];
+      if (object.type === "i-text") {
+        object.set({ fill: front });
+      } else if (object.type === "group") {
+        //svg
+        for (let i = 0; i < object._objects.length; i++) {
+          object._objects[i].set({
+            fill: front,
+            stroke: front,
+          });
+        }
       }
     }
 
@@ -238,7 +251,6 @@ const Canvas: React.FC = () => {
     await client.fetch(query).then((res: any) => {
       console.log("Got image from sanity", res[0].url);
       url = urlFor(res[0].url).url();
-      console.log(url);
     });
     let id = image.id ? image.id : uuidv4();
 
@@ -253,6 +265,12 @@ const Canvas: React.FC = () => {
           scaleY: scale,
         });
 
+        for (let i = 0; i < svg._objects.length; i++) {
+          svg._objects[i].set({
+            fill: sign.textColor,
+            stroke: sign.textColor,
+          });
+        }
         canvas.add(svg);
         if (image.id) {
           //IF we have visual props
@@ -386,7 +404,6 @@ const Canvas: React.FC = () => {
   };
 
   const addObjectToState = (obj: any) => {
-    console.log("Adding object to state");
     let newState = { ...sign, elements: [...sign.elements, obj] };
     return newState;
   };
@@ -404,7 +421,6 @@ const Canvas: React.FC = () => {
   };
 
   const updateObjectInState = (id: number, props: any) => {
-    console.log("Updating object in state");
     let newList: {}[] = [];
     sign.elements.forEach((element: any) => {
       if (element.id === id) {
@@ -418,7 +434,7 @@ const Canvas: React.FC = () => {
   };
 
   const saveSignState = (newSign: any) => {
-    console.log("Saving sign state", newSign);
+    //console.log("Saving sign state", newSign);
     let id = uuidv4();
     setSign({ ...newSign, id });
     dispatch(saveSign({ sign: newSign }));
@@ -429,6 +445,7 @@ const Canvas: React.FC = () => {
   const keyHandler = useCallback(
     (event: { key: string }) => {
       let obj = editor?.canvas.getActiveObject();
+      if (!obj) return;
       let shape = editor?.canvas._objects[0];
       let speed = 2;
       switch (event.key) {
@@ -624,14 +641,13 @@ const Canvas: React.FC = () => {
   useEffect(() => {
     let canvas = editor?.canvas;
 
-    if (canvas) {
-      //New way of updating the canvas
-      if (commands.length > commandsRecieved) {
-        let command = commands[commands.length - 1]; //Look at the latest command
-        handleCommand(command, canvas);
-        setCommandsRecieved((commandsRecieved) => (commandsRecieved += 1));
-        canvas.renderAll();
-      }
+    if (!canvas) return;
+    //New way of updating the canvas
+    if (commands.length > commandsRecieved) {
+      let command = commands[commands.length - 1]; //Look at the latest command
+      handleCommand(command, canvas);
+      setCommandsRecieved((commandsRecieved) => (commandsRecieved += 1));
+      canvas.renderAll();
     }
   }, [commands, canvas]);
 
@@ -685,7 +701,11 @@ const Canvas: React.FC = () => {
         setShowCartModal(false);
         break;
       case "addToCart":
-        handleAddToCart(command.value);
+        if (commandsRecieved > 0) {
+          //Only add to cart if the user has made a change, also prevents the sign to get added to the cart at reload
+          handleAddToCart(command.value);
+        }
+
         break;
       case "toggleCart":
         setShowCartModal(!showCartModal);
@@ -715,6 +735,7 @@ const Canvas: React.FC = () => {
     setEditorControls();
     canvas.renderAll();
   };
+
   const handleAddToCart = (amount: number) => {
     console.log("Adding to cart", sign);
     let pixelData = canvas.toDataURL("image/jpeg", 1.0);

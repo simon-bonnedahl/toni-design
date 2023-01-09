@@ -6,7 +6,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { addToCart, removeFromCart } from "../reducers/cartSlice";
 import { addCommand } from "../reducers/editorSlice";
@@ -19,7 +19,6 @@ interface Props {
 }
 
 const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
-  let image = document.createElement("img");
   const router = useRouter();
 
   const [itemQuantity, setItemQuantity] = useState(quantity);
@@ -27,18 +26,6 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
     item.metadata.price * itemQuantity
   );
   const dispatch = useDispatch();
-
-  if (image) {
-    image.src = item.data.pixelData;
-    image.addEventListener("load", () => {
-      URL.revokeObjectURL(item.data.pixelData), { once: true };
-      let div = document.getElementById("sign-image-" + index);
-      if (div) {
-        div.innerHTML = "";
-        div.appendChild(image);
-      }
-    });
-  }
 
   let signId = "sign-image-" + index;
 
@@ -72,6 +59,19 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
   } else {
     className += " bg-base-100";
   }
+
+  useEffect(() => {
+    let image = document.createElement("img");
+    image.src = item.data.pixelData;
+    image.addEventListener("load", () => {
+      URL.revokeObjectURL(item.data.pixelData), { once: true };
+      let div = document.getElementById("sign-image-" + index);
+      if (div) {
+        div.innerHTML = "";
+        div.appendChild(image);
+      }
+    });
+  }, [item.image]);
 
   return (
     <div className={className}>
