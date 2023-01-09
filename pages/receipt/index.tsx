@@ -1,9 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import HeaderBar from "../../components/HeaderBar";
-import Navbar from "../../components/Navbar";
 
 function Home() {
   //copy infomation from cart and order then clear the cart
