@@ -19,10 +19,18 @@ function Home() {
   useEffect(() => {
     //https://www.sanity.io/docs/js-client
     //const query = '*[_type == "bike" && seats >= $minSeats] {name, seats}'
-    const query = `*[_type == 'product' && category == '${current}'] {
+    let query = `*[_type == 'product' && '${current}' in categories[]->title] {
                                 ...,
             "jsonURL": json.asset->url
       }`;
+
+    if (current === null) {
+      query = `*[_type == 'product'] {
+          ...,
+              "jsonURL": json.asset->url
+        }
+        `;
+    }
 
     client.fetch(query).then((data: any) => {
       setProducts(data);

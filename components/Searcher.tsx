@@ -31,7 +31,11 @@ const Searcher: React.FC = () => {
 
   return (
     <div className="dropdown" onClick={selectSearchfield}>
-      <label tabIndex={0} className="btn btn-ghost m-1 flex space-x-2">
+      <label
+        id="searcher"
+        tabIndex={0}
+        className="btn btn-ghost m-1 flex space-x-2"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-5 w-5"
