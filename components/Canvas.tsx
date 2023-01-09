@@ -176,13 +176,18 @@ const Canvas: React.FC = () => {
       if (object.type === "i-text") {
         object.set({ fill: front });
       } else if (object.type === "group") {
-        //svg
+        //svg group
         for (let i = 0; i < object._objects.length; i++) {
           object._objects[i].set({
             fill: front,
             stroke: front,
           });
         }
+      } else if (object.type == "path") {
+        //svg path
+        object.set({
+          fill: front,
+        });
       }
     }
 
@@ -260,12 +265,19 @@ const Canvas: React.FC = () => {
           scaleY: scale,
         });
 
-        for (let i = 0; i < svg._objects.length; i++) {
-          svg._objects[i].set({
+        if (svg._objects) {
+          for (let i = 0; i < svg._objects.length; i++) {
+            svg._objects[i].set({
+              fill: sign.textColor,
+              stroke: sign.textColor,
+            });
+          }
+        } else {
+          svg.set({
             fill: sign.textColor,
-            stroke: sign.textColor,
           });
         }
+
         canvas.add(svg);
         if (image.id) {
           //IF we have visual props
