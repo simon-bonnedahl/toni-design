@@ -29,8 +29,7 @@ function Home() {
   const [zipCode, setZipCode] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("Sverige");
-  const [deliveryMethod, setDeliveryMethod] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
+
   const [errors, setErrors] = useState({
     firstName: true,
     lastName: true,
@@ -51,6 +50,32 @@ function Home() {
   const router = useRouter();
   const dispatch = useDispatch();
 
+  const deliveryMethods = [
+    {
+      name: "Brev",
+      price: 39,
+      info: "Leveranstid 3-5 vardagar, 39.00 kr inkl.moms, Ej Spårbart",
+    },
+    {
+      name: "Spårbart paket",
+      price: 129,
+      info: " Leveranstid 3-6 vardagar, 129.00 kr inkl.moms, Spårbar försändelse",
+    },
+  ];
+  const [deliveryMethod, setDeliveryMethod] = useState(deliveryMethods[0]);
+  const paymentMethods = [
+    {
+      name: "E-postfaktura",
+      price: 29,
+      info: "Leveranstid 3-5 vardagar, 39.00 kr inkl.moms, Ej Spårbart",
+    },
+    {
+      name: "Pappersfaktura",
+      price: 39,
+      info: " Leveranstid 3-6 vardagar, 129.00 kr inkl.moms, Spårbar försändelse",
+    },
+  ];
+  const [paymentMethod, setPaymentMethod] = useState(paymentMethods[0]);
   const validateFirstname = (name: string) => {
     setFirstName(name);
     if (name.length < 2) {
@@ -200,11 +225,11 @@ function Home() {
 
   const handlePlaceOrder = async () => {
     //validate delivery and payment
-    if (deliveryMethod == "") {
+    if (deliveryMethod == null) {
       setError("Välj leverans");
       return;
     }
-    if (paymentMethod == "") {
+    if (paymentMethod == null) {
       setError("Välj betalsätt");
       return;
     }
@@ -442,14 +467,15 @@ function Home() {
                         type="radio"
                         name="radio-9"
                         className="radio checked:bg-primary"
-                        onChange={() => setDeliveryMethod("Brev")}
+                        checked
+                        onChange={() => setDeliveryMethod(deliveryMethods[0])}
                       />
-                      <span className="label-text ml-4 text-lg">Brev</span>
+                      <span className="label-text ml-4 text-lg">
+                        {deliveryMethods[0].name}
+                      </span>
                     </label>
                   </div>
-                  <p>
-                    Leveranstid 3-5 vardagar, 39.00 kr inkl.moms, Ej Spårbart
-                  </p>
+                  <p className="ml-11 text-xs">{deliveryMethods[0].info}</p>
                 </div>
                 <div>
                   <div className="form-control flex items-start">
@@ -458,17 +484,14 @@ function Home() {
                         type="radio"
                         name="radio-9"
                         className="radio checked:bg-primary"
-                        onChange={() => setDeliveryMethod("Spårbart paket")}
+                        onChange={() => setDeliveryMethod(deliveryMethods[1])}
                       />
                       <span className="label-text ml-4 text-lg">
-                        Spårbart paket
+                        {deliveryMethods[1].name}
                       </span>
                     </label>
                   </div>
-                  <p>
-                    Leveranstid 3-6 vardagar, 129.00 kr inkl.moms, Spårbar
-                    försändelse
-                  </p>
+                  <p className="ml-11 text-xs">{deliveryMethods[1].info}</p>
                 </div>
               </div>
             </div>
@@ -488,7 +511,7 @@ function Home() {
                         type="radio"
                         name="radio-10"
                         className="radio checked:bg-primary"
-                        onChange={() => setPaymentMethod("Swish")}
+                        onChange={() => setPaymentMethod(paymentMethods[0])}
                         disabled
                       />
                       <span className="label-text ml-4 text-lg">
@@ -504,7 +527,7 @@ function Home() {
                         type="radio"
                         name="radio-10"
                         className="radio checked:bg-primary"
-                        onChange={() => setPaymentMethod("Kort")}
+                        onChange={() => setPaymentMethod(paymentMethods[0])}
                         disabled
                       />
                       <span className="label-text ml-4 text-lg">
@@ -519,15 +542,16 @@ function Home() {
                       <input
                         type="radio"
                         name="radio-10"
+                        checked
                         className="radio checked:bg-primary"
-                        onChange={() => setPaymentMethod("E-postfaktura")}
+                        onChange={() => setPaymentMethod(paymentMethods[0])}
                       />
                       <span className="label-text ml-4 text-lg">
                         Betala med e-postfaktura
                       </span>
                     </label>
                   </div>
-                  <p className="ml-10 text-xs">29.00 kr inkl.moms</p>
+                  <p className="ml-11 text-xs">29.00 kr inkl.moms</p>
                 </div>
                 <div>
                   <div className="form-control flex items-start">
@@ -536,19 +560,19 @@ function Home() {
                         type="radio"
                         name="radio-10"
                         className="radio checked:bg-primary"
-                        onChange={() => setPaymentMethod("Papperfaktura")}
+                        onChange={() => setPaymentMethod(paymentMethods[1])}
                       />
                       <span className="label-text ml-4 text-lg">
                         Betala med papperfaktura
                       </span>
                     </label>
                   </div>
-                  <p className="ml-10 text-xs">39.00 kr inkl.moms</p>
+                  <p className="ml-11 text-xs">39.00 kr inkl.moms</p>
                 </div>
               </div>
             </div>
             {/*Summary*/}
-            <div className="p-8 flex-col space-y-5 w-72 absolute -right-80 border border-primary rounded-xl">
+            <div className="px-8 pt-8 flex-col space-y-5 w-72 absolute -right-80 border border-primary rounded-xl text-sm">
               <div className="flex flex-col space-y-4">
                 <h2 className="text-2xl">Sammanställning</h2>
                 <div className="flex justify-between">
@@ -558,24 +582,34 @@ function Home() {
                 <div className="flex justify-between">
                   <div className="flex flex-col">
                     <p>Leverans</p>
-                    <p className="text-xs">{deliveryMethod} </p>
+                    <p className="text-xs">{deliveryMethod.name} </p>
                   </div>
-                  <p>39.00 kr</p>
+                  <p>{deliveryMethod.price} kr</p>
+                </div>
+                <div className="flex justify-between">
+                  <div className="flex flex-col">
+                    <p>Betalmetod</p>
+                    <p className="text-xs">{paymentMethod.name} </p>
+                  </div>
+                  <p>{paymentMethod.price} kr</p>
                 </div>
                 <hr />
                 <div className="flex justify-between">
                   <p>Pris exkl.moms</p>
-                  <p>{total + 39}</p>
+                  <p>{total + paymentMethod.price + deliveryMethod.price} kr</p>
                 </div>
                 <div className="flex justify-between">
                   <p>Moms(25%)</p>
-                  <p>{total * 0.25}</p>
+                  <p>{total * 0.25} kr </p>
                 </div>
                 <hr />
 
-                <div className="flex justify-between pb-5">
+                <div className="flex justify-between pb-5 text-md font-bold ">
                   <p>Totalt</p>
-                  <p>{total * 1.25 + 39} kr</p>
+                  <p>
+                    {total * 1.25 + paymentMethod.price + deliveryMethod.price}{" "}
+                    kr
+                  </p>
                 </div>
               </div>
             </div>

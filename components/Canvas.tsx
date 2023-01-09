@@ -1,13 +1,8 @@
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 import ControlBox from "./modals/ControlBox";
-import { clearCommands, selectCommands } from "../reducers/editorSlice";
+import { selectCommands } from "../reducers/editorSlice";
 import { getSignMetadata, saveSign } from "../reducers/signSlice";
 import { addToCart } from "../reducers/cartSlice";
 import client, { urlFor } from "../sanity";
@@ -61,7 +56,7 @@ const Canvas: React.FC = () => {
   };
 
   const toPixels = (mm: number) => {
-    return mm * 2.8346546;
+    return mm * 2.8346546; //Based on my laptops ppi, need to be calculated
   };
 
   const toMillimeter = (px: number) => {
