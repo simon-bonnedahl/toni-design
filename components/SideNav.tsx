@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { setCurrent } from "../reducers/navigationSlice";
 import client from "../sanity";
 
 const SideNav: React.FC = () => {
   const [categories, setCategories] = useState<any[]>([]);
+
+  const dispatch = useDispatch();
   useEffect(() => {
     const query = `*[_type == 'category']`;
 
@@ -10,6 +14,10 @@ const SideNav: React.FC = () => {
       setCategories(data);
     });
   }, []);
+
+  const handleSetCategory = (title: string) => {
+    dispatch(setCurrent({ current: title }));
+  };
 
   return (
     <div className="drawer drawer-mobile border border-primary w-80">
@@ -19,13 +27,15 @@ const SideNav: React.FC = () => {
           htmlFor="my-drawer-2"
           className="btn btn-primary drawer-button lg:hidden"
         >
-          Open drawer
+          Kategorier
         </label>
       </div>
       <ul className="menu bg-base-100 rounded-box p-2">
         {categories.map((category) => (
           <li key={category._id}>
-            <a>{category.title}</a>
+            <a onClick={() => handleSetCategory(category.title)}>
+              {category.title}
+            </a>
           </li>
         ))}
 

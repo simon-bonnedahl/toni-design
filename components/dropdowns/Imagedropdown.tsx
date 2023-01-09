@@ -72,7 +72,7 @@ const Imagedropdown: React.FC = () => {
         <div className="card-body">
           <h3 className="card-title text-neutral-content">Lägg till en bild</h3>
           <p className="text-neutral-content">
-            Du kan endast använda dig av bilder i vektoriserat format
+            Du kan endast använda dig av bilder i vektoriserat fil-format
           </p>
           <input
             type="file"
