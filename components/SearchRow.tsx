@@ -1,24 +1,40 @@
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
-import { setCurrent } from "../reducers/navigationSlice";
+import {
+  setSelectedCategory,
+  setSelectedProduct,
+} from "../reducers/navigationSlice";
+import { urlFor } from "../sanity";
 
 const SearchRow: React.FC<{ result: any }> = ({ result }) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
   const handleSetResult = () => {
-    dispatch(setCurrent({ current: result.title }));
-    let d = document.getElementById("searcher");
-    d?.blur();
-    //remove the searchfield from the window
+    if (result._type === "product") {
+      router.push("/product");
+      dispatch(setSelectedProduct({ product: result._id }));
+    }
+    if (result._type === "category") {
+      dispatch(setSelectedCategory({ category: result.title }));
+      router.push("/collections");
+    }
   };
 
+  console.log(result);
   return (
     <div
       onClick={handleSetResult}
-      className="flex flex-row items-center justify-between w-fill bg-base-300 hover:cursor-pointer"
+      className="flex flex-row w-fillbg-base-300 hover:cursor-pointer"
     >
-      <h1>{result.title}</h1>
+      <div className="p-2 border border-neutral h-40 w-40 rounded-md flex jusitfy-center items-center">
+        {result.image && (
+          <img src={urlFor(result.image).height(100).url()}></img>
+        )}
+      </div>
+      <div className="flex flex-col p-4">
+        <h1>{result.title}</h1>
+      </div>
     </div>
   );
 };

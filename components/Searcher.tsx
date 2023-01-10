@@ -12,21 +12,11 @@ const Searcher: React.FC = () => {
   };
 
   const handleSearch = (search: string) => {
-    let results: any[] = [];
-    let query = `*[_type == 'product' && title match "${search}*"]`;
+    let query = `*[_type in ["product", "category"] && title match "${search}*"]`;
 
     client.fetch(query).then((data: any) => {
-      setSearchResults(results.concat(data));
+      setSearchResults(data);
     });
-
-    query = `*[_type == 'category' && title match "${search}*"]`;
-
-    client.fetch(query).then((data: any) => {
-      setSearchResults(results.concat(data));
-    });
-
-    console.log(searchResults);
-    //console.log(results);
   };
 
   return (
@@ -61,6 +51,7 @@ const Searcher: React.FC = () => {
             type="text"
             placeholder="Sök"
             className="input w-11/12"
+            autoComplete="off"
             onChange={(e) => handleSearch(e.target.value)}
           />
           <div className="w-1/12 flex items-center justify-center">
@@ -81,7 +72,7 @@ const Searcher: React.FC = () => {
           </div>
         </div>
         {/*Search results*/}
-        <div className="flex flex-col">
+        <div className="flex flex-col space-y-2 max-h-96 overflow-y-scroll">
           {searchResults.map((result, key) => (
             <SearchRow key={key} result={result} />
           ))}

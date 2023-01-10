@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setCurrent } from "../reducers/navigationSlice";
+import { setSelectedCategory } from "../reducers/navigationSlice";
 import client from "../sanity";
 
 const SideNav: React.FC = () => {
@@ -16,7 +16,7 @@ const SideNav: React.FC = () => {
   }, []);
 
   const handleSetCategory = (title: string) => {
-    dispatch(setCurrent({ current: title }));
+    dispatch(setSelectedCategory({ category: title }));
   };
 
   return (

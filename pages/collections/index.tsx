@@ -7,23 +7,23 @@ import ResultFeed from "../../components/ResultFeed";
 import SideNav from "../../components/SideNav";
 import Footer from "../../components/Footer";
 import { useSelector } from "react-redux";
-import { selectCurrent } from "../../reducers/navigationSlice";
+import { getSelectedCategory } from "../../reducers/navigationSlice";
 
 function Home() {
   const [products, setProducts] = useState<any[]>([]);
 
-  const current = useSelector(selectCurrent);
-  const [currentNav, setCurrentNav] = useState<any>(current);
+  const selectedCategory = useSelector(getSelectedCategory);
+  const [currentCategory, setCurrentCategory] = useState<any>(selectedCategory);
 
   useEffect(() => {
     //https://www.sanity.io/docs/js-client
     //const query = '*[_type == "bike" && seats >= $minSeats] {name, seats}'
-    let query = `*[_type == 'product' && '${current}' in categories[]->title] {
+    let query = `*[_type == 'product' && '${selectedCategory}' in categories[]->title] {
                                 ...,
             "jsonURL": json.asset->url
       }`;
 
-    if (current === null) {
+    if (selectedCategory === null) {
       query = `*[_type == 'product'] {
           ...,
               "jsonURL": json.asset->url
@@ -34,12 +34,12 @@ function Home() {
     client.fetch(query).then((data: any) => {
       setProducts(data);
     });
-    setCurrentNav(current);
-  }, [current]);
+    setCurrentCategory(selectedCategory);
+  }, [selectedCategory]);
   return (
     <div>
       <Head>
-        <title>Checkout</title>
+        <title>Sortiment</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex flex-col bg-base-100 w-screen">
@@ -48,7 +48,7 @@ function Home() {
         <div className="flex">
           <SideNav />
           <div className="flex flex-col p-4">
-            <h1>{currentNav}</h1>
+            <h1>{currentCategory}</h1>
             <ResultFeed products={products} />
           </div>
         </div>

@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { uuid } from "uuidv4";
 import { addToCart } from "../reducers/cartSlice";
 import { addCommand, clearCommands } from "../reducers/editorSlice";
+import { setSelectedProduct } from "../reducers/navigationSlice";
 import { setSign } from "../reducers/signSlice";
 import { urlFor } from "../sanity";
 interface Props {
@@ -17,6 +18,7 @@ interface Props {
   type: string;
   material: string;
   json: string;
+  id: string;
 }
 const ProductCard: React.FC<Props> = ({
   title,
@@ -27,6 +29,7 @@ const ProductCard: React.FC<Props> = ({
   type,
   material,
   json,
+  id,
 }) => {
   const [jsonObj, setJsonObj] = React.useState<any>({});
   const router = useRouter();
@@ -35,7 +38,6 @@ const ProductCard: React.FC<Props> = ({
   let cardImage = urlFor(image).height(200).url();
   let cartImage = urlFor(image).height(100).url();
 
-  const id = uuid();
   if (json) {
     fetch(json).then((res) => {
       res.json().then((data) => {
@@ -49,6 +51,11 @@ const ProductCard: React.FC<Props> = ({
     dispatch(setSign({ sign: jsonObj }));
     dispatch(addCommand({ command: "reCreate", value: jsonObj.visual }));
     router.push("/");
+  };
+
+  const handleOpenProduct = () => {
+    dispatch(setSelectedProduct({ product: id }));
+    router.push("/product");
   };
 
   const handleAddToCart = () => {

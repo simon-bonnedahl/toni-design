@@ -14,6 +14,7 @@ const ResultFeed: React.FC<{ products: any[] }> = ({ products }) => {
           type={product.productType}
           material={product.material}
           json={product.jsonURL}
+          id={product._id}
         />
       ))}
     </div>
