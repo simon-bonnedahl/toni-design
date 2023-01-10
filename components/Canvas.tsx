@@ -197,12 +197,17 @@ const Canvas: React.FC = () => {
     }
   };
 
-  const addText = (canvas: any, text: any, updateBackend: boolean) => {
+  const addText = (
+    canvas: any,
+    text: any,
+    updateBackend: boolean,
+    color?: string
+  ) => {
     let id = text.id ? text.id : uuidv4(); //If the text already has an id, use that, otherwise generate a new one
 
     let textObject = new fabric.IText(text.string, {
       //Create the text visual object
-      fill: text.color,
+      fill: color || text.color,
       fontFamily: text.font,
       fontSize: text.fontSize,
       id: id,
@@ -243,7 +248,12 @@ const Canvas: React.FC = () => {
     canvas.setActiveObject(textObject);
   };
 
-  const addImage = async (canvas: any, image: any, updateBackend: boolean) => {
+  const addImage = async (
+    canvas: any,
+    image: any,
+    updateBackend: boolean,
+    color?: string
+  ) => {
     console.log("Adding image", image);
     console.log("Fetching image from sanity");
     let query = `*[_type == 'asset' && id == '${image.imageId}']`;
@@ -268,13 +278,13 @@ const Canvas: React.FC = () => {
         if (svg._objects) {
           for (let i = 0; i < svg._objects.length; i++) {
             svg._objects[i].set({
-              fill: sign.textColor,
-              stroke: sign.textColor,
+              fill: color || sign.textColor,
+              stroke: color || sign.textColor,
             });
           }
         } else {
           svg.set({
-            fill: sign.textColor,
+            fill: color || sign.textColor,
           });
         }
 
@@ -361,13 +371,13 @@ const Canvas: React.FC = () => {
     }
   };
 
-  const recreateCanvas = async (canvas: any, elements: any) => {
+  const recreateCanvas = async (canvas: any, elements: any, color: string) => {
     elements.forEach((element: any) => {
       if (element.type == "text") {
-        addText(canvas, element, false);
+        addText(canvas, element, false, color);
       }
       if (element.type == "image") {
-        addImage(canvas, element, false); //blir buggat då den är async
+        addImage(canvas, element, false, color);
       }
     });
   };
@@ -387,7 +397,7 @@ const Canvas: React.FC = () => {
     setColor(canvas, sign.color, sign.textColor, false);
     setSize(canvas, sign.width, sign.height, false);
 
-    recreateCanvas(canvas, sign.elements);
+    recreateCanvas(canvas, sign.elements, sign.textColor);
   };
 
   const translateCenterOrigin = (top: number, left: number) => {

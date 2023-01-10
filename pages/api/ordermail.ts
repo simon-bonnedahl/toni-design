@@ -66,14 +66,8 @@ const compileItems = (items: any) => {
   return compiledItems;
 };
 
-const compileSummary = (
-  items: any,
-  total: number,
-  orderData: any,
-  orderId: number
-) => {
-  let html = `<h1 style="text-align: center;">Order #${orderId}</h1>`;
-
+const itemsSummary = (items: any) => {
+  let html = "";
   for (let i = 0; i < items.length; i++) {
     let img = "";
     if (items[i].data.svg) {
@@ -99,8 +93,10 @@ const compileSummary = (
       </div>
     </div>`;
   }
-  html += ` <hr style="width: 100%"></hr>
-  <h2>Beställningsuppgifter</h2>
+  return html;
+};
+const detailsSummary = (orderData: any, total: number) => {
+  let html = `<h2>Beställningsuppgifter</h2>
     <p>${orderData.firstName} ${orderData.lastName}</p>
     <p>${orderData.email}</p>
     <p>${orderData.address}</p>
@@ -115,13 +111,41 @@ const compileSummary = (
     <p><b>Slutbelopp:</b> ${total} kr</p>  
     <br>
   `;
+  return html;
+};
+
+const productionSummary = (
+  items: any,
+  total: number,
+  orderData: any,
+  orderId: number
+) => {
+  let html = `<h1 style="text-align: center;">Order #${orderId}</h1>`;
+  html += itemsSummary(items);
+  html += detailsSummary(orderData, total);
+
   html += ` <hr style="width: 100%"></hr>
   <h2>Produktionsfiler</h2>`;
 
   return html;
 };
 
-const sendMail = async (
+const confirmationSummary = (
+  items: any,
+  total: number,
+  orderData: any,
+  orderId: number
+) => {
+  let html = `<h1 style="text-align: center;">Order #${orderId}</h1>`;
+  html += `<p>Vi har mottagit din beställning och kommer att skicka en bekräftelse när den är på väg.</p>
+    <p>Om du har några frågor eller funderingar är du välkommen att kontakta oss på <a href="mailto:
+    ${recipent}">${recipent}</a></p>`;
+  html += itemsSummary(items);
+  html += detailsSummary(orderData, total);
+
+  return html;
+};
+const sendProductionMail = async (
   body: any,
   compiledItems: any,
   res: NextApiResponse<Data>
@@ -139,19 +163,36 @@ const sendMail = async (
         disposition: "attachment",
       },
     ],
-    html: compileSummary(compiledItems, body.total, body.orderData, body.id),
+    html: productionSummary(compiledItems, body.total, body.orderData, body.id),
   };
 
   sgMail
     .send(msg)
     .then(() => {
       console.log("Email sent");
+      sendConfirmationMail(body, compiledItems);
       res.status(200).json({ message: "Email sent", response: true });
     })
     .catch((error: any) => {
       console.error(error);
       res.status(400).json({ message: "Email not sent", response: false });
     });
+};
+
+const sendConfirmationMail = async (body: any, compiledItems: any) => {
+  const msg = {
+    to: body.orderData.email,
+    from: sender,
+    subject: "Orderbekräftelse #" + body.id,
+    text: "Orderbekräftelse #" + body.id,
+    html: confirmationSummary(
+      compiledItems,
+      body.total,
+      body.orderData,
+      body.id
+    ),
+  };
+  sgMail.send(msg);
 };
 
 export default async function handler(
@@ -173,7 +214,7 @@ export default async function handler(
         .pipe(fs.createWriteStream(filePath + "files.zip"))
         .on("finish", () => {
           console.log("Zip written");
-          sendMail(body, compiledItems, res);
+          sendProductionMail(body, compiledItems, res);
         });
   }
 }

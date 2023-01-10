@@ -305,8 +305,8 @@ function Home() {
       zipCode: zipCode,
       city: city,
       country: country,
-      delivery: deliveryMethod,
-      payment: paymentMethod,
+      delivery: deliveryMethod.name,
+      payment: paymentMethod.name,
       company: company,
     };
     let orders = await client.fetch(`*[_type == "order"]`);
