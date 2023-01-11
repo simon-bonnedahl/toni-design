@@ -18,9 +18,10 @@ const Canvas: React.FC = () => {
     height: 100,
     color: "#ffffff",
     textColor: "#000000",
-    shape: "Rectangle",
+    shape: "Rounded Rectangle",
     elements: [],
   });
+
   const signMetaData = useSelector(getSignMetadata);
 
   const commands = useSelector(selectCommands);
@@ -40,6 +41,12 @@ const Canvas: React.FC = () => {
     setEditorControls();
     canvas.renderAll();
     onReady(canvas);
+
+    onresize = () => {
+      //Should also move the objects to the correct postion when resizing
+
+      centerSign(canvas);
+    };
   };
 
   const setEditorControls = () => {
@@ -157,6 +164,7 @@ const Canvas: React.FC = () => {
     //Replace the frame, this works if the frame always is the first object, which it should
     canvas._objects[0] = s;
     centerSign(canvas);
+
     if (updateBackend) {
       let newSign = { ...sign, shape };
       saveSignState(newSign);
@@ -807,7 +815,7 @@ const Canvas: React.FC = () => {
   return (
     <div className="w-full h-full relative">
       <FabricJSCanvas
-        className="sample-canvas w-full h-full bg-base-100"
+        className="sample-canvas h-full w-full bg-base-100"
         onReady={init}
       />
       {selectedObject && (

@@ -1,3 +1,4 @@
+import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
 import { useDispatch } from "react-redux";
@@ -6,11 +7,7 @@ import Cart from "./Cart";
 import Searcher from "./Searcher";
 
 const Navbar: React.FC = () => {
-  const dispatch = useDispatch();
-
-  const handleCartClicked = () => {
-    dispatch(addCommand({ command: "toggleCart" }));
-  };
+  const { data: session } = useSession();
 
   return (
     <div className="navbar bg-base-200">
@@ -34,7 +31,14 @@ const Navbar: React.FC = () => {
       <div className="navbar-end">
         <Searcher />
         <Cart />
+        {session && <div>Inloggad som {session.user?.email}</div>}
+        {!session && (
+          <div onClick={() => signIn()} className="hover:cursor-pointer">
+            Logga in
+          </div>
+        )}
       </div>
+
       <div className="dropdown dropdown-end">
         <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
           <div className="w-10 rounded-full">
@@ -54,9 +58,11 @@ const Navbar: React.FC = () => {
           <li>
             <a>Settings</a>
           </li>
-          <li>
-            <a>Logout</a>
-          </li>
+          {session && (
+            <li>
+              <a onClick={() => signOut()}>Logout</a>
+            </li>
+          )}
         </ul>
       </div>
     </div>

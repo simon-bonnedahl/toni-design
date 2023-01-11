@@ -38,6 +38,7 @@ const Sizedropdown: React.FC = () => {
   return (
     <div className="dropdown">
       <label
+        id="size-dropdown"
         tabIndex={0}
         onClick={() => dispatch(addCommand({ command: "closeCart" }))}
         className="btn btn-primary m-1 flex space-x-2 btn-outline"

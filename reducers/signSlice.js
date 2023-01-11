@@ -14,7 +14,7 @@ const initialState = {
       height: 100, //mm
       color: "#fff",
       textColor: "#000",
-      shape: "Rectangle",
+      shape: "Rounded Rectangle",
       elements: [],
     },
     data: {

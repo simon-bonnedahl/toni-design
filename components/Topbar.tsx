@@ -18,6 +18,10 @@ const Topbar: React.FC = () => {
   const sign = useSelector(getSignVisual);
   const dispatch = useDispatch();
 
+  const openSizeDropdown = () => {
+    document.getElementById("size-dropdown")?.focus();
+  };
+
   return (
     <div className="flex flex-row justify-between w-screen shadow-lg bg-base-200">
       <div className="flex items-center h-full pl-4 space-x-5">
@@ -62,15 +66,18 @@ const Topbar: React.FC = () => {
         <Imagedropdown />
       </div>
       {/*Size*/}
-      <div className="flex space-x-4 items-center h-full mr-10">
+      <div
+        onClick={openSizeDropdown}
+        className="flex space-x-4 items-center h-full mr-4 font-light text-sm hover:cursor-pointer"
+      >
         <div>
-          Bredd: <span className="font-bold">{sign.width}</span> mm
+          <span className="font-bold">Bredd:</span> {sign.width} mm
         </div>
         <div>
-          Höjd: <span className="font-bold">{sign.height}</span> mm
+          <span className="font-bold"> Höjd:</span> {sign.height} mm
         </div>
         <div>
-          Djup: <span className="font-bold">1</span> mm
+          <span className="font-bold">Djup:</span> 1 mm
         </div>
       </div>
     </div>
