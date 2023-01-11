@@ -1,5 +1,6 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { Router, useRouter } from "next/router";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { addCommand } from "../reducers/editorSlice";
@@ -8,7 +9,7 @@ import Searcher from "./Searcher";
 
 const Navbar: React.FC = () => {
   const { data: session } = useSession();
-
+  const router = useRouter();
   return (
     <div className="navbar bg-base-200">
       <div className="navbar-start">
@@ -33,7 +34,10 @@ const Navbar: React.FC = () => {
         <Cart />
         {session && <div>Inloggad som {session.user?.email}</div>}
         {!session && (
-          <div onClick={() => signIn()} className="hover:cursor-pointer">
+          <div
+            onClick={() => router.push("/login")}
+            className="hover:cursor-pointer"
+          >
             Logga in
           </div>
         )}
