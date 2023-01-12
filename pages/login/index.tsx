@@ -1,3 +1,4 @@
+import { signIn } from "next-auth/react";
 import Head from "next/head";
 import { useState } from "react";
 import Footer from "../../components/Footer";
@@ -161,11 +162,23 @@ function Home() {
     }
   };
 
-  const handleRegister = async () => {
-    let body = {
-      firstName: firstName,
-      lastName: lastName,
+  const handleLogin = async () => {
+    let credentials = {
       email: email,
+      password: password,
+    };
+    signIn("credentials", credentials);
+
+    setLoading(true);
+  };
+
+  const handleRegister = async () => {
+    if (!allFieldsValid()) return;
+    let body = {
+      firstname: firstName,
+      lastname: lastName,
+      email: email,
+      password: password,
       phone: phone,
       address: address,
       zipCode: zipCode,
@@ -240,7 +253,12 @@ function Home() {
                     required
                   />
                 </div>
-                <button className="btn btn-info text-white">Logga in</button>
+                <button
+                  onClick={handleLogin}
+                  className="btn btn-info text-white"
+                >
+                  Logga in
+                </button>
               </div>
             </div>
           </div>
@@ -287,6 +305,17 @@ function Home() {
                     placeholder="Används för kvitto och orderinformation"
                     value={email}
                     onChange={(e) => validateEmail(e.target.value)}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label>Lösenord</label>
+                  <input
+                    id="password"
+                    className="input input-bordered input-primary w-full max-w"
+                    type="password"
+                    value={password}
+                    onChange={(e) => validatePassword(e.target.value)}
+                    required
                   />
                 </div>
 
@@ -349,6 +378,18 @@ function Home() {
                     })}
                   </select>
                 </div>
+                <button
+                  onClick={handleRegister}
+                  className="btn btn-info text-white"
+                >
+                  Registrera
+                </button>
+                <p className="text-sm">
+                  Toni-Design inhämtar personlig information när du skapar ett
+                  konto. Vi använder informationen till att handlägga eventella
+                  beställningar samt, om du samtycker, även till nyhetsbrev. För
+                  mer information, se vår integritetspolicy.
+                </p>
               </div>
             </div>
           </div>
