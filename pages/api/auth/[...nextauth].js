@@ -14,23 +14,22 @@ export const authOptions = {
     }),
     CredentialsProvider({
       name: "credentials",
+
       async authorize(credentials, req) {
         // Add logic here to look up the user from the credentials supplied
         let query = `*[_type == "account" && email == $email][0]`;
         let params = { email: credentials.email };
-        client.fetch(query, params).then((account) => {
-          console.log(account);
-          if (passwordHash.verify(credentials.password, account.password)) {
-            console.log("success");
-            return { id: "1", name: "J Smith", email: "jsmith@example.com" };
-          } else {
-            console.log("failed");
-            return null;
-          }
-        });
+        let account = await client.fetch(query, params);
+
+        if (passwordHash.verify(credentials.password, account.password))
+          return { email: account.email, name: account.firstname };
+        return null;
       },
     }),
     // ...add more providers here
   ],
+  pages: {
+    newUser: "/",
+  },
 };
 export default NextAuth(authOptions);

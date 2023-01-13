@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { useLocalStorage } from "use-hooks";
 
 const ThemeSwitch: React.FC = () => {
-  const [theme, setTheme] = useLocalStorage("theme", "autumn");
+  const [theme, setTheme] = useLocalStorage("theme", "mytheme");
   const toggleTheme = () => {
-    setTheme(theme === "business" ? "autumn" : "business");
+    setTheme(theme === "business" ? "mytheme2" : "business");
   };
   // initially set the theme and "listen" for changes to apply them to the HTML tag
   useEffect(() => {

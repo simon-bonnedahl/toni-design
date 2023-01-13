@@ -46,7 +46,7 @@ const Bottombar: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-0 flex flex-row w-full h-20 items-center bg-base-300 justify-between px-4 ">
+    <div className="fixed bottom-0 flex flex-row w-full h-20 items-center bg-base-200 justify-between px-4 ">
       <div className="flex space-x-4">
         <button
           className="btn btn-primary primary-content btn-outline"
@@ -100,27 +100,15 @@ const Bottombar: React.FC = () => {
 
         {/*Add button */}
         <div>
-          <button
-            onClick={handleAddToCart}
-            className="btn btn-info btn-outline"
-          >
+          <button onClick={handleAddToCart} className="btn btn-info">
             Lägg till i varukorg
-            <FontAwesomeIcon
-              className="w-4 h-4 text-content-info ml-2"
-              icon={faShoppingCart}
-            />
+            <FontAwesomeIcon className="w-4 h-4 ml-2" icon={faShoppingCart} />
           </button>
         </div>
         <div>
-          <button
-            onClick={handleCheckout}
-            className="btn btn-success btn-outline"
-          >
+          <button onClick={handleCheckout} className="btn btn-success">
             Gå till kassan
-            <FontAwesomeIcon
-              className="w-4 h-4 text-content-info ml-2"
-              icon={faArrowRight}
-            />
+            <FontAwesomeIcon className="w-4 h-4 ml-2" icon={faArrowRight} />
           </button>
         </div>
         {error && (

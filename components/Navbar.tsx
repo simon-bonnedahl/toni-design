@@ -1,9 +1,8 @@
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
-import { Router, useRouter } from "next/router";
+import { useRouter } from "next/router";
 import React from "react";
-import { useDispatch } from "react-redux";
-import { addCommand } from "../reducers/editorSlice";
 import Cart from "./Cart";
 import Searcher from "./Searcher";
 
@@ -12,27 +11,27 @@ const Navbar: React.FC = () => {
   const router = useRouter();
   return (
     <div className="navbar bg-base-200">
-      <div className="navbar-start">
-        <Link className="text-primary btn btn-ghost" href="/">
-          Hem
+      <div className="navbar-start flex space-x-4 pl-5">
+        <Link className="" href="/">
+          <Image
+            src="/../public/logo-light-2.png"
+            alt="logo"
+            height={150}
+            width={150}
+          />
         </Link>
-        <Link className="text-primary btn btn-ghost" href="/collections">
+        <Link
+          className="text-base-content btn btn-ghost font-bold"
+          href="/collections"
+        >
           Sortiment
-        </Link>
-        <Link className="text-primary btn btn-ghost" href="/collections">
-          Frågor & Svar
-        </Link>
-      </div>
-      <div className="navbar-center">
-        <Link href="/" className="btn btn-ghost normal-case text-xl">
-          Toni-Design
         </Link>
       </div>
 
       <div className="navbar-end">
         <Searcher />
         <Cart />
-        {session && <div>Inloggad som {session.user?.email}</div>}
+        {session && <div>Inloggad som {session.user?.name}</div>}
         {!session && (
           <div
             onClick={() => router.push("/login")}

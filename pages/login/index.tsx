@@ -167,7 +167,7 @@ function Home() {
       email: email,
       password: password,
     };
-    signIn("credentials", credentials);
+    signIn("credentials", credentials, { callbackUrl: "/" });
 
     setLoading(true);
   };

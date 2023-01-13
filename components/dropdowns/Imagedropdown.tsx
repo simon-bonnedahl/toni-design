@@ -67,7 +67,7 @@ const Imagedropdown: React.FC = () => {
       </label>
       <div
         tabIndex={0}
-        className="dropdown-content card w-80 card-compact bg-neutral p-2 shadow"
+        className="dropdown-content card w-80 card-compact bg-base-200 border border-black  p-2 shadow"
       >
         <div className="card-body">
           <h3 className="card-title text-neutral-content">Lägg till en bild</h3>

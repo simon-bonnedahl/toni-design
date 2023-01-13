@@ -38,7 +38,7 @@ const Productdropdown: React.FC = () => {
       </label>
       <div
         tabIndex={0}
-        className="dropdown-content card w-96 card-compact bg-neutral p-2 shadow"
+        className="dropdown-content card w-96 card-compact bg-base-200 border border-black  p-2 shadow"
       >
         <div className="card-body">
           <h3 className="card-title text-neutral-content">Välj en produkt</h3>
@@ -46,8 +46,8 @@ const Productdropdown: React.FC = () => {
             {products.map((product) => {
               let className =
                 "flex justify-between hover:cursor-pointer h-24 relative";
-              if (product.name === selectedProduct) className += " bg-primary";
-              else className += " bg-neutral";
+              if (product.name === selectedProduct)
+                className += " border border-primary rounded-md";
 
               return (
                 <div
