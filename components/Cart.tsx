@@ -1,4 +1,7 @@
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRight,
+  faCartShopping,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
@@ -39,32 +42,20 @@ const Cart: React.FC = () => {
   };
   return (
     <div className="dropdown">
-      <label
-        id="cart-button"
-        tabIndex={0}
-        className="btn btn-ghost m-1 flex space-x-2"
-      >
-        <div className="indicator">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-            />
-          </svg>
-          <span className="badge badge-sm indicator-item">{items.length}</span>
+      <label id="cart-button" tabIndex={0} className="btn btn-ghost">
+        <div className="flex space-x-4">
+          <div className="indicator">
+            <FontAwesomeIcon className="scale-110" icon={faCartShopping} />
+            <span className="badge badge-warning badge-xs indicator-item ml-">
+              {items.length}
+            </span>
+          </div>
+          <span className="text-base-content">Varukorg</span>
         </div>
       </label>
       <div
         tabIndex={0}
-        className="dropdown-content -right-10 card w-[82vw] border border-neutral card-compact bg-base-100 p-2 shadow"
+        className="dropdown-content -right-0 card w-[82vw] border border-neutral card-compact bg-base-100 p-2 shadow"
       >
         <div className=" p-4">
           {/*header*/}
@@ -105,10 +96,7 @@ const Cart: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center justify-end space-x-2 w-full mt-4">
-              <button
-                onClick={handleCheckout}
-                className="btn btn-success btn-outline"
-              >
+              <button onClick={handleCheckout} className="btn btn-success">
                 Gå till kassan
                 <FontAwesomeIcon
                   className="w-4 h-4 text-content-info ml-2"

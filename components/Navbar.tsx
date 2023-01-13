@@ -1,4 +1,6 @@
-import { signOut, useSession } from "next-auth/react";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -29,45 +31,25 @@ const Navbar: React.FC = () => {
       </div>
 
       <div className="navbar-end">
-        <Searcher />
-        <Cart />
-        {session && <div>Inloggad som {session.user?.name}</div>}
-        {!session && (
-          <div
-            onClick={() => router.push("/login")}
-            className="hover:cursor-pointer"
-          >
-            Logga in
-          </div>
+        {session && (
+          <Link href="/account" className="btn btn-ghost">
+            <div className="flex space-x-2">
+              <FontAwesomeIcon icon={faUser} />
+              <span>Mitt konto</span>
+            </div>
+          </Link>
         )}
+        {!session && (
+          <button onClick={() => signIn()} className="btn btn-ghost">
+            <div className="flex space-x-2">
+              <FontAwesomeIcon icon={faUser} />
+              <span>Logga in</span>
+            </div>
+          </button>
+        )}
+        <Searcher />
       </div>
-
-      <div className="dropdown dropdown-end">
-        <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
-          <div className="w-10 rounded-full">
-            <img src="https://placeimg.com/80/80/people" />
-          </div>
-        </label>
-        <ul
-          tabIndex={0}
-          className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
-        >
-          <li>
-            <a className="justify-between">
-              Profile
-              <span className="badge">New</span>
-            </a>
-          </li>
-          <li>
-            <a>Settings</a>
-          </li>
-          {session && (
-            <li>
-              <a onClick={() => signOut()}>Logout</a>
-            </li>
-          )}
-        </ul>
-      </div>
+      <Cart />
     </div>
   );
 };

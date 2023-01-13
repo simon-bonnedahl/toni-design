@@ -6,7 +6,7 @@ import HeaderBar from "../../components/HeaderBar";
 import Navbar from "../../components/Navbar";
 import countriesEurope from "../../utils/countriesEurope";
 
-function Home() {
+function Login() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -167,7 +167,7 @@ function Home() {
       email: email,
       password: password,
     };
-    signIn("credentials", credentials, { callbackUrl: "/" });
+    signIn("credentials", credentials);
 
     setLoading(true);
   };
@@ -399,4 +399,5 @@ function Home() {
     </div>
   );
 }
-export default Home;
+
+export default Login;
