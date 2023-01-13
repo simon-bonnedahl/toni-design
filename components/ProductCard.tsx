@@ -53,11 +53,6 @@ const ProductCard: React.FC<Props> = ({
     router.push("/");
   };
 
-  const handleOpenProduct = () => {
-    dispatch(setSelectedProduct({ product: id }));
-    router.push("/product");
-  };
-
   const handleAddToCart = () => {
     //make the image url to image data
     var img = new Image();
@@ -114,11 +109,14 @@ const ProductCard: React.FC<Props> = ({
     img.src = cartImage;
   };
   return (
-    <div className="card w-72 bg-base-300 shadow-xl">
-      <figure className="px-10 h-48 mt-5">
+    <div className="card w-72 bg-base-200 border border-primary shadow-xl">
+      <figure
+        className="px-10 h-48 mt-5 hover:cursor-pointer"
+        onClick={() => router.push({ pathname: "/product", query: { id: id } })}
+      >
         <img src={cardImage} alt="Product" />
       </figure>
-      <div className="card-body items-center text-center">
+      <div className="card-body text-start">
         <h2 className="card-title">{title}</h2>
         <p>
           {width} x {height} mm,
@@ -130,7 +128,7 @@ const ProductCard: React.FC<Props> = ({
             {type == "adjustable" && (
               <button
                 onClick={handleOpenSign}
-                className="btn btn-success btn-outline mt-2 w-56"
+                className="btn btn-warning mt-2 w-56"
               >
                 Anpassa
                 <FontAwesomeIcon
@@ -140,10 +138,7 @@ const ProductCard: React.FC<Props> = ({
               </button>
             )}
             {type == "complete" && (
-              <button
-                onClick={handleAddToCart}
-                className="btn btn-info btn-outline w-56"
-              >
+              <button onClick={handleAddToCart} className="btn btn-info  w-56">
                 Lägg till i varukorg
                 <FontAwesomeIcon
                   className="text-content-info ml-2"

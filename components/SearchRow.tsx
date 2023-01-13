@@ -12,8 +12,7 @@ const SearchRow: React.FC<{ result: any }> = ({ result }) => {
 
   const handleSetResult = () => {
     if (result._type === "product") {
-      router.push("/product");
-      dispatch(setSelectedProduct({ product: result._id }));
+      router.push({ pathname: "/product", query: { id: result._id } });
     }
     if (result._type === "category") {
       dispatch(setSelectedCategory({ category: result.title }));

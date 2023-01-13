@@ -61,7 +61,7 @@ const Colordropdown: React.FC = () => {
       >
         <p className="text-content-primary">Färg</p>
 
-        <FontAwesomeIcon className="w-4 h-4" icon={faDroplet} />
+        <FontAwesomeIcon className="scale-110" icon={faDroplet} />
       </label>
       <div
         tabIndex={0}

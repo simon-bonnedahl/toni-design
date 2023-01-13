@@ -45,7 +45,7 @@ const Sizedropdown: React.FC = () => {
       >
         <p className="text-content-primary">Storlek</p>
 
-        <FontAwesomeIcon icon={faExpand} />
+        <FontAwesomeIcon icon={faExpand} className="scale-110" />
       </label>
       <div
         tabIndex={0}

@@ -33,8 +33,7 @@ export const authOptions = {
   ],
   callbacks: {
     async redirect(obj) {
-      console.log(obj);
-      return "/account";
+      return "/";
     },
   },
   pages: {

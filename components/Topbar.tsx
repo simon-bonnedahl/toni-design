@@ -1,6 +1,10 @@
 import {
+  faArrowsTurnRight,
+  faArrowTurnUp,
   faRotateBack,
   faRotateForward,
+  faTurnDown,
+  faTurnUp,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
@@ -23,36 +27,40 @@ const Topbar: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-row justify-between w-screen shadow-lg bg-base-200">
-      <div className="flex items-center h-full pl-4 space-x-5">
-        <button
+    <div className="flex flex-row justify-between items-center w-screen bg-base-200 h-16 ">
+      <div className="flex items-center h-full pl-4">
+        <div
           onClick={() =>
             dispatch(addCommand({ command: "reset", value: null }))
           }
-          className="btn btn-primary btn-outline ml-10"
-        >
-          Börja om
-        </button>
-        <div
-          onClick={() =>
-            dispatch(addCommand({ command: "goBack", value: null }))
-          }
-          className=" hover:scale-125 ease-in-out duration-300 hover:cursor-pointer"
+          className="btn btn-ghost flex space-x-2"
         >
           <FontAwesomeIcon
             className="text-primary scale-150"
             icon={faRotateBack}
+          />
+          <span>Börja om</span>
+        </div>
+        <div
+          onClick={() =>
+            dispatch(addCommand({ command: "goBack", value: null }))
+          }
+          className="btn btn-ghost"
+        >
+          <FontAwesomeIcon
+            className="text-primary scale-150 -rotate-90"
+            icon={faTurnUp}
           />
         </div>
         <div
           onClick={() =>
             dispatch(addCommand({ command: "goForward", value: null }))
           }
-          className=" hover:scale-125 ease-in-out duration-300 hover:cursor-pointer"
+          className=" btn btn-ghost"
         >
           <FontAwesomeIcon
-            className="text-primary scale-150"
-            icon={faRotateForward}
+            className="text-primary scale-150 -rotate-90"
+            icon={faTurnDown}
           />
         </div>
       </div>

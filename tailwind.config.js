@@ -51,7 +51,7 @@ module.exports = {
           success: "#21a249",
           "success-content": "#bdffd5",
 
-          warning: "#9D5407",
+          warning: "#daad59",
 
           error: "#F3305D",
         },

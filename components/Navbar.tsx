@@ -1,4 +1,9 @@
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faWindowRestore } from "@fortawesome/free-regular-svg-icons";
+import {
+  faChartArea,
+  faChartColumn,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
@@ -23,10 +28,13 @@ const Navbar: React.FC = () => {
           />
         </Link>
         <Link
-          className="text-base-content btn btn-ghost font-bold"
+          className="text-base-content btn btn-ghost font-bold "
           href="/collections"
         >
-          Sortiment
+          <div className="flex space-x-2">
+            <FontAwesomeIcon className="scale-110" icon={faWindowRestore} />
+            <span>Sortiment</span>
+          </div>
         </Link>
       </div>
 

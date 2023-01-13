@@ -751,7 +751,7 @@ const Canvas: React.FC = () => {
       height: 100,
       color: "#ffffff",
       textColor: "#000000",
-      shape: "Rectangle",
+      shape: "Rounded Rectangle",
       elements: [],
     });
     setShape(canvas, "Rectangle", 250, 100, true);

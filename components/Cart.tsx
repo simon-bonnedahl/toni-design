@@ -46,9 +46,11 @@ const Cart: React.FC = () => {
         <div className="flex space-x-4">
           <div className="indicator">
             <FontAwesomeIcon className="scale-110" icon={faCartShopping} />
-            <span className="badge badge-warning badge-xs indicator-item ml-">
-              {items.length}
-            </span>
+            {items.length > 0 && (
+              <span className="badge badge-warning badge-xs indicator-item ml-">
+                {items.length}
+              </span>
+            )}
           </div>
           <span className="text-base-content">Varukorg</span>
         </div>

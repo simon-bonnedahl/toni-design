@@ -30,15 +30,15 @@ const Shapedropdown: React.FC = () => {
     switch (shape) {
       case "Rectangle":
         //return a rectangle div stroke
-        return <div className="w-4 h-4 border border-gray-400 bg-none"></div>;
+        return <div className="w-5 h-5 border border-gray-400 bg-none"></div>;
 
       case "Rounded Rectangle":
         return (
-          <div className="w-4 h-4 border border-gray-400 rounded-sm bg-none"></div>
+          <div className="w-5 h-5 border border-gray-400 rounded-sm bg-none"></div>
         );
       case "Ellipse":
         return (
-          <div className="w-4 h-4 border border-gray-400 rounded-full bg-none"></div>
+          <div className="w-5 h-5 border border-gray-400 rounded-full bg-none"></div>
         );
     }
   };

@@ -41,7 +41,7 @@ const Textdropdown: React.FC = () => {
         className="btn btn-primary btn-outline m-1 flex space-x-2"
       >
         <p className="text-content-primary">Text</p>
-        <FontAwesomeIcon icon={faFileText} />
+        <FontAwesomeIcon icon={faFileText} className="scale-110" />
       </label>
       <div
         tabIndex={0}

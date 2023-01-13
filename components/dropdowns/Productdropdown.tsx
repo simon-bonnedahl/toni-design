@@ -34,7 +34,7 @@ const Productdropdown: React.FC = () => {
         className="btn btn-primary m-1 flex space-x-2 btn-outline"
       >
         <p className="text-content-primary">Produkt</p>
-        <FontAwesomeIcon icon={faChevronDown} />
+        <FontAwesomeIcon icon={faChevronDown} className="scale-110" />
       </label>
       <div
         tabIndex={0}

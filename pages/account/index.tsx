@@ -1,14 +1,17 @@
 import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import HeaderBar from "../../components/HeaderBar";
 import Navbar from "../../components/Navbar";
 
 function Home() {
   const { data: session } = useSession();
-
+  const router = useRouter();
   const handleLogout = () => {
     signOut();
   };
+
   return (
     <div>
       <Head>
