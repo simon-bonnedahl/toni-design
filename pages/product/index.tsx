@@ -15,9 +15,6 @@ import client, { urlFor } from "../../sanity";
 
 function Home() {
   const selectedProduct = useSelector(getSelectedProduct);
-  const [productTitle, setProductTitle] = useState<string>();
-  const [productImage, setProductImage] = useState<string>();
-  const [productPrice, setProductPrice] = useState<number>();
   const [product, setProduct] = useState<any>();
   const router = useRouter();
   const dispatch = useDispatch();

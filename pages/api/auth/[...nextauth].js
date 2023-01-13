@@ -20,9 +20,10 @@ export const authOptions = {
         let query = `*[_type == "account" && email == $email][0]`;
         let params = { email: credentials.email };
         let account = await client.fetch(query, params);
-
-        if (passwordHash.verify(credentials.password, account.password)) {
-          return { email: account.email, name: account.firstname };
+        if (account) {
+          if (passwordHash.verify(credentials.password, account.password)) {
+            return { email: account.email, name: account.firstname };
+          }
         }
 
         return null;

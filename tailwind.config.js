@@ -33,7 +33,7 @@ module.exports = {
 
           error: "#F3305D",
         },
-        mytheme: {
+        light: {
           primary: "#000000",
 
           secondary: "#66666E",

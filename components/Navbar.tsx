@@ -1,27 +1,26 @@
 import { faWindowRestore } from "@fortawesome/free-regular-svg-icons";
-import {
-  faChartArea,
-  faChartColumn,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import Cart from "./Cart";
 import Searcher from "./Searcher";
+import logolight from "../static/logo-light-2.png";
 
 const Navbar: React.FC = () => {
   const { data: session } = useSession();
   const router = useRouter();
+
   return (
     <div className="navbar bg-base-200">
       <div className="navbar-start flex space-x-4 pl-5">
         <Link className="" href="/">
           <Image
-            src="/../public/logo-light-2.png"
+            className="text-black"
+            src={logolight}
             alt="logo"
             height={150}
             width={150}

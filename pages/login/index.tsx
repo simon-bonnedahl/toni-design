@@ -3,7 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { signIn } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import ErrorAlert from "../../components/alerts/ErrorAlert";
 import Footer from "../../components/Footer";
 import HeaderBar from "../../components/HeaderBar";
 import Navbar from "../../components/Navbar";
@@ -12,15 +13,20 @@ function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleLogin = async () => {
     let credentials = {
       email: email,
       password: password,
     };
-    signIn("credentials", credentials);
+    let r = signIn("credentials", credentials);
   };
-
+  useEffect(() => {
+    if (router.query.error) {
+      setError("Felaktig inloggning");
+    }
+  });
   return (
     <div>
       <Head>
@@ -91,6 +97,7 @@ function Login() {
         </div>
         <Footer />
       </main>
+      {error && <ErrorAlert text={error} />}
     </div>
   );
 }
