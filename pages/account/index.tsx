@@ -68,8 +68,8 @@ function Home() {
         <div className="flex px-40 pt-10 h-screen space-x-10">
           <ul className="menu bg-base-200 w-96 p-2 h-min rounded-box space-y-2">
             <li className="text-xl px-4 pt-2">Hej {session?.user?.name}</li>
-            {menuItems.map((item) => (
-              <li>
+            {menuItems.map((item, key) => (
+              <li key={key}>
                 <a onClick={item.func}>
                   <FontAwesomeIcon icon={item.icon} />
                   {item.title}
