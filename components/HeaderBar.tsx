@@ -16,48 +16,6 @@ const HeaderBar: React.FC = () => {
     setCustomerState(customer);
   }, [customer]);
 
-  const [themeIndex, setThemeIndex] = useState(0);
-
-  const themes = [
-    "light",
-    "dark",
-    "cupcake",
-    "bumblebee",
-    "emerald",
-    "corporate",
-    "synthwave",
-    "retro",
-    "cyberpunk",
-    "valentine",
-    "halloween",
-    "garden",
-    "forest",
-    "aqua",
-    "lofi",
-    "pastel",
-    "fantasy",
-    "wireframe",
-    "black",
-    "luxury",
-    "dracula",
-    "cmyk",
-    "autumn",
-    "business",
-    "acid",
-    "lemonade",
-    "night",
-    "coffee",
-    "winter",
-  ];
-
-  const handleNextTheme = () => {
-    setThemeIndex((themeIndex + 1) % themes.length);
-    console.log(themes[themeIndex]);
-    document
-      .querySelector("body")
-      ?.setAttribute("data-theme", themes[themeIndex]);
-  };
-
   return (
     <div className="flex justify-end items-center w-full h-8 bg-base-300 pl-12 pr-1 space-x-4 shadows-xl">
       {customerState === "private" ? (
@@ -94,7 +52,7 @@ const HeaderBar: React.FC = () => {
         </div>
       )}
       {windowLoaded && <ThemeSwitch />}
-      <button onClick={handleNextTheme}>Next theme</button>
+
       <div>
         <iframe
           className="w-20 h-5"

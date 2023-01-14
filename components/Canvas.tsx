@@ -772,6 +772,26 @@ const Canvas: React.FC = () => {
       stroke: "#ff0000",
       strokeWidth: 2,
     });
+    //loop through all objects and fill with black
+    for (let i = 1; i < canvas._objects.length; i++) {
+      let object = canvas._objects[i];
+      if (object.type === "i-text") {
+        object.set({ fill: "#000000" });
+      } else if (object.type === "group") {
+        //svg group
+        for (let i = 0; i < object._objects.length; i++) {
+          object._objects[i].set({
+            fill: "#000000",
+            stroke: "#000000",
+          });
+        }
+      } else if (object.type == "path") {
+        //svg path
+        object.set({
+          fill: "#000000",
+        });
+      }
+    }
 
     let svg = canvas.toSVG();
     //Crop it?
