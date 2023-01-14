@@ -9,6 +9,7 @@ import client, { urlFor } from "../sanity";
 const fabric = require("fabric").fabric;
 const { v4: uuidv4 } = require("uuid");
 import { saveAs } from "file-saver";
+import SuccessAlert from "./alerts/SuccessAlert";
 
 const Canvas: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor();
@@ -31,6 +32,7 @@ const Canvas: React.FC = () => {
   const [commandsRecieved, setCommandsRecieved] = useState(0);
 
   const [showCartModal, setShowCartModal] = useState(false);
+  const [success, setSuccess] = useState("");
 
   const dispatch = useDispatch();
 
@@ -858,6 +860,7 @@ const Canvas: React.FC = () => {
         };
         client.create(doc).then(() => {
           console.log("Document was created");
+          setSuccess("Skylt sparad!");
         });
       })
       .catch((error) => {
