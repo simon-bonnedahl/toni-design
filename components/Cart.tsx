@@ -43,7 +43,7 @@ const Cart: React.FC = () => {
   return (
     <div className="dropdown">
       <label id="cart-button" tabIndex={0} className="btn btn-ghost">
-        <div className="flex space-x-4">
+        <div className="flex space-x-2">
           <div className="indicator">
             <FontAwesomeIcon className="scale-110" icon={faCartShopping} />
             {items.length > 0 && (
