@@ -1,6 +1,6 @@
 const Details = () => {
   return (
-    <div>
+    <div className="text-2xl font-bold">
       <h1>Mina uppgifter</h1>
     </div>
   );

@@ -1,6 +1,6 @@
 const OrderHistory = () => {
   return (
-    <div>
+    <div className="text-2xl font-bold">
       <h1>Orderhistorik</h1>
     </div>
   );

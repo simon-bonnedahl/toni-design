@@ -12,8 +12,10 @@ const Imagedropdown: React.FC = () => {
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
+
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
+      console.log(file);
       let imgId = uuidv4();
       client.assets
         .upload("image", file, {

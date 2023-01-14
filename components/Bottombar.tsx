@@ -3,18 +3,22 @@ import {
   faShoppingCart,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { userAgent } from "next/server";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectCartItems } from "../reducers/cartSlice";
 import { addCommand } from "../reducers/editorSlice";
 import { getSignJSON, getSignMetadata } from "../reducers/signSlice";
+import client from "../sanity";
 import ErrorAlert from "./alerts/ErrorAlert";
 
 const Bottombar: React.FC = () => {
   const price = useSelector(getSignMetadata).price;
   const json = useSelector(getSignJSON);
   const dispatch = useDispatch();
+  const { data: session } = useSession();
 
   const items = useSelector(selectCartItems);
   const [error, setError] = useState("");
@@ -45,6 +49,12 @@ const Bottombar: React.FC = () => {
     dispatch(addCommand({ command: "addToCart", value: 1 }));
   };
 
+  const handleSaveSign = () => {
+    dispatch(
+      addCommand({ command: "saveSignToDatabase", value: session!.user!.email })
+    );
+  };
+
   return (
     <div className="fixed bottom-0 flex flex-row w-full h-20 items-center bg-base-200 justify-between px-4 ">
       <div className="flex space-x-4">
@@ -70,6 +80,11 @@ const Bottombar: React.FC = () => {
         >
           JSON
         </button>
+        {session && (
+          <button className="btn btn-warning" onClick={handleSaveSign}>
+            Spara skylt
+          </button>
+        )}
       </div>
       {/*Add to cart*/}
 
@@ -78,25 +93,6 @@ const Bottombar: React.FC = () => {
         <div>
           <span className="font-bold text-xl">{Math.round(price)}</span> kr
         </div>
-        {/*Increase and Decrease
-        
-        
-        <div className="flex items-center rounded-md">
-          <button
-            disabled={amount === 0}
-            onClick={() => setAmount(amount - 1)}
-            className="btn"
-          >
-            <FontAwesomeIcon className="w-3 h-3" icon={faMinus} />
-          </button>
-          <div className="p-4">
-            <span className="font-bold">{amount}</span>
-          </div>
-          <button onClick={() => setAmount(amount + 1)} className="btn">
-            <FontAwesomeIcon className="w-3 h-3" icon={faPlus} />
-          </button>
-        </div>
-        */}
 
         {/*Add button */}
         <div>

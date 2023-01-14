@@ -6,14 +6,16 @@ import order from './order'
 import asset from './asset'
 import subCategory from './subCategory'
 import account from './account'
+import createdSign from './createdSign'
 
 export const schemaTypes = [
   product,
   material,
   category,
+  subCategory,
   colorOption,
   order,
-  asset,
-  subCategory,
   account,
+  createdSign,
+  asset,
 ]

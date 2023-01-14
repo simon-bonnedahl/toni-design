@@ -720,6 +720,10 @@ const Canvas: React.FC = () => {
         if (command.value === "PDF") {
           handleDownloadJpeg(canvas);
         }
+
+        break;
+      case "saveSignToDatabase":
+        handleSaveSignToDatabase(canvas, command.value);
         break;
       case "reset":
         handleReset(canvas);
@@ -831,6 +835,49 @@ const Canvas: React.FC = () => {
     let blob = new Blob([svg], { type: "image/svg+xml" });
     saveAs(blob, "sign.svg");
   };
+
+  const handleSaveSignToDatabase = async (canvas: any, user: any) => {
+    let file = dataURLtoFile(canvas.toDataURL(), "image.jpeg");
+
+    client.assets
+      .upload("image", file, {
+        contentType: file.type,
+        filename: "image.jpeg",
+      })
+      .then((document) => {
+        const doc = {
+          _type: "createdSign",
+          creator: user,
+          image: {
+            _type: "image",
+            asset: {
+              _ref: document._id,
+            },
+          },
+          json: JSON.stringify({ visual: sign, metadata: signMetaData }),
+        };
+        client.create(doc).then(() => {
+          console.log("Document was created");
+        });
+      })
+      .catch((error) => {
+        console.log("Upload failed:", error.message);
+      });
+  };
+
+  function dataURLtoFile(dataurl: any, filename: any) {
+    var arr = dataurl.split(","),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n);
+
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+
+    return new File([u8arr], filename, { type: mime });
+  }
 
   return (
     <div className="w-full h-full relative">

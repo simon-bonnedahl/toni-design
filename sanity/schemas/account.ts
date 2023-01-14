@@ -2,7 +2,7 @@ import {defineField, defineType} from 'sanity'
 
 export default defineType({
   name: 'account',
-  title: 'Konto',
+  title: 'Konton',
   type: 'document',
   fields: [
     defineField({
@@ -49,6 +49,21 @@ export default defineType({
       name: 'country',
       title: 'Land',
       type: 'string',
+    }),
+    defineField({
+      name: 'createdSigns',
+      title: 'Skapade skyltar',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: [
+            {
+              type: 'createdSign',
+            },
+          ],
+        },
+      ],
     }),
   ],
 })

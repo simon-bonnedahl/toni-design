@@ -1,38 +1,36 @@
 import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Footer from "../../components/Footer";
 import HeaderBar from "../../components/HeaderBar";
 import Navbar from "../../components/Navbar";
 
 import {
   faArrowRightFromBracket,
+  faBoxArchive,
   faClockRotateLeft,
-  faL,
-  faM,
-  faO,
-  faU,
+  faGear,
   faUser,
-  faWindowRestore,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Creations from "./creations";
 import Details from "./details";
 import OrderHistory from "./orderHistory";
+import Saved from "./saved";
+import Settings from "./settings";
 
 function Home() {
   const { data: session } = useSession();
   const router = useRouter();
 
-  const [selectedSection, setSelectedSection] = useState("creations");
+  const [selectedSection, setSelectedSection] = useState("saved");
 
   const handleLogout = () => {
     signOut();
   };
 
-  const handleShowCreations = () => {
-    setSelectedSection("creations");
+  const handleShowSaved = () => {
+    setSelectedSection("saved");
   };
 
   const handleShowDetails = () => {
@@ -42,22 +40,26 @@ function Home() {
   const handleShowOrders = () => {
     setSelectedSection("orderHistory");
   };
+  const handleShowSettings = () => {
+    setSelectedSection("settings");
+  };
 
   const menuItems = [
     {
-      title: "Mina skapelser",
-      icon: faWindowRestore,
-      func: handleShowCreations,
+      title: "Sparade skyltar",
+      icon: faBoxArchive,
+      func: handleShowSaved,
     },
     { title: "Mina uppgifter", icon: faUser, func: handleShowDetails },
     { title: "Orderhistorik", icon: faClockRotateLeft, func: handleShowOrders },
+    { title: "Inställningar", icon: faGear, func: handleShowSettings },
     { title: "Logga ut", icon: faArrowRightFromBracket, func: handleLogout },
   ];
 
   return (
     <div>
       <Head>
-        <title>Toni Design</title>
+        <title>Konto</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex flex-col bg-base-100 w-screen">
@@ -75,9 +77,10 @@ function Home() {
               </li>
             ))}
           </ul>
-          {selectedSection === "creations" && <Creations />}
+          {selectedSection === "saved" && <Saved />}
           {selectedSection === "details" && <Details />}
           {selectedSection === "orderHistory" && <OrderHistory />}
+          {selectedSection === "settings" && <Settings />}
         </div>
         <Footer />
       </main>
