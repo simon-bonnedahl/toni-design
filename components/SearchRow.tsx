@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import {
@@ -28,7 +29,12 @@ const SearchRow: React.FC<{ result: any }> = ({ result }) => {
     >
       <div className="p-2 border border-neutral h-40 w-40 rounded-md flex jusitfy-center items-center">
         {result.image && (
-          <img src={urlFor(result.image).height(100).url()}></img>
+          <Image
+            src={urlFor(result.image).height(100).url()}
+            alt="Result image"
+            width={200}
+            height={100}
+          />
         )}
       </div>
       <div className="flex flex-col p-4">

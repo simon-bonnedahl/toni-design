@@ -71,7 +71,7 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
         div.appendChild(image);
       }
     });
-  }, [item.image]);
+  });
 
   return (
     <div className={className}>

@@ -18,6 +18,7 @@ import Details from "./details";
 import OrderHistory from "./orderHistory";
 import Saved from "./saved";
 import Settings from "./settings";
+import AlertHandler from "../../components/alerts/AlertHandler";
 
 function Home() {
   const { data: session } = useSession();
@@ -84,6 +85,7 @@ function Home() {
         </div>
         <Footer />
       </main>
+      <AlertHandler />
     </div>
   );
 }

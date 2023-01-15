@@ -54,7 +54,7 @@ const Bottombar: React.FC = () => {
   return (
     <div className="fixed bottom-0 flex flex-row w-full h-20 items-center bg-base-200 justify-between px-4 ">
       <div className="flex space-x-4">
-        <button
+        {/*<button
           className="btn btn-primary primary-content btn-outline"
           onClick={() =>
             dispatch(addCommand({ command: "saveSign", value: "SVG" }))
@@ -75,7 +75,8 @@ const Bottombar: React.FC = () => {
           onClick={handleDownloadJSON}
         >
           JSON
-        </button>
+        </button>*/}
+
         {session && (
           <button className="btn btn-warning" onClick={handleSaveSign}>
             Spara skylt

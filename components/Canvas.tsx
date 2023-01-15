@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 import ControlBox from "./ControlBox";
-import { selectCommands } from "../reducers/editorSlice";
+import { clearCommands, selectCommands } from "../reducers/editorSlice";
 import { getSignMetadata, saveSign } from "../reducers/signSlice";
 import { addToCart } from "../reducers/cartSlice";
 import client, { urlFor } from "../sanity";
@@ -471,7 +471,7 @@ const Canvas: React.FC = () => {
       let obj = editor?.canvas.getActiveObject();
       if (!obj) return;
       let shape = editor?.canvas._objects[0];
-      let speed = 2;
+      let speed = 4;
       switch (event.key) {
         case "ArrowUp":
           if (obj.top < shape.top) return;
@@ -503,7 +503,7 @@ const Canvas: React.FC = () => {
 
       saveSignState(state);
     },
-    [editor?.canvas, sign]
+    [editor?.canvas]
   );
 
   const alignObject = (location: string, obj: any, updateBackend?: boolean) => {
@@ -632,20 +632,6 @@ const Canvas: React.FC = () => {
     setSignHistory([...signHistory, s]);
   };
 
-  /*Canvas Events*/
-
-  if (canvas) {
-    //http://fabricjs.com/events
-    canvas.on({
-      "selection:created": handleSelectObject,
-      "selection:cleared": handleUnselectObject,
-      "object:moving": handleMoveObject,
-      "object:scaling": handleScaleObject,
-      "object:modified": handleModifyObject,
-      "text:changed": handleTextChange,
-    });
-  }
-
   const handleDeleteObject = () => {
     let obj = editor?.canvas.getActiveObject();
     let state = removeObjectFromState(obj?.id);
@@ -661,20 +647,6 @@ const Canvas: React.FC = () => {
   const handleAlignObjectRight = () => {
     alignObject("mid-right", editor?.canvas.getActiveObject(), true);
   };
-
-  useEffect(() => {
-    let canvas = editor?.canvas;
-
-    if (!canvas) return;
-    //New way of updating the canvas
-    if (commands.length > commandsRecieved) {
-      let command = commands[commands.length - 1]; //Look at the latest command
-      handleCommand(command, canvas);
-      setCommandsRecieved((commandsRecieved) => (commandsRecieved += 1));
-      canvas.renderAll();
-    }
-  }, [commands, canvas]);
-
   const handleCommand = (command: any, canvas: any) => {
     switch (command.command) {
       case "addText":
@@ -737,6 +709,38 @@ const Canvas: React.FC = () => {
         return;
     }
   };
+  useMemo(() => {
+    //This solves the problem of executing commands on load this component but could cause some bugs
+    let command = commands[commands.length - 1]; //Look at the latest command
+    if (command && command.command === "reCreate") {
+      setSign(command.value);
+    } else {
+      dispatch(clearCommands());
+    }
+  }, []);
+
+  useEffect(() => {
+    let canvas = editor?.canvas;
+
+    if (!canvas) return;
+    //New way of updating the canvas
+    if (commands.length > commandsRecieved) {
+      let command = commands[commands.length - 1]; //Look at the latest command
+      handleCommand(command, canvas);
+      setCommandsRecieved((commandsRecieved) => (commandsRecieved += 1));
+      canvas.renderAll();
+    }
+
+    //http://fabricjs.com/events
+    canvas.on({
+      "selection:created": handleSelectObject,
+      "selection:cleared": handleUnselectObject,
+      "object:moving": handleMoveObject,
+      "object:scaling": handleScaleObject,
+      "object:modified": handleModifyObject,
+      "text:changed": handleTextChange,
+    });
+  });
 
   const handleReset = (canvas: any) => {
     canvas.clear();

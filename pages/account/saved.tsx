@@ -4,8 +4,9 @@ import { sign } from "crypto";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
+import { setInfo } from "../../reducers/alertSlice";
 import { addCommand, clearCommands } from "../../reducers/editorSlice";
 import { setSign } from "../../reducers/signSlice";
 import client, { urlFor } from "../../sanity";
@@ -15,7 +16,7 @@ const Saved = () => {
   const [signs, setSigns] = useState<any[]>([]);
   const dispatch = useDispatch();
   const router = useRouter();
-  useEffect(() => {
+  useMemo(() => {
     //fetch all signs created by user
     if (!session) return;
     let query = `*[_type == "createdSign" && creator == "${
@@ -25,10 +26,9 @@ const Saved = () => {
         "imageUrl" : image.asset->url
     }`;
     client.fetch(query).then((res) => {
-      console.log(res);
       setSigns(res);
     });
-  }, [session]);
+  }, []);
 
   const handleOpenSign = (json: string) => {
     let jsonObj = JSON.parse(json);
@@ -41,6 +41,7 @@ const Saved = () => {
   const handleRemove = (sign: any) => {
     client.delete(sign._id).then((res) => {
       setSigns(signs.filter((s) => s._id !== sign._id));
+      dispatch(setInfo("Skylten togs bort!"));
     });
   };
 

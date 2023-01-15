@@ -27,7 +27,6 @@ function calculatePrice(sign) {
   let minimalPrice = 9.3;
   let area = sign.visual.width * sign.visual.height;
   if (!area > 0) return minimalPrice;
-  console.log(sign.metadata.application);
   //Area breakpoints in mm^2
   let ab_1 = 500;
   let ab_2 = 5000;

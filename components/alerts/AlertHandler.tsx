@@ -30,7 +30,7 @@ const AlertHandler = () => {
         dispatch(setInfo(""));
       }
     }, 5000);
-  }, [alerts]);
+  });
 
   return (
     <div className="fixed bottom-24 space-y-2 left-2 w-96">

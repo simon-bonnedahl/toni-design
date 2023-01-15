@@ -55,7 +55,7 @@ const Imagedropdown: React.FC = () => {
           value: { imageType: image.type, imageId: image.imgId },
         })
       );
-  }, [image]);
+  }, [image, dispatch]);
 
   return (
     <div className="dropdown">

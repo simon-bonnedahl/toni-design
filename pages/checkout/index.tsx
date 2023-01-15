@@ -221,27 +221,35 @@ function Home() {
       }
       if (errors.email) {
         document.getElementById("email")?.classList.add("input-error");
+        document.getElementById("email")?.focus();
       }
       if (errors.phone) {
         document.getElementById("phone")?.classList.add("input-error");
+        document.getElementById("phone")?.focus();
       }
       if (errors.address) {
         document.getElementById("address")?.classList.add("input-error");
+        document.getElementById("address")?.focus();
       }
       if (errors.zipCode) {
         document.getElementById("zipCode")?.classList.add("input-error");
+        document.getElementById("zipCode")?.focus();
       }
       if (errors.city) {
         document.getElementById("city")?.classList.add("input-error");
+        document.getElementById("city")?.focus();
       }
       if (errors.company) {
         document.getElementById("company")?.classList.add("input-error");
+        document.getElementById("company")?.focus();
       }
       if (errors.orgNumber) {
         document.getElementById("orgNumber")?.classList.add("input-error");
+        document.getElementById("orgNumber")?.focus();
       }
       if (errors.reference) {
         document.getElementById("reference")?.classList.add("input-error");
+        document.getElementById("reference")?.focus();
       }
       dispatch(setError("Fyll i alla fält"));
       return false;
