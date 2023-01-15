@@ -18,12 +18,13 @@ function Login() {
 
   const dispatch = useDispatch();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: any) => {
     let credentials = {
       email: email,
       password: password,
     };
-    let r = signIn("credentials", credentials);
+    e.preventDefault();
+    signIn("credentials", credentials);
   };
   useEffect(() => {
     if (router.query.error) {
