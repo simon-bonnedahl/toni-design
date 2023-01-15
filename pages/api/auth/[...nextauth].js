@@ -4,7 +4,6 @@ import client from "../../../sanity";
 const passwordHash = require("password-hash");
 
 export default NextAuth({
-  secret: "d1c34d1338b62b4da851a53a5b28fdd5",
   providers: [
     CredentialsProvider({
       // The name to display on the sign in form (e.g. 'Sign in with...')
@@ -35,7 +34,7 @@ export default NextAuth({
     }),
     // ...add more providers here
   ],
-
+  secret: process.env.NEXT_PUBLIC_SECRET,
   pages: {
     signIn: "/login",
   },
