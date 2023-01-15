@@ -23,7 +23,6 @@ function Login() {
       email: email,
       password: password,
     };
-    e.preventDefault();
     signIn("credentials", credentials);
   };
   useEffect(() => {
