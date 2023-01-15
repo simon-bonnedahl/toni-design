@@ -11,6 +11,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addCommand } from "../reducers/editorSlice";
 import { getSignVisual } from "../reducers/signSlice";
+import Applicationdropdown from "./dropdowns/Applicationdropdown";
 import Colordropdown from "./dropdowns/Colordropdown";
 import Imagedropdown from "./dropdowns/Imagedropdown";
 import Productdropdown from "./dropdowns/Productdropdown";
@@ -67,6 +68,7 @@ const Topbar: React.FC = () => {
       {/*Dropdowns*/}
       <div className="flex space-x-2">
         <Productdropdown />
+        <Applicationdropdown />
         <Sizedropdown />
         <Colordropdown />
         <Shapedropdown />

@@ -1,64 +1,72 @@
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronDown,
+  faScrewdriverWrench,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addCommand } from "../../reducers/editorSlice";
-import { getSignMetadata, setSignProduct } from "../../reducers/signSlice";
+import { getSignMetadata, setSignApplication } from "../../reducers/signSlice";
 
-const Productdropdown: React.FC = () => {
-  const [selectedProduct, setSelectedProduct] = useState(
-    useSelector(getSignMetadata).product
+const Applicationdropdown: React.FC = () => {
+  const [selectedApplication, setSelectedApplication] = useState(
+    useSelector(getSignMetadata).application
   );
 
   //Hämta från sanity
-  const products = [
+  const applications = [
     {
-      name: "Engraved Sign",
+      name: "None",
       key: 0,
-      swe: "Graverad skylt",
-      desc: "Graverade skyltar är bra för att visa upp information",
+      swe: "Ingen",
+      desc: "Ingen applikation",
+    },
+    {
+      name: "Tape",
+      key: 1,
+      swe: "Tejp",
+      desc: "Dubbelhäftande tejp",
     },
   ];
   const dispatch = useDispatch();
 
-  const handleProductChange = (p: string) => {
-    setSelectedProduct(p);
-    dispatch(setSignProduct({ product: p }));
+  const handleProductChange = (a: string) => {
+    setSelectedApplication(a);
+    dispatch(setSignApplication({ application: a }));
   };
 
   return (
     <div className="dropdown">
       <label
-        onClick={() => dispatch(addCommand({ command: "closeCart" }))}
         tabIndex={0}
         className="btn btn-primary m-1 flex space-x-2 btn-outline"
       >
-        <p className="text-content-primary">Produkt</p>
-        <FontAwesomeIcon icon={faChevronDown} className="scale-110" />
+        <p className="text-content-primary">Fästmetod</p>
+        <FontAwesomeIcon icon={faScrewdriverWrench} className="scale-110" />
       </label>
       <div
         tabIndex={0}
         className="dropdown-content card w-96 card-compact bg-base-200 border border-black  p-2 shadow"
       >
         <div className="card-body">
-          <h3 className="card-title text-neutral-content">Välj en produkt</h3>
+          <h3 className="card-title text-neutral-content">Välj en fästmetod</h3>
           <div className="flex flex-col space-y-4">
-            {products.map((product) => {
+            {applications.map((application) => {
               let className =
                 "flex justify-between hover:cursor-pointer h-24 relative";
-              if (product.name === selectedProduct)
+              if (application.name === selectedApplication)
                 className += " border border-primary rounded-md";
 
               return (
                 <div
-                  key={product.key}
+                  key={application.key}
                   className={className}
-                  onClick={() => handleProductChange(product.name)}
+                  onClick={() => handleProductChange(application.name)}
                 >
                   <div className="p-2 flex flex-col justify-center">
-                    <h1 className="text-neutral-content">{product.swe}</h1>
+                    <h1 className="text-neutral-content">{application.swe}</h1>
                     <p className="text-neutral-content text-xs">
-                      {product.desc}
+                      {application.desc}
                     </p>
                   </div>
                   <div className="form-control">
@@ -72,8 +80,8 @@ const Productdropdown: React.FC = () => {
                       <input
                         readOnly
                         type="radio"
-                        name="radio-product"
-                        checked={product.name === selectedProduct}
+                        name="radio-application"
+                        checked={application.name === selectedApplication}
                         className="radio checked:bg-primary checked:border-base-100 ml-2"
                       />
                     </label>
@@ -82,11 +90,10 @@ const Productdropdown: React.FC = () => {
               );
             })}
           </div>
-          <p className="text-neutral-content">Kommer fler senare</p>
         </div>
       </div>
     </div>
   );
 };
 
-export default Productdropdown;
+export default Applicationdropdown;

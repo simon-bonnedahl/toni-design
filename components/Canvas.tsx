@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
-import ControlBox from "./modals/ControlBox";
+import ControlBox from "./ControlBox";
 import { selectCommands } from "../reducers/editorSlice";
 import { getSignMetadata, saveSign } from "../reducers/signSlice";
 import { addToCart } from "../reducers/cartSlice";

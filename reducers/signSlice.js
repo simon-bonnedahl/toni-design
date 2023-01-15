@@ -27,7 +27,7 @@ function calculatePrice(sign) {
   let minimalPrice = 9.3;
   let area = sign.visual.width * sign.visual.height;
   if (!area > 0) return minimalPrice;
-  console.log("Area: " + area);
+  console.log(sign.metadata.application);
   //Area breakpoints in mm^2
   let ab_1 = 500;
   let ab_2 = 5000;
@@ -41,14 +41,13 @@ function calculatePrice(sign) {
   let f4 = 0.0082;
 
   if (sign.metadata.application === "Tape") {
-    let f1 = 0.02;
-    let f2 = 0.0125;
-    let f3 = 0.01;
-    let f4 = 0.009;
+    f1 = 0.02;
+    f2 = 0.0125;
+    f3 = 0.01;
+    f4 = 0.009;
   }
 
   let price = 0;
-  500 * 0.0018 + 450 * 0.011;
   if (area <= ab_1) {
     price = area * f1;
   } else if (area <= ab_2) {
@@ -83,6 +82,7 @@ export const signSlice = createSlice({
     },
     setSignApplication: (state, action) => {
       state.sign.metadata.application = action.payload.application;
+      state.sign.metadata.price = calculatePrice(state.sign);
     },
     setSignSvg: (state, action) => {
       state.sign.data.svg = action.payload.svg;
