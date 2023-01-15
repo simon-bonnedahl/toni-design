@@ -1,12 +1,12 @@
 import { useDispatch } from "react-redux";
-import { setSuccess } from "../../reducers/alertSlice";
+import { setWarning } from "../../reducers/alertSlice";
 
-const SuccessAlert: React.FC<any> = ({ text }) => {
+const WarningAlert: React.FC<any> = ({ text }) => {
   const dispatch = useDispatch();
   return (
     <div
-      className="alert alert-success shadow-lg hover:cursor-pointer"
-      onClick={() => dispatch(setSuccess(""))}
+      className="alert alert-warning shadow-lg hover:cursor-pointer"
+      onClick={() => dispatch(setWarning(""))}
     >
       <div>
         <svg
@@ -19,7 +19,7 @@ const SuccessAlert: React.FC<any> = ({ text }) => {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth="2"
-            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
           />
         </svg>
         <span>{text}</span>
@@ -27,4 +27,4 @@ const SuccessAlert: React.FC<any> = ({ text }) => {
     </div>
   );
 };
-export default SuccessAlert;
+export default WarningAlert;

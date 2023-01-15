@@ -23,13 +23,48 @@ const initialState = {
     },
   },
 };
+function calculatePrice(sign) {
+  let minimalPrice = 9.3;
+  let area = sign.visual.width * sign.visual.height;
+  if (!area > 0) return minimalPrice;
+  console.log("Area: " + area);
+  //Area breakpoints in mm^2
+  let ab_1 = 500;
+  let ab_2 = 5000;
+  let ab_3 = 10000;
+  let ab_4 = 100000;
 
-const calculatePrice = (sign) => {
-  let width = sign.visual.width;
-  let height = sign.visual.height;
-  let c = 0.00725;
-  return width * height * c;
-};
+  //Price per mm^2 for each area bracke
+  let f1 = 0.018;
+  let f2 = 0.011;
+  let f3 = 0.009;
+  let f4 = 0.0082;
+
+  if (sign.metadata.application === "Tape") {
+    let f1 = 0.02;
+    let f2 = 0.0125;
+    let f3 = 0.01;
+    let f4 = 0.009;
+  }
+
+  let price = 0;
+  500 * 0.0018 + 450 * 0.011;
+  if (area <= ab_1) {
+    price = area * f1;
+  } else if (area <= ab_2) {
+    price = ab_1 * f1 + (area - ab_1) * f2;
+  } else if (area <= ab_3) {
+    price = ab_1 * f1 + (ab_2 - ab_1) * f2 + (area - ab_2) * f3;
+  } else if (area <= ab_4) {
+    price =
+      ab_1 * f1 +
+      (ab_2 - ab_1) * f2 +
+      (ab_3 - (ab_1 + ab_2)) * f3 +
+      (area - ab_3) * f4;
+  }
+  return price <= minimalPrice ? minimalPrice : price;
+}
+
 //Calculate price at initialization
 initialState.sign.metadata.price = calculatePrice(initialState.sign);
 

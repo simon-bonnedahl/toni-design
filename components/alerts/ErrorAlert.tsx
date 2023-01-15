@@ -1,6 +1,13 @@
+import { useDispatch } from "react-redux";
+import { setError } from "../../reducers/alertSlice";
+
 const ErrorAlert: React.FC<any> = ({ text }) => {
+  const dispatch = useDispatch();
   return (
-    <div className="alert alert-error shadow-lg fixed w-96 bottom-2 left-2 hover:cursor-pointer">
+    <div
+      className="alert alert-error shadow-lg hover:cursor-pointer"
+      onClick={() => dispatch(setError(""))}
+    >
       <div>
         <svg
           xmlns="http://www.w3.org/2000/svg"

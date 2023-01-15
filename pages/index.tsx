@@ -4,6 +4,7 @@ import Bottombar from "../components/Bottombar";
 import Canvas from "../components/Canvas";
 import Navbar from "../components/Navbar";
 import HeaderBar from "../components/HeaderBar";
+import AlertHandler from "../components/alerts/AlertHandler";
 
 function Home() {
   return (
@@ -22,6 +23,7 @@ function Home() {
         </div>
         <Bottombar />
       </main>
+      <AlertHandler />
     </div>
   );
 }

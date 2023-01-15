@@ -5,14 +5,12 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { userAgent } from "next/server";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { setError } from "../reducers/alertSlice";
 import { selectCartItems } from "../reducers/cartSlice";
 import { addCommand } from "../reducers/editorSlice";
 import { getSignJSON, getSignMetadata } from "../reducers/signSlice";
-import client from "../sanity";
-import ErrorAlert from "./alerts/ErrorAlert";
 
 const Bottombar: React.FC = () => {
   const price = useSelector(getSignMetadata).price;
@@ -21,7 +19,6 @@ const Bottombar: React.FC = () => {
   const { data: session } = useSession();
 
   const items = useSelector(selectCartItems);
-  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleDownloadJSON = () => {
@@ -36,9 +33,9 @@ const Bottombar: React.FC = () => {
 
   const handleCheckout = async () => {
     if (items.length < 1) {
-      setError("Du har inget din varukorg");
+      dispatch(setError("Du har inget i din varukorg"));
     } else {
-      setError("");
+      dispatch(setError(""));
       router.push("/checkout");
     }
   };
@@ -107,11 +104,6 @@ const Bottombar: React.FC = () => {
             <FontAwesomeIcon className="w-4 h-4 ml-2" icon={faArrowRight} />
           </button>
         </div>
-        {error && (
-          <div onClick={() => setError("")}>
-            <ErrorAlert text={error} />
-          </div>
-        )}
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ import client, { urlFor } from "../sanity";
 const fabric = require("fabric").fabric;
 const { v4: uuidv4 } = require("uuid");
 import { saveAs } from "file-saver";
-import SuccessAlert from "./alerts/SuccessAlert";
+import { setInfo, setSuccess } from "../reducers/alertSlice";
 
 const Canvas: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor();
@@ -30,9 +30,6 @@ const Canvas: React.FC = () => {
   const [historyIndex, setHistoryIndex] = useState(0);
   const [selectedObject, setSelectedObject] = useState(false);
   const [commandsRecieved, setCommandsRecieved] = useState(0);
-
-  const [showCartModal, setShowCartModal] = useState(false);
-  const [success, setSuccess] = useState("");
 
   const dispatch = useDispatch();
 
@@ -702,18 +699,15 @@ const Canvas: React.FC = () => {
         if (backIndex < 0) return;
         setHistoryIndex(backIndex);
         recreateSign(canvas, signHistory[backIndex]);
-        setShowCartModal(false);
         break;
       case "goForward":
         let forwardIndex = historyIndex + 1;
         if (forwardIndex > signHistory.length - 1) return;
         setHistoryIndex(forwardIndex);
         recreateSign(canvas, signHistory[forwardIndex], false);
-        setShowCartModal(false);
         break;
       case "reCreate":
         recreateSign(canvas, command.value, false);
-        setShowCartModal(false);
         break;
       case "saveSign":
         if (command.value === "SVG") {
@@ -729,7 +723,6 @@ const Canvas: React.FC = () => {
         break;
       case "reset":
         handleReset(canvas);
-        setShowCartModal(false);
         break;
       case "addToCart":
         if (commandsRecieved > 0) {
@@ -737,12 +730,6 @@ const Canvas: React.FC = () => {
           handleAddToCart(command.value);
         }
 
-        break;
-      case "toggleCart":
-        setShowCartModal(!showCartModal);
-        break;
-      case "closeCart":
-        setShowCartModal(false);
         break;
       default:
         return;
@@ -815,7 +802,6 @@ const Canvas: React.FC = () => {
     for (let i = 0; i < amount; i++) {
       dispatch(addToCart(item));
     }
-    setShowCartModal(true);
     setShape(canvas, sign.shape, sign.width, sign.height, false);
     setColor(canvas, sign.color, sign.textColor, false);
   };
@@ -860,7 +846,7 @@ const Canvas: React.FC = () => {
         };
         client.create(doc).then(() => {
           console.log("Document was created");
-          setSuccess("Skylt sparad!");
+          dispatch(setInfo("Skylten är sparad"));
         });
       })
       .catch((error) => {
