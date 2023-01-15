@@ -28,7 +28,7 @@ const Saved = () => {
     client.fetch(query).then((res) => {
       setSigns(res);
     });
-  }, []);
+  }, [session]);
 
   const handleOpenSign = (json: string) => {
     let jsonObj = JSON.parse(json);
