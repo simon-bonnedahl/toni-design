@@ -23,6 +23,7 @@ export const authOptions = {
       },
     }),
   ],
+  secret: "IamVeryHandsome",
   callbacks: {
     async redirect(obj) {
       return "/";
@@ -31,6 +32,5 @@ export const authOptions = {
   pages: {
     signIn: "/login",
   },
-  secret: "d1c34d1338b62b4da851a53a5b28fdd5",
 };
 export default NextAuth(authOptions);
