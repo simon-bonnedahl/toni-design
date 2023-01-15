@@ -9,7 +9,7 @@ import client, { urlFor } from "../sanity";
 const fabric = require("fabric").fabric;
 const { v4: uuidv4 } = require("uuid");
 import { saveAs } from "file-saver";
-import { setInfo, setSuccess } from "../reducers/alertSlice";
+import { setInfo, setSuccess, setWarning } from "../reducers/alertSlice";
 
 const Canvas: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor();
@@ -728,6 +728,8 @@ const Canvas: React.FC = () => {
         if (commandsRecieved > 0) {
           //Only add to cart if the user has made a change, also prevents the sign to get added to the cart at reload
           handleAddToCart(command.value);
+        } else {
+          dispatch(setWarning("Du kan inte lägga till en tom skylt"));
         }
 
         break;

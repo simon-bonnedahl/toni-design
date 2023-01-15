@@ -33,7 +33,7 @@ const AlertHandler = () => {
   }, [alerts]);
 
   return (
-    <div className="fixed bottom-24 space-y-2 left-0 w-96">
+    <div className="fixed bottom-24 space-y-2 left-2 w-96">
       {alerts.success && <SuccessAlert text={alerts.success} />}
       {alerts.error && <ErrorAlert text={alerts.error} />}
       {alerts.warning && <WarningAlert text={alerts.warning} />}

@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setError } from "../reducers/alertSlice";
+import { setError, setWarning } from "../reducers/alertSlice";
 import { selectCartItems } from "../reducers/cartSlice";
 import { addCommand } from "../reducers/editorSlice";
 import { getSignJSON, getSignMetadata } from "../reducers/signSlice";
@@ -33,11 +33,10 @@ const Bottombar: React.FC = () => {
 
   const handleCheckout = async () => {
     if (items.length < 1) {
-      dispatch(setError("Du har inget i din varukorg"));
-    } else {
-      dispatch(setError(""));
-      router.push("/checkout");
+      dispatch(setWarning("Du har inget din varukorg"));
+      return;
     }
+    router.push("/checkout");
   };
 
   const handleAddToCart = () => {

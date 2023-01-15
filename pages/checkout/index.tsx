@@ -18,6 +18,7 @@ import SuccessAlert from "../../components/alerts/SuccessAlert";
 import { useRouter } from "next/router";
 import client from "../../sanity";
 import Footer from "../../components/Footer";
+import { setError, setSuccess } from "../../reducers/alertSlice";
 
 function Home() {
   //Setup statevariables for all checkout fields
@@ -46,8 +47,6 @@ function Home() {
     orgNumber: true,
     reference: true,
   });
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const items = useSelector(selectCartItems);
@@ -244,10 +243,10 @@ function Home() {
       if (errors.reference) {
         document.getElementById("reference")?.classList.add("input-error");
       }
-      setError("Fyll i alla fält");
+      dispatch(setError("Fyll i alla fält"));
       return false;
     } else {
-      setError("");
+      dispatch(setError(""));
       return true;
     }
   };
@@ -288,11 +287,11 @@ function Home() {
   const handlePlaceOrder = async () => {
     //validate delivery and payment
     if (deliveryMethod == null) {
-      setError("Välj leverans");
+      dispatch(setError("Välj leverans"));
       return;
     }
     if (paymentMethod == null) {
-      setError("Välj betalsätt");
+      dispatch(setError("Välj betalsätt"));
       return;
     }
 
@@ -329,8 +328,8 @@ function Home() {
       res.json();
       console.log(res);
       if (res.status == 200) {
-        setError("");
-        setSuccess("Beställningen är bekräftad");
+        dispatch(setError(""));
+        dispatch(setSuccess("Beställningen är bekräftad"));
 
         setTimeout(() => {
           //add the order to the database
@@ -351,10 +350,12 @@ function Home() {
         }, 1000);
       } else if (res.status == 400) {
         setLoading(false);
-        setError("Något gick fel, se till att du har varor i kundvagnen");
+        dispatch(
+          setError("Något gick fel, se till att du har varor i kundvagnen")
+        );
       } else {
         setLoading(false);
-        setError("Något gick fel, prova igen senare");
+        dispatch(setError("Något gick fel, prova igen senare"));
       }
     });
   };
@@ -780,18 +781,6 @@ function Home() {
         </div>
         {/*Footer*/}
         <Footer />
-
-        {success && (
-          <div onClick={() => setSuccess("")}>
-            <SuccessAlert text={success} />
-          </div>
-        )}
-
-        {error && (
-          <div onClick={() => setError("")}>
-            <ErrorAlert text={error} />
-          </div>
-        )}
       </main>
     </div>
   );

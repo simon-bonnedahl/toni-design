@@ -1,4 +1,4 @@
-import { faPen } from "@fortawesome/free-solid-svg-icons";
+import { faCross, faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sign } from "crypto";
 import { useSession } from "next-auth/react";
@@ -38,8 +38,14 @@ const Saved = () => {
     router.push("/");
   };
 
+  const handleRemove = (sign: any) => {
+    client.delete(sign._id).then((res) => {
+      setSigns(signs.filter((s) => s._id !== sign._id));
+    });
+  };
+
   return (
-    <div>
+    <div className="overflow-y-scroll">
       <h1 className="text-2xl font-bold">Sparade skyltar</h1>
       <div className="grid grid-cols-4 gap-4">
         {signs.map((sign, key) => (
@@ -54,13 +60,23 @@ const Saved = () => {
               height={200}
             />
             <button
-              className="btn btn-warning mt-2 w-56"
+              className="btn btn-warning mt-2 w-48"
               onClick={() => handleOpenSign(sign.json)}
             >
               Anpassa
               <FontAwesomeIcon
                 className="text-content-info ml-2"
                 icon={faPen}
+              />
+            </button>
+            <button
+              className="btn btn-error mt-2 w-48"
+              onClick={() => handleRemove(sign)}
+            >
+              Ta bort
+              <FontAwesomeIcon
+                className="text-content-info ml-2"
+                icon={faTrash}
               />
             </button>
           </div>

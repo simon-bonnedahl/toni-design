@@ -4,16 +4,19 @@ import { signIn } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import ErrorAlert from "../../components/alerts/ErrorAlert";
 import Footer from "../../components/Footer";
 import HeaderBar from "../../components/HeaderBar";
 import Navbar from "../../components/Navbar";
+import { setError } from "../../reducers/alertSlice";
 
 function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+
+  const dispatch = useDispatch();
 
   const handleLogin = async () => {
     let credentials = {
@@ -24,7 +27,7 @@ function Login() {
   };
   useEffect(() => {
     if (router.query.error) {
-      setError("Felaktig inloggning");
+      dispatch(setError("Felaktig inloggning"));
     }
   });
   return (
@@ -97,7 +100,6 @@ function Login() {
         </div>
         <Footer />
       </main>
-      {error && <ErrorAlert text={error} />}
     </div>
   );
 }

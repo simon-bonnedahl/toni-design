@@ -2,13 +2,16 @@ import { signIn } from "next-auth/react";
 import Head from "next/head";
 import Router from "next/router";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import ErrorAlert from "../../components/alerts/ErrorAlert";
 import Footer from "../../components/Footer";
 import HeaderBar from "../../components/HeaderBar";
 import Navbar from "../../components/Navbar";
+import { setError, setSuccess } from "../../reducers/alertSlice";
 import countriesEurope from "../../utils/countriesEurope";
 
 function Login() {
+  const dispatch = useDispatch();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -33,8 +36,6 @@ function Login() {
     orgNumber: true,
     reference: true,
   });
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const validateFirstname = (name: string) => {
@@ -156,10 +157,10 @@ function Login() {
       if (errors.city) {
         document.getElementById("city")?.classList.add("input-error");
       }
-      setError("Fyll i alla fält");
+      dispatch(setError("Fyll i alla fält"));
       return false;
     } else {
-      setError("");
+      dispatch(setError(""));
       return true;
     }
   };
@@ -190,15 +191,15 @@ function Login() {
       res.json();
       console.log(res);
       if (res.status == 200) {
-        setError("");
-        setSuccess("Konto skapat");
+        dispatch(setError(""));
+        dispatch(setSuccess("Konto skapat"));
         signIn();
       } else if (res.status == 400) {
         setLoading(false);
-        setError("Epostadressen är redan registrerad");
+        dispatch(setError("Epostadressen är redan registrerad"));
       } else {
         setLoading(false);
-        setError("Något gick fel, prova igen senare");
+        dispatch(setError("Något gick fel, prova igen senare"));
       }
     });
   };
@@ -348,7 +349,7 @@ function Login() {
             </div>
           </div>
         </div>
-        {error && <ErrorAlert text={error}></ErrorAlert>}
+
         <Footer />
       </main>
     </div>

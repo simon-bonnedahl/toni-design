@@ -5,7 +5,8 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setWarning } from "../reducers/alertSlice";
 import { selectCartItems, selectCartTotal } from "../reducers/cartSlice";
 import CartRow from "./CartRow";
 
@@ -16,7 +17,7 @@ const Cart: React.FC = () => {
 
   const total = useSelector(selectCartTotal);
   const router = useRouter();
-  const [error, setError] = useState("");
+  const dispatch = useDispatch();
 
   useMemo(() => {
     const groupedItems = items.reduce((results: any[], item: any) => {
@@ -28,11 +29,10 @@ const Cart: React.FC = () => {
 
   const handleCheckout = async () => {
     if (items.length < 1) {
-      setError("Du har inget din varukorg");
-    } else {
-      setError("");
-      router.push("/checkout");
+      dispatch(setWarning("Du har inget din varukorg"));
+      return;
     }
+    router.push("/checkout");
   };
 
   const round = (number: number, precision: number) => {
@@ -40,6 +40,7 @@ const Cart: React.FC = () => {
       Math.round(number * Math.pow(10, precision)) / Math.pow(10, precision)
     );
   };
+
   return (
     <div className="dropdown">
       <label id="cart-button" tabIndex={0} className="btn btn-ghost">
