@@ -2,6 +2,7 @@ import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sign } from "crypto";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -46,7 +47,12 @@ const Saved = () => {
             key={key}
             className="border border-primary flex flex-col items-center p-4 rounded-md"
           >
-            <img src={urlFor(sign.imageUrl).height(200).width(300).url()} />
+            <Image
+              src={urlFor(sign.imageUrl).height(200).width(300).url()}
+              alt="sign"
+              width={300}
+              height={200}
+            />
             <button
               className="btn btn-warning mt-2 w-56"
               onClick={() => handleOpenSign(sign.json)}

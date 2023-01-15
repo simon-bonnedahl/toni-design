@@ -1,5 +1,6 @@
 import { faPen, faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import NextImage from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch } from "react-redux";
@@ -35,7 +36,7 @@ const ProductCard: React.FC<Props> = ({
   const router = useRouter();
   const dispatch = useDispatch();
 
-  let cardImage = urlFor(image).height(200).url();
+  let cardImage = urlFor(image).height(200).width(300).url();
   let cartImage = urlFor(image).height(100).url();
 
   if (json) {
@@ -55,7 +56,7 @@ const ProductCard: React.FC<Props> = ({
 
   const handleAddToCart = () => {
     //make the image url to image data
-    var img = new Image();
+    var img: HTMLImageElement = new Image();
     img.crossOrigin = "Anonymous";
     img.onload = function () {
       var canvas = document.createElement("canvas");
@@ -114,7 +115,7 @@ const ProductCard: React.FC<Props> = ({
         className="px-10 h-48 mt-5 hover:cursor-pointer"
         onClick={() => router.push({ pathname: "/product", query: { id: id } })}
       >
-        <img src={cardImage} alt="Product" />
+        <NextImage src={cardImage} alt="Product" width={300} height={200} />
       </figure>
       <div className="card-body text-start">
         <h2 className="card-title">{title}</h2>

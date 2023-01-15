@@ -1,6 +1,7 @@
 import { faPen, faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Head from "next/head";
+import NextImage from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -124,7 +125,12 @@ function Home() {
             {/*Image*/}
             <div className="flex justify-center bg-base-200 items-center border border-neutral h-96 w-full rounded-md">
               {product.image && (
-                <img src={urlFor(product.image).height(300).url()}></img>
+                <NextImage
+                  src={urlFor(product.image).width(400).height(300).url()}
+                  alt="Product image"
+                  width={400}
+                  height={300}
+                />
               )}
             </div>
           </div>
