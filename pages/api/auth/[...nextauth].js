@@ -2,57 +2,64 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import client from "../../../sanity";
 const passwordHash = require("password-hash");
+import FacebookProvider from "next-auth/providers/facebook";
+import GithubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
+import TwitterProvider from "next-auth/providers/twitter";
+import Auth0Provider from "next-auth/providers/auth0";
 
-export default NextAuth({
+export const authOptions = {
+  // https://next-auth.js.org/configuration/providers/oauth
   providers: [
-    CredentialsProvider({
-      name: "toni-design",
-      credentials: {
-        email: {
-          label: "email",
-          type: "email",
-          placeholder: "jsmith@example.com",
-        },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials, req) {
-        let query = `*[_type == "account" && email == $email][0]`;
-        let params = { email: credentials.email };
-        let account = await client.fetch(query, params);
-        if (account) {
-          if (passwordHash.verify(credentials.password, account.password)) {
-            return { email: account.email, name: account.firstname };
-          }
-        }
-        return null;
+    /* EmailProvider({
+         server: process.env.EMAIL_SERVER,
+         from: process.env.EMAIL_FROM,
+       }),
+    // Temporarily removing the Apple provider from the demo site as the
+    // callback URL for it needs updating due to Vercel changing domains
+
+    Providers.Apple({
+      clientId: process.env.APPLE_ID,
+      clientSecret: {
+        appleId: process.env.APPLE_ID,
+        teamId: process.env.APPLE_TEAM_ID,
+        privateKey: process.env.APPLE_PRIVATE_KEY,
+        keyId: process.env.APPLE_KEY_ID,
       },
     }),
-    // ...add more providers here
+    */
+    FacebookProvider({
+      clientId: process.env.FACEBOOK_ID,
+      clientSecret: process.env.FACEBOOK_SECRET,
+    }),
+    GithubProvider({
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_ID,
+      clientSecret: process.env.GOOGLE_SECRET,
+    }),
+    TwitterProvider({
+      clientId: process.env.TWITTER_ID,
+      clientSecret: process.env.TWITTER_SECRET,
+    }),
+    Auth0Provider({
+      clientId: process.env.AUTH0_ID,
+      clientSecret: process.env.AUTH0_SECRET,
+      issuer: process.env.AUTH0_ISSUER,
+    }),
   ],
-
-  secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: "/login",
+  theme: {
+    colorScheme: "light",
   },
   callbacks: {
-    async jwt({ token, user, account }) {
-      if (account && user) {
-        return {
-          ...token,
-          accessToken: user.token,
-          refreshToken: user.refreshToken,
-        };
-      }
-
+    async jwt({ token }) {
+      token.userRole = "admin";
       return token;
     },
-
-    async session({ session, token }) {
-      session.user.accessToken = token.accessToken;
-      session.user.refreshToken = token.refreshToken;
-      session.user.accessTokenExpires = token.accessTokenExpires;
-
-      return session;
-    },
   },
-});
+  secret: process.env.NEXTAUTH_SECRET,
+};
+
+export default NextAuth(authOptions);
