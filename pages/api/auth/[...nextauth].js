@@ -6,12 +6,7 @@ const passwordHash = require("password-hash");
 export default NextAuth({
   providers: [
     CredentialsProvider({
-      // The name to display on the sign in form (e.g. 'Sign in with...')
       name: "toni-design",
-      // The credentials is used to generate a suitable form on the sign in page.
-      // You can specify whatever fields you are expecting to be submitted.
-      // e.g. domain, username, password, 2FA token, etc.
-      // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
         email: {
           label: "email",
@@ -36,6 +31,7 @@ export default NextAuth({
   ],
 
   secret: process.env.NEXT_PUBLIC_SECRET,
+  NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   pages: {
     signIn: "/login",
   },
@@ -60,9 +56,4 @@ export default NextAuth({
       return session;
     },
   },
-  theme: {
-    colorScheme: "auto", // "auto" | "dark" | "light"
-  },
-  // Enable debug messages in the console if you are having problems
-  debug: process.env.NODE_ENV === "development",
 });
