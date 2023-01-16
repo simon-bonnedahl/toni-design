@@ -31,7 +31,6 @@ export default NextAuth({
   ],
 
   secret: "test",
-  NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   pages: {
     signIn: "/login",
   },
