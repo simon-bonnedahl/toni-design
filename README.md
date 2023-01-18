@@ -1,10 +1,12 @@
 # Toni-Design
 
-Devlopment build at: https://toni-design.vercel.app/
+Early production build at: https://toni-design.simonbonnedahl.dev/
 
-This is a full stack web application devloped for a Swedish Signage company. 
-The customer can design their own custom sign or browse in the collection, add the sign to the shopping cart and checkout.
-The backend then compile the signs into files that get sent to the production.
+This is a full stack web application developed for a [Toni-Reklam](https://www.tonireklam.se/), a Swedish Signage company. 
+The app has a design tool to create customizable signs. It also has a webstore with common signs.
+The first version is only focusing on Laser-engraved signs. 
+
+At checkout the backend compiles and sends a the production files to the laser-machine.
 
 ## Tech
 
