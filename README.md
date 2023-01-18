@@ -20,5 +20,5 @@ At checkout the backend compiles and sends a the production files to the laser-m
 - [Daisy UI](https://daisyui.com/)
 - [Fabric.js](http://fabricjs.com/)
 - [Zod](https://github.com/colinhacks/zod)
-- [Mailersend API](https://www.mailersend.com/)
+- [Mailersend API](https://developers.mailersend.com/)
 - [Swish Payments API](https://developer.swish.nu/api)
