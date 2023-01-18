@@ -3,16 +3,15 @@
 Early production build at: https://toni-design.simonbonnedahl.dev/
 
 This is a full stack web application developed for a [Toni-Reklam](https://www.tonireklam.se/), a Swedish Signage company. 
-The app has a design tool to create customizable signs. It also has a webstore with common signs.
+The app has a design tool to create customizable signs. It also has a webstore connected to Sanity CMS with a collection of common signs.
 The first version is only focusing on Laser-engraved signs. 
-
 At checkout the backend compiles and sends a the production files to the laser-machine.
 
 ## Tech
 
 
 - [Next.js](https://nextjs.org/) and [React.js](https://reactjs.org/)
-- [NextAuth](https://next-auth.js.org/)
+- [NextAuth.js](https://next-auth.js.org/)
 - [Typescript](https://www.typescriptlang.org/)
 - [tRPC](https://trpc.io/)
 - [Sanity.io](https://www.sanity.io/)
