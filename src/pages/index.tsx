@@ -1,0 +1,34 @@
+import type { NextPage } from "next";
+import { signOut, useSession } from "next-auth/react";
+import Head from "next/head";
+import Link from "next/link";
+import Bottombar from "../components/Bottombar";
+import Canvas from "../components/Canvas";
+import HeaderBar from "../components/HeaderBar";
+import Navbar from "../components/Navbar";
+import Topbar from "../components/Topbar";
+
+const Home: NextPage = () => {
+  const { data: session } = useSession();
+
+  return (
+    <>
+      <Head>
+        <title>Toni Design</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <main className="flex h-screen w-screen flex-col bg-base-100">
+        <HeaderBar />
+        <Navbar />
+        <Topbar />
+
+        <div className="flex max-h-[75%] flex-1">
+          <Canvas />
+        </div>
+        <Bottombar />
+      </main>
+    </>
+  );
+};
+
+export default Home;

@@ -1,38 +1,42 @@
 import {defineField, defineType} from 'sanity'
-
-export default defineType({
+const order = defineType({
   name: 'order',
-  title: 'Orders',
+  title: 'Ordrar',
   type: 'document',
   fields: [
     defineField({
-      name: 'id',
+      name: 'orderId',
       title: 'Order ID',
       type: 'number',
+      readOnly: true,
+    }),
+    defineField({
+      name: 'orderDate',
+      title: 'Order datum',
+      type: 'date',
+      readOnly: true,
     }),
     defineField({
       name: 'items',
-      title: 'Order Items',
+      title: 'Order produkter',
       type: 'array',
       of: [{type: 'reference', to: {type: 'product'}}],
+      readOnly: true,
     }),
+
     defineField({
-      name: 'total',
-      title: 'Total',
-      type: 'number',
-    }),
-    defineField({
-      name: 'orderData',
-      title: 'Order Data',
+      name: 'customerDetails',
+      title: 'Kunduppgifter',
       type: 'object',
+      readOnly: true,
       fields: [
         defineField({
-          name: 'firstName',
+          name: 'firstname',
           title: 'Förnamn',
           type: 'string',
         }),
         defineField({
-          name: 'lastName',
+          name: 'lastname',
           title: 'Efternamn',
           type: 'string',
         }),
@@ -67,16 +71,35 @@ export default defineType({
           type: 'string',
         }),
         defineField({
-          name: 'delivery',
-          title: 'Leverans',
+          name: 'company',
+          title: 'Företag',
+          type: 'string',
+        }),
+      ],
+    }),
+    defineField({
+      name: 'orderDetails',
+      title: 'Orderdetaljer',
+      type: 'object',
+      readOnly: true,
+      fields: [
+        defineField({
+          name: 'deliveryMethod',
+          title: 'Leveransmetod',
           type: 'string',
         }),
         defineField({
-          name: 'payment',
-          title: 'Betalsätt',
+          name: 'paymentMethod',
+          title: 'Betalningsmetod',
           type: 'string',
+        }),
+        defineField({
+          name: 'total',
+          title: 'Belopp',
+          type: 'number',
         }),
       ],
     }),
   ],
 })
+export default order

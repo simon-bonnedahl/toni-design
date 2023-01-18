@@ -3,7 +3,6 @@ import signReducer from "./reducers/signSlice";
 import cartReducer from "./reducers/cartSlice";
 import editorReducer from "./reducers/editorSlice";
 import navigationReducer from "./reducers/navigationSlice";
-import alertSliceReducer from "./reducers/alertSlice";
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +10,5 @@ export const store = configureStore({
     cart: cartReducer,
     editor: editorReducer,
     navigation: navigationReducer,
-    alert: alertSliceReducer,
   },
 });
