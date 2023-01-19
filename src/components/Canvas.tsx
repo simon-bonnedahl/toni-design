@@ -16,8 +16,8 @@ const Canvas: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor();
 
   const [sign, setSign] = useState<any>({
-    width: 250,
-    height: 100,
+    width: 125,
+    height: 50,
     color: "#ffffff",
     textColor: "#000000",
     shape: "Rounded Rectangle",
@@ -37,8 +37,13 @@ const Canvas: React.FC = () => {
   const init = (canvas: any) => {
     setShape(canvas, sign.shape, sign.width, sign.height, true);
     setSize(canvas, sign.width, sign.height, true);
+    canvas.zoomToPoint(
+      new fabric.Point(canvas.width / 2, canvas.height / 2),
+      2
+    );
     setColor(canvas, sign.color, sign.textColor, true);
     setEditorControls();
+
     canvas.renderAll();
     onReady(canvas);
 
@@ -93,13 +98,7 @@ const Canvas: React.FC = () => {
   };
 
   const centerSign = (canvas: any) => {
-    const shape = canvas._objects[0];
-    if (shape) {
-      shape.set({
-        left: canvas.width / 2 - (shape.width * shape.scaleX) / 2,
-        top: canvas.height / 2 - (shape.height * shape.scaleY) / 2,
-      });
-    }
+    canvas.centerObject(canvas._objects[0]);
   };
 
   const setShape = (
