@@ -37,20 +37,17 @@ const Canvas: React.FC = () => {
   const init = (canvas: any) => {
     setShape(canvas, sign.shape, sign.width, sign.height, true);
     setSize(canvas, sign.width, sign.height, true);
-    canvas.zoomToPoint(
-      new fabric.Point(canvas.width / 2, canvas.height / 2),
-      2
-    );
     setColor(canvas, sign.color, sign.textColor, true);
     setEditorControls();
-
+    //zoom to center
+    canvas.zoomToPoint();
     canvas.renderAll();
     onReady(canvas);
 
     onresize = () => {
       //Should also move the objects to the correct postion when resizing
 
-      centerSign(canvas);
+      canvas.centerObject(canvas._objects[0]);
     };
   };
 
@@ -74,22 +71,36 @@ const Canvas: React.FC = () => {
   const toMillimeter = (px: number) => {
     return px / 2.8346546;
   };
-
+  //Update the code in the setSize function to make the sign always be appearing as 70-90% of the canvas size
   const setSize = (
     canvas: any,
     width: number,
     height: number,
     updateBackend: boolean
   ) => {
-    const shape = canvas._objects[0];
-    if (shape) {
+    const sign = canvas._objects[0];
+    if (sign) {
       if (sign.shape === "Ellipse") {
-        shape.set({ rx: toPixels(width) / 2, ry: toPixels(height) / 2 });
+        sign.set({ rx: toPixels(width) / 2, ry: toPixels(height) / 2 });
       } else {
-        shape.set({ width: toPixels(width), height: toPixels(height) });
+        sign.set({ width: toPixels(width), height: toPixels(height) });
       }
+      canvas.centerObject(sign);
+      //we dont want to zoom on every size change, only when the shape has the same width or height as the canvas
+      //or when the shape width or height is smaller than 75% of the canvas width or height
+      console.log(canvas.getZoom());
+
+      if (
+        sign.width * canvas.getZoom() === canvas.width ||
+        sign.height * canvas.getZoom() === canvas.height ||
+        sign.width * canvas.getZoom() < canvas.width * 0.75 ||
+        sign.height * canvas.getZoom() < canvas.height * 0.75
+      ) {
+        //handleZoom(canvas, sign);
+        console.log(sign.width * canvas.getZoom());
+      }
+
       canvas.renderAll();
-      centerSign(canvas);
     }
     if (updateBackend) {
       const newSign = { ...sign, width, height };
@@ -97,8 +108,17 @@ const Canvas: React.FC = () => {
     }
   };
 
-  const centerSign = (canvas: any) => {
-    canvas.centerObject(canvas._objects[0]);
+  const handleZoom = (canvas: any, sign: any) => {
+    const shapeRatio = sign.width / sign.height;
+    const canvasRatio = canvas.width / canvas.height;
+    const ratio = canvasRatio / shapeRatio;
+    //calculate based on the ratio between the shape and the canvas if we need to change the zoom level
+    const zoomConst = 2;
+
+    canvas.zoomToPoint(
+      new fabric.Point(canvas.width / 2, canvas.height / 2),
+      ratio * zoomConst
+    );
   };
 
   const setShape = (
@@ -160,9 +180,8 @@ const Canvas: React.FC = () => {
       offsetY: 5,
     });
 
-    //Replace the frame, this works if the frame always is the first object, which it should
+    canvas.centerObject(s);
     canvas._objects[0] = s;
-    centerSign(canvas);
 
     if (updateBackend) {
       const newSign = { ...sign, shape };
