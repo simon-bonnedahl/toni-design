@@ -39,8 +39,6 @@ const Canvas: React.FC = () => {
     setSize(canvas, sign.width, sign.height, true);
     setColor(canvas, sign.color, sign.textColor, true);
     setEditorControls();
-    //zoom to center
-    canvas.zoomToPoint();
     canvas.renderAll();
     onReady(canvas);
 
