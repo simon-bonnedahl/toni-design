@@ -16,7 +16,7 @@ const Canvas: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor();
 
   const [sign, setSign] = useState<any>({
-    width: 125,
+    width: 150,
     height: 50,
     color: "#ffffff",
     textColor: "#000000",
@@ -31,7 +31,7 @@ const Canvas: React.FC = () => {
   const [historyIndex, setHistoryIndex] = useState(0);
   const [selectedObject, setSelectedObject] = useState(false);
   const [commandsRecieved, setCommandsRecieved] = useState(0);
-
+  const [zoom, setZoom] = useState(2);
   const dispatch = useDispatch();
 
   const init = (canvas: any) => {
@@ -63,7 +63,7 @@ const Canvas: React.FC = () => {
   };
 
   const toPixels = (mm: number) => {
-    return mm * 2.8346546; //Based on my laptops ppi, need to be calculated
+    return mm * 2.8346546 * zoom; //Based on my laptops ppi, need to be calculated
   };
 
   const toMillimeter = (px: number) => {
@@ -77,26 +77,25 @@ const Canvas: React.FC = () => {
     updateBackend: boolean
   ) => {
     const sign = canvas._objects[0];
+    const pixelWidth = toPixels(width);
+    const pixelHeight = toPixels(height);
+
+    //if either width or height is bigger than 90 % of the canvas size, we need to zoom out
+    if (pixelWidth > canvas.width * 0.9 || pixelHeight > canvas.height * 0.9) {
+      setZoom(zoom * 0.9);
+    }
+    //if either width or height is smaller than 70 % of the canvas size, we need to zoom in
+    if (pixelWidth < canvas.width * 0.7 || pixelHeight < canvas.height * 0.7) {
+      setZoom(zoom * 1.1);
+    }
+
     if (sign) {
       if (sign.shape === "Ellipse") {
-        sign.set({ rx: toPixels(width) / 2, ry: toPixels(height) / 2 });
+        sign.set({ rx: pixelWidth / 2, ry: pixelHeight / 2 });
       } else {
-        sign.set({ width: toPixels(width), height: toPixels(height) });
+        sign.set({ width: pixelWidth, height: pixelHeight });
       }
       canvas.centerObject(sign);
-      //we dont want to zoom on every size change, only when the shape has the same width or height as the canvas
-      //or when the shape width or height is smaller than 75% of the canvas width or height
-      console.log(canvas.getZoom());
-
-      if (
-        sign.width * canvas.getZoom() === canvas.width ||
-        sign.height * canvas.getZoom() === canvas.height ||
-        sign.width * canvas.getZoom() < canvas.width * 0.75 ||
-        sign.height * canvas.getZoom() < canvas.height * 0.75
-      ) {
-        //handleZoom(canvas, sign);
-        console.log(sign.width * canvas.getZoom());
-      }
 
       canvas.renderAll();
     }
@@ -772,17 +771,21 @@ const Canvas: React.FC = () => {
     canvas.renderAll();
   };
 
-  const handleAddToCart = (amount: number) => {
-    console.log("Adding to cart", sign);
-    const pixelData = canvas.toDataURL("image/jpeg", 1.0);
-    canvas._objects[0].set({ shadow: null });
+  const getSignSVG = (canvas: any) => {
+    //remove the shadow and set it to the right size
+    canvas._objects[0].set({
+      shadow: null,
+      width: toPixels(sign.width),
+      height: toPixels(sign.height),
+    });
 
-    //Ajust the svg optimised for the printer
+    //Ajust the svg optimised for the printer with red borders, white background and black content
     canvas._objects[0].set({
       fill: "#ffffff",
       stroke: "#ff0000",
       strokeWidth: 2,
     });
+
     //loop through all objects and fill with black
     for (let i = 1; i < canvas._objects.length; i++) {
       const object = canvas._objects[i];
@@ -803,15 +806,20 @@ const Canvas: React.FC = () => {
         });
       }
     }
-
     const svg = canvas.toSVG();
     //Crop it?
+    return svg;
+  };
+
+  const handleAddToCart = (amount: number) => {
+    console.log("Adding to cart", sign);
+    const pixelData = canvas.toDataURL("image/jpeg", 1.0);
 
     const item = {
       id: sign.id,
       metadata: signMetaData,
       data: {
-        svg: svg,
+        svg: getSignSVG(canvas),
         pixelData: pixelData,
       },
       visual: sign,
@@ -828,7 +836,7 @@ const Canvas: React.FC = () => {
     const saveImg = document.createElement("a");
     saveImg.href = canvas.toDataURL({
       format: "image/jpeg",
-      quality: 0.8,
+      quality: 1,
     });
     saveImg.download = "sign.jpeg";
     saveImg.click();
