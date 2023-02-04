@@ -78,8 +78,8 @@ const Canvas: React.FC = () => {
   ) => {
     console.log(width, height);
     const shape = canvas._objects[0];
-    let pixelWidth = toPixels(width);
-    let pixelHeight = toPixels(height);
+    const pixelWidth = toPixels(width);
+    const pixelHeight = toPixels(height);
 
     if (shape) {
       if (shape.shape === "Ellipse") {
