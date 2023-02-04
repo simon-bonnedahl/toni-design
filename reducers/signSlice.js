@@ -60,7 +60,7 @@ function calculatePrice(sign) {
       (ab_3 - (ab_1 + ab_2)) * f3 +
       (area - ab_3) * f4;
   }
-  return price <= minimalPrice ? minimalPrice : price;
+  return price <= minimalPrice ? minimalPrice : Math.round(price);
 }
 
 //Calculate price at initialization

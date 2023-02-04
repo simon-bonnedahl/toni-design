@@ -1,4 +1,6 @@
 import {
+  faMagnifyingGlassMinus,
+  faMagnifyingGlassPlus,
   faRotateBack,
   faTurnDown,
   faTurnUp,
@@ -59,6 +61,28 @@ const Topbar: React.FC = () => {
           <FontAwesomeIcon
             className="-rotate-90 scale-150 text-primary"
             icon={faTurnDown}
+          />
+        </div>
+        <div
+          onClick={() =>
+            dispatch(addCommand({ command: "zoomOut", value: null }))
+          }
+          className="btn-ghost btn"
+        >
+          <FontAwesomeIcon
+            className="scale-150 text-primary"
+            icon={faMagnifyingGlassMinus}
+          />
+        </div>
+        <div
+          onClick={() =>
+            dispatch(addCommand({ command: "zoomIn", value: null }))
+          }
+          className=" btn-ghost btn"
+        >
+          <FontAwesomeIcon
+            className="scale-150 text-primary"
+            icon={faMagnifyingGlassPlus}
           />
         </div>
       </div>

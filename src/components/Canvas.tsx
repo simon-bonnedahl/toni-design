@@ -31,6 +31,7 @@ const Canvas: React.FC = () => {
   const [historyIndex, setHistoryIndex] = useState(0);
   const [selectedObject, setSelectedObject] = useState(false);
   const [commandsRecieved, setCommandsRecieved] = useState(0);
+  const [zoom, setZoom] = useState(1);
   const dispatch = useDispatch();
 
   const init = (canvas: any) => {
@@ -62,7 +63,7 @@ const Canvas: React.FC = () => {
   };
 
   const toPixels = (mm: number) => {
-    return mm * 2.8346546; //Based on my laptops ppi, need to be calculated
+    return mm * 2.8346546 * zoom; //Based on my laptops ppi, need to be calculated
   };
 
   const toMillimeter = (px: number) => {
@@ -670,6 +671,22 @@ const Canvas: React.FC = () => {
         setHistoryIndex(forwardIndex);
         recreateSign(canvas, signHistory[forwardIndex], false);
         break;
+      case "zoomIn":
+        if (zoom >= 2) {
+          toast.warning("Du kan inte zooma in mer");
+          return;
+        }
+        setZoom(zoom + 0.25);
+        setSize(canvas, sign.width, sign.height, true);
+        break;
+      case "zoomOut":
+        if (zoom <= 0.25) {
+          toast.warning("Du kan inte att zooma ut mer");
+          return;
+        }
+        setZoom(zoom - 0.25);
+        setSize(canvas, sign.width, sign.height, true);
+        break;
       case "reCreate":
         recreateSign(canvas, command.value, false);
         break;
@@ -693,6 +710,7 @@ const Canvas: React.FC = () => {
         handleAddToCart(command.value);
 
         break;
+
       default:
         return;
     }
@@ -729,7 +747,8 @@ const Canvas: React.FC = () => {
       "object:modified": handleModifyObject,
       "text:changed": handleTextChange,
     });
-  }, [commands]);
+  });
+  //[commands] is makign the reacreation of a sign brake but is needed to update size with no delay
 
   const handleReset = (canvas: any) => {
     canvas.clear();
