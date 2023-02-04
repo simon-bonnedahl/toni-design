@@ -16,8 +16,8 @@ const Canvas: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor();
 
   const [sign, setSign] = useState<any>({
-    width: 150,
-    height: 50,
+    width: 250,
+    height: 100,
     color: "#ffffff",
     textColor: "#000000",
     shape: "Rounded Rectangle",
@@ -31,7 +31,6 @@ const Canvas: React.FC = () => {
   const [historyIndex, setHistoryIndex] = useState(0);
   const [selectedObject, setSelectedObject] = useState(false);
   const [commandsRecieved, setCommandsRecieved] = useState(0);
-  const [zoom, setZoom] = useState(2);
   const dispatch = useDispatch();
 
   const init = (canvas: any) => {
@@ -63,7 +62,7 @@ const Canvas: React.FC = () => {
   };
 
   const toPixels = (mm: number) => {
-    return mm * 2.8346546 * zoom; //Based on my laptops ppi, need to be calculated
+    return mm * 2.8346546; //Based on my laptops ppi, need to be calculated
   };
 
   const toMillimeter = (px: number) => {
@@ -76,26 +75,18 @@ const Canvas: React.FC = () => {
     height: number,
     updateBackend: boolean
   ) => {
-    const sign = canvas._objects[0];
-    const pixelWidth = toPixels(width);
-    const pixelHeight = toPixels(height);
+    console.log(width, height);
+    const shape = canvas._objects[0];
+    let pixelWidth = toPixels(width);
+    let pixelHeight = toPixels(height);
 
-    //if either width or height is bigger than 90 % of the canvas size, we need to zoom out
-    if (pixelWidth > canvas.width * 0.9 || pixelHeight > canvas.height * 0.9) {
-      setZoom(zoom * 0.9);
-    }
-    //if either width or height is smaller than 70 % of the canvas size, we need to zoom in
-    if (pixelWidth < canvas.width * 0.7 || pixelHeight < canvas.height * 0.7) {
-      setZoom(zoom * 1.1);
-    }
-
-    if (sign) {
-      if (sign.shape === "Ellipse") {
-        sign.set({ rx: pixelWidth / 2, ry: pixelHeight / 2 });
+    if (shape) {
+      if (shape.shape === "Ellipse") {
+        shape.set({ rx: pixelWidth / 2, ry: pixelHeight / 2 });
       } else {
-        sign.set({ width: pixelWidth, height: pixelHeight });
+        shape.set({ width: pixelWidth, height: pixelHeight });
       }
-      canvas.centerObject(sign);
+      canvas.centerObject(shape);
 
       canvas.renderAll();
     }
@@ -103,19 +94,6 @@ const Canvas: React.FC = () => {
       const newSign = { ...sign, width, height };
       saveSignState(newSign);
     }
-  };
-
-  const handleZoom = (canvas: any, sign: any) => {
-    const shapeRatio = sign.width / sign.height;
-    const canvasRatio = canvas.width / canvas.height;
-    const ratio = canvasRatio / shapeRatio;
-    //calculate based on the ratio between the shape and the canvas if we need to change the zoom level
-    const zoomConst = 2;
-
-    canvas.zoomToPoint(
-      new fabric.Point(canvas.width / 2, canvas.height / 2),
-      ratio * zoomConst
-    );
   };
 
   const setShape = (
@@ -751,7 +729,7 @@ const Canvas: React.FC = () => {
       "object:modified": handleModifyObject,
       "text:changed": handleTextChange,
     });
-  });
+  }, [commands]);
 
   const handleReset = (canvas: any) => {
     canvas.clear();

@@ -1,38 +1,51 @@
 import { faExpand } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import { addCommand } from "../../../reducers/editorSlice";
 import { getSignVisual } from "../../../reducers/signSlice";
 
 const Sizedropdown: React.FC = () => {
   const [width, setWidth] = useState(useSelector(getSignVisual).width);
   const [height, setHeight] = useState(useSelector(getSignVisual).height);
+  const MIN_HEIHGT = 5;
+  const MAX_HEIGHT = 200;
+  const MIN_WIDTH = 5;
+  const MAX_WIDTH = 400;
 
   const dispatch = useDispatch();
-  const handleWidthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const width = event.target.valueAsNumber;
-    setWidth(width);
-    if (5 <= width && width <= 400) {
-      dispatch(
-        addCommand({
-          command: "setSize",
-          value: { width: width, height: height },
-        })
+
+  const handleSetSize = () => {
+    if (!(MIN_WIDTH <= width && width <= MAX_WIDTH)) {
+      toast.error(
+        "Bredd: Endast " +
+          MIN_WIDTH +
+          " - " +
+          MAX_WIDTH +
+          " mm" +
+          " är tillåtet"
       );
+      return;
     }
-  };
-  const handleHeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const height = event.target.valueAsNumber;
-    setHeight(height);
-    if (5 <= height && height <= 200) {
-      dispatch(
-        addCommand({
-          command: "setSize",
-          value: { width: width, height: height },
-        })
+    if (!(MIN_HEIHGT <= height && height <= MAX_HEIGHT)) {
+      toast.error(
+        "Höjd: Endast " +
+          MIN_HEIHGT +
+          " - " +
+          MAX_HEIGHT +
+          " mm" +
+          " är tillåtet"
       );
+      return;
     }
+    console.log("Sending");
+    dispatch(
+      addCommand({
+        command: "setSize",
+        value: { width: width, height: height },
+      })
+    );
   };
 
   return (
@@ -64,11 +77,9 @@ const Sizedropdown: React.FC = () => {
               <input
                 className="input w-full"
                 type="number"
+                id="widthInput"
                 value={width}
-                onChange={handleWidthChange}
-                min={5}
-                max={400}
-                step={5}
+                onChange={(e) => setWidth(e.target.value)}
               />
               <span className="bg-primary text-primary-content">mm</span>
             </label>
@@ -83,10 +94,7 @@ const Sizedropdown: React.FC = () => {
                 className="input w-full bg-base-100"
                 type="number"
                 value={height}
-                onChange={handleHeightChange}
-                min={5}
-                max={200}
-                step={5}
+                onChange={(e) => setHeight(e.target.value)}
               />
               <span className="bg-primary text-primary-content">mm</span>
             </label>
@@ -101,6 +109,9 @@ const Sizedropdown: React.FC = () => {
               <span className="bg-primary text-primary-content">mm</span>
             </div>
           </div>
+          <button className="btn-primary btn mt-4" onClick={handleSetSize}>
+            Applicera
+          </button>
         </div>
       </div>
     </div>
