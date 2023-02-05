@@ -99,4 +99,15 @@ export const userRouter = router({
         console.log("Account updated", account);
       });
     }),
+  getOrders: publicProcedure
+    .input(
+      z.object({
+        email: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const query = `*[_type == "order" && email == '${input.email}']`;
+      const result = await sanityDB.fetch(query);
+      return result;
+    }),
 });
