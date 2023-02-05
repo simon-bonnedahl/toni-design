@@ -201,7 +201,12 @@ const SignUp = ({ setAuth }: { setAuth: Dispatch<SetStateAction<AUTH>> }) => {
         <label>
           Land <span className="text-red-600">*</span>
         </label>
-        <select className="select-bordered select w-full max-w-xs border-primary">
+        <select
+          className="select-bordered select w-full max-w-xs border-primary"
+          onChange={(e) =>
+            setSignUpDetails({ ...signUpDetails, country: e.target.value })
+          }
+        >
           {countriesEurope.map((c) => {
             if (c === signUpDetails.country)
               return (

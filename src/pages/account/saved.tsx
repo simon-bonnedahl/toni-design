@@ -48,6 +48,15 @@ const Saved = () => {
     <div className="">
       <h1 className="text-2xl font-bold">Sparade skyltar</h1>
       <div className="grid grid-cols-4 gap-4">
+        {signs.length === 0 && (
+          <div className="col-span-4 flex flex-col items-center justify-center">
+            <h2 className="text-xl font-bold">Du har inga sparade skyltar</h2>
+            <p className="text-center">
+              Du kan spara skyltar genom att klicka på "Spara" när du är inne i
+              skyltredigeraren
+            </p>
+          </div>
+        )}
         {signs.map((sign, key) => (
           <div
             key={key}

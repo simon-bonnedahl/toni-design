@@ -63,7 +63,7 @@ const Canvas: React.FC = () => {
   };
 
   const toPixels = (mm: number) => {
-    return mm * 2.8346546 * zoom; //Based on my laptops ppi, need to be calculated
+    return mm * 2.8346546 * zoom; //Based on my laptops ppi, might need to be calculated
   };
 
   const toMillimeter = (px: number) => {
