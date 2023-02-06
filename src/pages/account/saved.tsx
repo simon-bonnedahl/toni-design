@@ -50,7 +50,7 @@ const Saved = () => {
       <div className="grid grid-cols-4 gap-4">
         {signs.length === 0 && (
           <div className="col-span-4 flex flex-col items-center justify-center">
-            <h2 className="text-xl font-bold">Du har inga sparade skyltar</h2>
+            <h2 className="">Du har inga sparade skyltar</h2>
             <p className="text-center">
               Du kan spara skyltar genom att klicka på Spara-knappen när du är
               inne i skyltredigeraren
