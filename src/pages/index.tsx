@@ -4,6 +4,7 @@ import Head from "next/head";
 import Link from "next/link";
 import Bottombar from "../components/Bottombar";
 import Canvas from "../components/Canvas";
+import Editor from "../components/Editor/Editor";
 import HeaderBar from "../components/HeaderBar";
 import Navbar from "../components/Navbar";
 import Topbar from "../components/Topbar";
@@ -23,7 +24,7 @@ const Home: NextPage = () => {
         <Topbar />
 
         <div className="flex max-h-[75%] flex-1">
-          <Canvas />
+          <Editor />
         </div>
         <Bottombar />
       </main>
