@@ -7,6 +7,8 @@ type Sign = {
   width: number;
   height: number;
   shape: Shapes;
+  backgroundColor: string;
+  foregroundColor: string;
 };
 enum Shapes {
   RECTANGLE = 1,
@@ -18,8 +20,16 @@ DEFAULT_SIGN = {
   width: 100,
   height: 100,
   shape: Shapes.ROUNDED_RECTANGLE,
+  backgroundColor: "#ffffff",
+  foregroundColor: "#000000",
+};
+
+type Text = {
+  text: string;
+  fontSize: number;
+  fontFamily: string;
 };
 
 type Sign = z.infer<typeof Sign>;
 
-export { Shapes, DEFAULT_SIGN, Sign };
+export { Shapes, DEFAULT_SIGN, Sign, Text };
