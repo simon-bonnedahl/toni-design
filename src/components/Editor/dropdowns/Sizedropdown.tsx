@@ -3,8 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { addCommand } from "../../../reducers/editorSlice";
-import { getSignVisual } from "../../../reducers/signSlice";
+import { addCommand } from "../../../../reducers/editorSlice";
+import { getSignVisual } from "../../../../reducers/signSlice";
 
 const Sizedropdown: React.FC = () => {
   const [width, setWidth] = useState(useSelector(getSignVisual).width);

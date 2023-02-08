@@ -5,11 +5,11 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addCommand } from "../../../reducers/editorSlice";
+import { addCommand } from "../../../../reducers/editorSlice";
 import {
   getSignMetadata,
   setSignApplication,
-} from "../../../reducers/signSlice";
+} from "../../../../reducers/signSlice";
 
 const Applicationdropdown: React.FC = () => {
   const [selectedApplication, setSelectedApplication] = useState(

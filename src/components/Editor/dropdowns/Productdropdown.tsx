@@ -2,8 +2,11 @@ import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addCommand } from "../../../reducers/editorSlice";
-import { getSignMetadata, setSignProduct } from "../../../reducers/signSlice";
+import { addCommand } from "../../../../reducers/editorSlice";
+import {
+  getSignMetadata,
+  setSignProduct,
+} from "../../../../reducers/signSlice";
 
 const Productdropdown: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState(

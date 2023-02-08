@@ -2,14 +2,14 @@ import { faDroplet, faT } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addCommand } from "../../../reducers/editorSlice";
+import { addCommand } from "../../../../reducers/editorSlice";
 import {
   getSignMetadata,
   getSignVisual,
   setSignColorCombination,
-} from "../../../reducers/signSlice";
-import client from "../../../sanity";
-import { trpc } from "../../utils/trpc";
+} from "../../../../reducers/signSlice";
+import client from "../../../../sanity";
+import { trpc } from "../../../utils/trpc";
 
 const Colordropdown: React.FC = () => {
   const [selectedColor, setSelectedColor] = useState(
@@ -17,7 +17,7 @@ const Colordropdown: React.FC = () => {
   );
   const product = useSelector(getSignMetadata).product;
 
-  const colorOptions = trpc.color.getColors.useQuery().data || []
+  const colorOptions = trpc.color.getColors.useQuery().data || [];
 
   const dispatch = useDispatch();
 
@@ -61,7 +61,7 @@ const Colordropdown: React.FC = () => {
           <h3 className="card-title text-neutral-content">Ändra färg</h3>
           {product === "Engraved Sign" ? (
             <div className="grid grid-cols-4 gap-16 p-4">
-              {colorOptions.map((option:any, key:string) => (
+              {colorOptions.map((option: any, key: string) => (
                 <div
                   key={key}
                   className="flex flex-col items-center justify-center"

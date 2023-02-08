@@ -10,13 +10,13 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addCommand } from "../../reducers/editorSlice";
 import { getSignVisual } from "../../reducers/signSlice";
-import Applicationdropdown from "./dropdowns/Applicationdropdown";
-import Colordropdown from "./dropdowns/Colordropdown";
-import Imagedropdown from "./dropdowns/Imagedropdown";
-import Productdropdown from "./dropdowns/Productdropdown";
-import Shapedropdown from "./dropdowns/Shapedropdown";
-import Sizedropdown from "./dropdowns/Sizedropdown";
-import Textdropdown from "./dropdowns/Textdrowdown";
+import Applicationdropdown from "./Editor/dropdowns/Applicationdropdown";
+import Colordropdown from "./Editor/dropdowns/Colordropdown";
+import Imagedropdown from "./Editor/dropdowns/Imagedropdown";
+import Productdropdown from "./Editor/dropdowns/Productdropdown";
+import Shapedropdown from "./Editor/dropdowns/Shapedropdown";
+import Sizedropdown from "./Editor/dropdowns/Sizedropdown";
+import Textdropdown from "./Editor/dropdowns/Textdrowdown";
 
 const Topbar: React.FC = () => {
   const sign = useSelector(getSignVisual);

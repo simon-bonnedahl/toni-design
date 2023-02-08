@@ -21,7 +21,6 @@ const Home: NextPage = () => {
       <main className="flex h-screen w-screen flex-col bg-base-100">
         <HeaderBar />
         <Navbar />
-        <Topbar />
 
         <div className="flex max-h-[75%] flex-1">
           <Editor />

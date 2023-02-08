@@ -1,8 +1,8 @@
 import { faFileText } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDispatch, useSelector } from "react-redux";
-import { addCommand } from "../../../reducers/editorSlice";
-import { getSignVisual } from "../../../reducers/signSlice";
+import { addCommand } from "../../../../reducers/editorSlice";
+import { getSignVisual } from "../../../../reducers/signSlice";
 
 const Textdropdown: React.FC = () => {
   const textColor = useSelector(getSignVisual).textColor;

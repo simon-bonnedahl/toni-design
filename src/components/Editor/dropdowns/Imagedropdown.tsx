@@ -3,9 +3,9 @@ import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { addCommand } from "../../../reducers/editorSlice";
+import { addCommand } from "../../../../reducers/editorSlice";
 
-import client from "../../../sanity";
+import client from "../../../../sanity";
 const { v4: uuidv4 } = require("uuid");
 const Imagedropdown: React.FC = () => {
   const dispatch = useDispatch();
