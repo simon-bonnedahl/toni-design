@@ -23,4 +23,4 @@ At checkout the backend compiles and sends a the production files to the laser-m
 - [Mailersend API](https://developers.mailersend.com/)
 - [Swish Payments API](https://developer.swish.nu/api)
 
-![Map](https://github.com/simon-bonnedahl/toni-design/blob/v2/map.excalidraw.svg)
+![Map](https://github.com/simon-bonnedahl/toni-design/blob/v2/map.png)
