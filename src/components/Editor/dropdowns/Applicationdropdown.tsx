@@ -10,8 +10,12 @@ import {
   getSignMetadata,
   setSignApplication,
 } from "../../../../reducers/signSlice";
-
-const Applicationdropdown: React.FC = () => {
+import { Applications, Sign } from "../../../types/sign.d";
+type Props = {
+  sign: Sign;
+  setApplication: (application: Applications) => void;
+};
+const Applicationdropdown: React.FC<Props> = ({ sign, setApplication }) => {
   const [selectedApplication, setSelectedApplication] = useState(
     useSelector(getSignMetadata).application
   );
@@ -19,15 +23,13 @@ const Applicationdropdown: React.FC = () => {
   //Hämta från sanity
   const applications = [
     {
-      name: "None",
-      key: 0,
-      swe: "Ingen",
+      application: Applications.NONE,
+      text: "Ingen",
       desc: "Ingen applikation",
     },
     {
-      name: "Tape",
-      key: 1,
-      swe: "Tejp",
+      application: Applications.TAPE,
+      text: "Tejp",
       desc: "Dubbelhäftande tejp",
     },
   ];
@@ -49,25 +51,25 @@ const Applicationdropdown: React.FC = () => {
       </label>
       <div
         tabIndex={0}
-        className="card dropdown-content card-compact w-96 border border-black bg-base-200  p-2 shadow"
+        className="card-compact card dropdown-content w-96 border border-black bg-base-200  p-2 shadow"
       >
         <div className="card-body">
           <h3 className="card-title text-neutral-content">Välj en fästmetod</h3>
           <div className="flex flex-col space-y-4">
-            {applications.map((application) => {
+            {applications.map((application, key) => {
               let className =
                 "flex justify-between hover:cursor-pointer h-24 relative";
-              if (application.name === selectedApplication)
+              if (application.application === sign.application)
                 className += " border border-primary rounded-md";
 
               return (
                 <div
-                  key={application.key}
+                  key={key}
                   className={className}
-                  onClick={() => handleProductChange(application.name)}
+                  onClick={() => setApplication(application.application)}
                 >
                   <div className="flex flex-col justify-center p-2">
-                    <h1 className="text-neutral-content">{application.swe}</h1>
+                    <h1 className="text-neutral-content">{application.text}</h1>
                     <p className="text-xs text-neutral-content">
                       {application.desc}
                     </p>
@@ -84,7 +86,7 @@ const Applicationdropdown: React.FC = () => {
                         readOnly
                         type="radio"
                         name="radio-application"
-                        checked={application.name === selectedApplication}
+                        checked={application.application === sign.application}
                         className="radio ml-2 checked:border-base-100 checked:bg-primary"
                       />
                     </label>

@@ -60,9 +60,12 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
       {/*Dropdowns*/}
       <div className="flex space-x-2">
         <Productdropdown />
-        <Applicationdropdown />
-        <Sizedropdown />
-        <Colordropdown />
+        <Applicationdropdown
+          sign={props.sign}
+          setApplication={props.setApplication}
+        />
+        <Sizedropdown sign={props.sign} setSize={props.setSize} />
+        <Colordropdown sign={props.sign} setColor={props.setColor} />
         <Shapedropdown sign={props.sign} setShape={props.setShape} />
         <Textdropdown />
         <Imagedropdown />

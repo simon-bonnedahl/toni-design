@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  Applications,
   DEFAULT_SIGN,
   Shapes,
   Sign,
@@ -19,6 +20,7 @@ const Editor: React.FC = () => {
   const [canvas, setCanvas] = useState<any>();
   const [zoom, setZoom] = useState(1);
   const [sign, setSign] = useState<Sign>(DEFAULT_SIGN);
+  const history = [];
 
   const initCanvas = (canvas: any) => {
     setEditorControls();
@@ -117,6 +119,10 @@ const Editor: React.FC = () => {
         height: heightPx,
       });
     }
+    // Center the shape in the canvas.
+    canvas.centerObject(shape);
+    // Re-render the canvas.
+    canvas.renderAll();
     // Update sign's width and height.
     setSign((prev) => ({ ...prev, width, height, depth }));
   };
@@ -147,6 +153,8 @@ const Editor: React.FC = () => {
         });
       }
     }
+    // Re-render the canvas.
+    canvas.renderAll();
     // Update sign's background and foreground colors.
     setSign((prev) => ({
       ...prev,
@@ -161,6 +169,10 @@ const Editor: React.FC = () => {
         />
       </>
     );
+  };
+  const setApplication = (application: Applications) => {
+    // Recalculate the price
+    setSign((prev) => ({ ...prev, application }));
   };
 
   const addText = (text: Text) => {
@@ -180,6 +192,7 @@ const Editor: React.FC = () => {
     setSize,
     setColor,
     addText,
+    setApplication,
   };
 
   // Update the shape when the canvas is ready.

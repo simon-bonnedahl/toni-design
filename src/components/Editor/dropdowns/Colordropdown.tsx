@@ -1,51 +1,20 @@
 import { faDroplet, faT } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { addCommand } from "../../../../reducers/editorSlice";
-import {
-  getSignMetadata,
-  getSignVisual,
-  setSignColorCombination,
-} from "../../../../reducers/signSlice";
-import client from "../../../../sanity";
+
+import { Sign, SignTypes } from "../../../types/sign.d";
 import { trpc } from "../../../utils/trpc";
 
-const Colordropdown: React.FC = () => {
-  const [selectedColor, setSelectedColor] = useState(
-    useSelector(getSignVisual).color
-  );
-  const product = useSelector(getSignMetadata).product;
+type Props = {
+  sign: Sign;
+  setColor: (background: string, foreground: string) => void;
+};
 
+const Colordropdown: React.FC<Props> = ({ sign, setColor }) => {
   const colorOptions = trpc.color.getColors.useQuery().data || [];
-
-  const dispatch = useDispatch();
-
-  const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const color = event.target.value;
-    setSelectedColor(color);
-    dispatch(
-      addCommand({
-        command: "setColor",
-        value: color,
-      })
-    );
-  };
-
-  const handleEngravedColorChange = (option: any) => {
-    dispatch(
-      addCommand({
-        command: "setColor",
-        value: option,
-      })
-    );
-    dispatch(setSignColorCombination({ colorCombination: option.name }));
-  };
 
   return (
     <div className="dropdown">
       <label
-        onClick={() => dispatch(addCommand({ command: "closeCart" }))}
         tabIndex={0}
         className="btn-outline btn-primary btn m-1 flex space-x-2"
       >
@@ -59,7 +28,7 @@ const Colordropdown: React.FC = () => {
       >
         <div className="card-body">
           <h3 className="card-title text-neutral-content">Ändra färg</h3>
-          {product === "Engraved Sign" ? (
+          {sign.type === SignTypes.ENGRAVED ? (
             <div className="grid grid-cols-4 gap-16 p-4">
               {colorOptions.map((option: any, key: string) => (
                 <div
@@ -67,7 +36,9 @@ const Colordropdown: React.FC = () => {
                   className="flex flex-col items-center justify-center"
                 >
                   <div
-                    onClick={() => handleEngravedColorChange(option)}
+                    onClick={() =>
+                      setColor(option.frontColorValue, option.backColorValue)
+                    }
                     className="flex h-12 w-12 items-center justify-center rounded-full hover:cursor-pointer"
                     style={{ backgroundColor: option.frontColorValue }}
                   >
@@ -90,12 +61,7 @@ const Colordropdown: React.FC = () => {
             <div className="flex w-full p-5">
               <label>
                 Color:
-                <input
-                  className="ml-4 rounded-lg"
-                  type="color"
-                  value={selectedColor}
-                  onChange={handleColorChange}
-                />
+                <input className="ml-4 rounded-lg" type="color" />
               </label>
             </div>
           )}
