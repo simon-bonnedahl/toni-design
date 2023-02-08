@@ -48,6 +48,7 @@ type Text = {
 };
 type Image = {
   type: string;
+  url: string;
   id: any;
 };
 type ToolbarProps = {
@@ -58,6 +59,9 @@ type ToolbarProps = {
   addText: (text: Text) => void;
   addImage: (image: Image) => void;
   setApplication: (application: Applications) => void;
+  undo: () => void;
+  redo: () => void;
+  restart: () => void;
 };
 
 type Sign = z.infer<typeof Sign>;

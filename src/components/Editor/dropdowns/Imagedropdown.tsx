@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { addCommand } from "../../../../reducers/editorSlice";
 
-import client from "../../../../sanity";
+import client, { urlFor } from "../../../../sanity";
 import { Image, Sign } from "../../../types/sign.d";
 const { v4: uuidv4 } = require("uuid");
 
@@ -38,9 +38,10 @@ const Imagedropdown: React.FC<Props> = ({ sign, addImage }) => {
             },
           };
           client.create(doc).then(() => {
-            console.log("Document created", doc);
+            //console.log("Document created", doc);
             addImage({
               type: file.type,
+              url: urlFor(doc.url.asset._ref).url(),
               id: id,
             });
           });

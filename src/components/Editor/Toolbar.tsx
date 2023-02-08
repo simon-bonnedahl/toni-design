@@ -25,20 +25,23 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
   return (
     <div className="flex h-16 w-screen flex-row items-center justify-between bg-base-200 ">
       <div className="flex h-full items-center pl-4">
-        <div onClick={() => null} className="btn-ghost btn flex space-x-2">
+        <div
+          onClick={() => props.restart()}
+          className="btn-ghost btn flex space-x-2"
+        >
           <FontAwesomeIcon
             className="scale-150 text-primary"
             icon={faRotateBack}
           />
           <span>Börja om</span>
         </div>
-        <div onClick={() => null} className="btn-ghost btn">
+        <div onClick={() => props.undo()} className="btn-ghost btn">
           <FontAwesomeIcon
             className="-rotate-90 scale-150 text-primary"
             icon={faTurnUp}
           />
         </div>
-        <div onClick={() => null} className=" btn-ghost btn">
+        <div onClick={() => props.redo()} className=" btn-ghost btn">
           <FontAwesomeIcon
             className="-rotate-90 scale-150 text-primary"
             icon={faTurnDown}

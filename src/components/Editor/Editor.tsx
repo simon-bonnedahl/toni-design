@@ -14,6 +14,8 @@ import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 import { toPixels } from "./utils";
 import Toolbar from "./Toolbar";
 import { trpc } from "../../utils/trpc";
+import { toast } from "react-toastify";
+import { json } from "stream/consumers";
 const fabric = require("fabric").fabric;
 const { v4: uuidv4 } = require("uuid");
 
@@ -22,7 +24,8 @@ const Editor: React.FC = () => {
   const [canvas, setCanvas] = useState<any>();
   const [zoom, setZoom] = useState(1);
   const [sign, setSign] = useState<Sign>(DEFAULT_SIGN);
-  const history: Sign[] = [];
+  const [history, setHistory] = useState<Sign[]>([]);
+  const [future, setFuture] = useState<Sign[]>([]);
 
   const initCanvas = (canvas: any) => {
     setEditorControls();
@@ -96,9 +99,8 @@ const Editor: React.FC = () => {
     canvas.centerObject(object);
     canvas.renderAll();
     // Add the previous sign to the history.
-    history.push(sign);
     // Update the sign's shape.
-    setSign((prev) => ({ ...prev, shape }));
+    setSign((prev) => ({ ...prev, shape, JSON: canvas.toJSON() }));
   };
 
   const getShape = () => {
@@ -127,9 +129,15 @@ const Editor: React.FC = () => {
     // Re-render the canvas.
     canvas.renderAll();
     // Add the previous sign to the history.
-    history.push(sign);
+    setHistory((prev) => [...prev, sign]);
     // Update sign's width and height.
-    setSign((prev) => ({ ...prev, width, height, depth }));
+    setSign((prev) => ({
+      ...prev,
+      width,
+      height,
+      depth,
+      JSON: canvas.toJSON(),
+    }));
   };
 
   const setColor = (background: string, foreground: string) => {
@@ -161,21 +169,15 @@ const Editor: React.FC = () => {
     // Re-render the canvas.
     canvas.renderAll();
     // Add the previous sign to the history.
-    history.push(sign);
+    setHistory((prev) => [...prev, sign]);
+    console.log([...history, sign]);
     // Update sign's background and foreground colors.
     setSign((prev) => ({
       ...prev,
       backgroundColor: background,
       foregroundColor: foreground,
+      JSON: canvas.toJSON(),
     }));
-    return (
-      <>
-        <FabricJSCanvas
-          className="sample-canvas h-full w-full bg-red-500"
-          onReady={initCanvas}
-        />
-      </>
-    );
   };
   const setApplication = (application: Applications) => {
     // Recalculate the price
@@ -193,15 +195,14 @@ const Editor: React.FC = () => {
     });
     canvas.add(textObject);
     canvas.centerObject(textObject);
+    setHistory((prev) => [...prev, sign]);
+    setSign((prev) => ({ ...prev, JSON: canvas.toJSON() }));
   };
 
   const addImage = async (image: Image) => {
-    //get the Image
-    const imgUrl = await trpc.color.getColors.useQuery(image.id).data;
     if (image.type === "image/svg+xml") {
       //Async load
-      fabric.loadSVGFromURL(imgUrl, function (objects: any, options: any) {
-
+      fabric.loadSVGFromURL(image.url, function (objects: any, options: any) {
         const svg = fabric.util.groupSVGElements(objects, options);
         const scale = sign.width / svg.width;
         svg.set({
@@ -213,49 +214,128 @@ const Editor: React.FC = () => {
         if (svg._objects) {
           for (let i = 0; i < svg._objects.length; i++) {
             svg._objects[i].set({
-              fill: sign.backgroundColor,
+              fill: sign.foregroundColor,
               stroke: sign.foregroundColor,
             });
           }
         } else {
           svg.set({
-            fill: color || sign.textColor,
+            fill: sign.foregroundColor,
           });
         }
 
         canvas.add(svg);
-        if (image.id) {
-          //IF we have visual props
-          const pos = translateTopLeftOrigin(
-            toPixels(image.x),
-            toPixels(image.y)
-          );
-          svg.set({
-            top: pos.top,
-            left: pos.left,
-            scaleX: toPixels(image.width) / svg.width,
-            scaleY: toPixels(image.height) / svg.height,
-            angle: image.angle,
-          });
-        }
-        //Center it
-        if (!image.id) alignObject("center", svg);
+        canvas.centerObject(svg);
         canvas.setActiveObject(svg);
         canvas.renderAll();
-        const pos = translateCenterOrigin(svg.top, svg.left);
-        const state = addObjectToState({
-          ...image,
-          type: "image",
-          id: id,
-          width: toMillimeter(svg.width),
-          height: toMillimeter(svg.height),
-          x: toMillimeter(pos.x),
-          y: toMillimeter(pos.y),
-        });
-        if (updateBackend) {
-          saveSignState(state);
-        }
+        setHistory((prev) => [...prev, sign]);
+        setSign((prev) => ({ ...prev, JSON: canvas.toJSON() }));
+      });
+    }
   };
+
+  const undo = () => {
+    if (history.length <= 0) {
+      toast.error("No more undo's");
+      return;
+    }
+    const prev = history[history.length - 1];
+    setHistory((prev) => prev.slice(0, prev.length - 1));
+    setFuture((prev) => [...prev, sign]);
+    if (prev) recreateSign(prev);
+  };
+  const redo = () => {
+    if (future.length <= 0) {
+      toast.error("No more redo's");
+      return;
+    }
+    const next = future[future.length - 1];
+    setFuture((prev) => prev.slice(0, prev.length - 1));
+    setHistory((prev) => [...prev, sign]);
+    if (next) recreateSign(next);
+  };
+  const restart = () => {
+    setHistory([]);
+    setFuture([]);
+    canvas.clear();
+    setShape(DEFAULT_SIGN.shape);
+    setColor(DEFAULT_SIGN.backgroundColor, DEFAULT_SIGN.foregroundColor);
+    setSize(DEFAULT_SIGN.width, DEFAULT_SIGN.height, DEFAULT_SIGN.depth);
+    setSign(DEFAULT_SIGN);
+  };
+
+  const recreateSign = (sign: Sign) => {
+    setSign(sign);
+    // Clear the canvas.
+    canvas.clear();
+    canvas.loadFromJSON(sign.JSON, function () {
+      canvas.renderAll();
+    });
+  };
+
+  const keyHandler = useCallback(
+    (e: { key: string }) => {
+      const activeObject = canvas.getActiveObject();
+      if (!activeObject) return;
+      if (e.key === "Delete") canvas.remove(activeObject);
+      if (e.key === "ArrowUp") activeObject.top -= 1;
+      if (e.key === "ArrowDown") activeObject.top += 1;
+      if (e.key === "ArrowLeft") activeObject.left -= 1;
+      if (e.key === "ArrowRight") activeObject.left += 1;
+
+      canvas.renderAll();
+      setHistory((prev) => [...prev, sign]);
+      setSign((prev) => ({ ...prev, JSON: canvas.toJSON() }));
+    },
+    [canvas]
+  );
+
+  const handleSelectObject = () => {
+    document.addEventListener("keydown", keyHandler, false);
+  };
+  const handleUnselectObject = () => {
+    document.removeEventListener("keydown", keyHandler, false);
+  };
+
+  const handleMoveObject = (e: any) => {
+    const obj = e.target;
+    const shape = getShape();
+    const padding = 2;
+    if (obj.left < shape.left + padding) {
+      obj.set({ left: shape.left + padding });
+    }
+    if (obj.left > shape.left + shape.width - obj.width * obj.scaleX) {
+      obj.set({
+        left: shape.left + shape.width - obj.width * obj.scaleX,
+      });
+    }
+    if (obj.top < shape.top + padding) {
+      obj.set({ top: shape.top + padding });
+    }
+    if (obj.top > shape.top + shape.height - obj.height * obj.scaleY) {
+      obj.set({
+        top: shape.top + shape.height - obj.height * obj.scaleY,
+      });
+    }
+  };
+
+  const handleModifyObject = (e: any) => {
+    setHistory((prev) => [...prev, sign]);
+    setSign((prev) => ({ ...prev, JSON: canvas.toJSON() }));
+  };
+
+  canvas?.on({
+    "selection:created": handleSelectObject,
+    "selection:cleared": handleUnselectObject,
+    "object:moving": handleMoveObject,
+    "object:modified": handleModifyObject,
+  });
+
+  // Update the shape when the canvas is ready.
+  useMemo(() => {
+    if (canvas) setShape(sign.shape);
+  }, [canvas]);
+
   const props: ToolbarProps = {
     sign,
     setShape,
@@ -264,19 +344,10 @@ const Editor: React.FC = () => {
     addText,
     addImage,
     setApplication,
+    undo,
+    redo,
+    restart,
   };
-
-  const undo = () => {
-    if (history.length > 0) {
-      const prev = history[history.length - 1];
-      if (prev) setSign(prev);
-    }
-  };
-  const redo = () => {};
-  // Update the shape when the canvas is ready.
-  useMemo(() => {
-    if (canvas) setShape(sign.shape);
-  }, [canvas]);
 
   return (
     <div className="relative h-full w-full">
