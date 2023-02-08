@@ -46,13 +46,17 @@ type Text = {
   fontSize: number;
   fontFamily: string;
 };
-
+type Image = {
+  type: string;
+  id: any;
+};
 type ToolbarProps = {
   sign: Sign;
   setShape: (shape: Shapes) => void;
   setSize: (width: number, height: number, depth: number) => void;
   setColor: (background: string, foreground: string) => void;
   addText: (text: Text) => void;
+  addImage: (image: Image) => void;
   setApplication: (application: Applications) => void;
 };
 
@@ -63,6 +67,7 @@ export {
   DEFAULT_SIGN,
   Sign,
   Text,
+  Image,
   ToolbarProps,
   SignTypes,
   Applications,

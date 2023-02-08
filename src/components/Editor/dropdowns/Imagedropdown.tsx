@@ -6,18 +6,21 @@ import { useDispatch } from "react-redux";
 import { addCommand } from "../../../../reducers/editorSlice";
 
 import client from "../../../../sanity";
+import { Image, Sign } from "../../../types/sign.d";
 const { v4: uuidv4 } = require("uuid");
-const Imagedropdown: React.FC = () => {
-  const dispatch = useDispatch();
-  const [image, setImage] = useState<any>(null);
 
+type Props = {
+  sign: Sign;
+  addImage: (image: Image) => void;
+};
+
+const Imagedropdown: React.FC<Props> = ({ sign, addImage }) => {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
 
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      console.log(file);
-      const imgId = uuidv4();
+      const id = uuidv4();
       client.assets
         .upload("image", file, {
           contentType: file.type,
@@ -26,7 +29,7 @@ const Imagedropdown: React.FC = () => {
         .then((document) => {
           const doc = {
             _type: "asset",
-            id: imgId,
+            id: id,
             url: {
               _type: "image",
               asset: {
@@ -36,9 +39,9 @@ const Imagedropdown: React.FC = () => {
           };
           client.create(doc).then(() => {
             console.log("Document created", doc);
-            setImage({
+            addImage({
               type: file.type,
-              imgId: imgId,
+              id: id,
             });
           });
         })
@@ -47,26 +50,11 @@ const Imagedropdown: React.FC = () => {
         });
     }
   };
-  useEffect(() => {
-    console.log(image);
-    if (image)
-      dispatch(
-        addCommand({
-          command: "addImage",
-          value: { imageType: image.type, imageId: image.imgId },
-        })
-      );
-  }, [image, dispatch]);
 
   return (
     <div className="dropdown">
-      <label
-        onClick={() => dispatch(addCommand({ command: "closeCart" }))}
-        tabIndex={0}
-        className="btn-outline btn-primary btn m-1 flex space-x-2"
-      >
-        <p className="text-content-primary">Bild</p>
-        <FontAwesomeIcon icon={faImage} className="scale-110" />
+      <label tabIndex={0} className="btn-outline btn-primary btn m-1 p-4">
+        <FontAwesomeIcon icon={faImage} className="scale-150" />
       </label>
       <div
         tabIndex={0}

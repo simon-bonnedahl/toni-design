@@ -7,7 +7,6 @@ import Canvas from "../components/Canvas";
 import Editor from "../components/Editor/Editor";
 import HeaderBar from "../components/HeaderBar";
 import Navbar from "../components/Navbar";
-import Topbar from "../components/Topbar";
 
 const Home: NextPage = () => {
   const { data: session } = useSession();

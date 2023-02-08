@@ -46,8 +46,7 @@ const Applicationdropdown: React.FC<Props> = ({ sign, setApplication }) => {
         tabIndex={0}
         className="btn-outline btn-primary btn m-1 flex space-x-2"
       >
-        <p className="text-content-primary">Fästmetod</p>
-        <FontAwesomeIcon icon={faScrewdriverWrench} className="scale-110" />
+        <FontAwesomeIcon icon={faScrewdriverWrench} className="scale-150" />
       </label>
       <div
         tabIndex={0}

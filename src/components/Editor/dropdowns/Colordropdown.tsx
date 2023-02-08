@@ -14,13 +14,8 @@ const Colordropdown: React.FC<Props> = ({ sign, setColor }) => {
 
   return (
     <div className="dropdown">
-      <label
-        tabIndex={0}
-        className="btn-outline btn-primary btn m-1 flex space-x-2"
-      >
-        <p className="text-content-primary">Färg</p>
-
-        <FontAwesomeIcon className="scale-110" icon={faDroplet} />
+      <label tabIndex={0} className="btn-outline btn-primary btn m-1 p-4">
+        <FontAwesomeIcon className="scale-150" icon={faDroplet} />
       </label>
       <div
         tabIndex={0}

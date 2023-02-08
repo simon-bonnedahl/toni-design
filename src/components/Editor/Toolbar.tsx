@@ -67,8 +67,8 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
         <Sizedropdown sign={props.sign} setSize={props.setSize} />
         <Colordropdown sign={props.sign} setColor={props.setColor} />
         <Shapedropdown sign={props.sign} setShape={props.setShape} />
-        <Textdropdown />
-        <Imagedropdown />
+        <Textdropdown sign={props.sign} addText={props.addText} />
+        <Imagedropdown sign={props.sign} addImage={props.addImage} />
       </div>
       {/*Size*/}
       <div

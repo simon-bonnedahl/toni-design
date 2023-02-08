@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Shapes, Sign } from "../../../types/sign.d";
 
 type Props = {
@@ -59,15 +57,9 @@ const Shapedropdown: React.FC<Props> = ({ sign, setShape }) => {
     }
   };
 
-  const dispatch = useDispatch();
-
   return (
     <div className="dropdown">
-      <label
-        tabIndex={0}
-        className="btn-outline btn-primary btn m-1 flex space-x-2"
-      >
-        <p className="text-content-primary">Form</p>
+      <label tabIndex={0} className="p4 btn-outline btn-primary btn m-1">
         {getIconSmall(sign.shape)}
       </label>
       <div

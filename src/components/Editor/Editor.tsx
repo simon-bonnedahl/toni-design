@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   Applications,
   DEFAULT_SIGN,
+  Image,
   Shapes,
   Sign,
   Text,
@@ -12,6 +13,7 @@ import {
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 import { toPixels } from "./utils";
 import Toolbar from "./Toolbar";
+import { trpc } from "../../utils/trpc";
 const fabric = require("fabric").fabric;
 const { v4: uuidv4 } = require("uuid");
 
@@ -20,7 +22,7 @@ const Editor: React.FC = () => {
   const [canvas, setCanvas] = useState<any>();
   const [zoom, setZoom] = useState(1);
   const [sign, setSign] = useState<Sign>(DEFAULT_SIGN);
-  const history = [];
+  const history: Sign[] = [];
 
   const initCanvas = (canvas: any) => {
     setEditorControls();
@@ -93,7 +95,8 @@ const Editor: React.FC = () => {
     // Center the shape in the canvas.
     canvas.centerObject(object);
     canvas.renderAll();
-
+    // Add the previous sign to the history.
+    history.push(sign);
     // Update the sign's shape.
     setSign((prev) => ({ ...prev, shape }));
   };
@@ -123,6 +126,8 @@ const Editor: React.FC = () => {
     canvas.centerObject(shape);
     // Re-render the canvas.
     canvas.renderAll();
+    // Add the previous sign to the history.
+    history.push(sign);
     // Update sign's width and height.
     setSign((prev) => ({ ...prev, width, height, depth }));
   };
@@ -155,6 +160,8 @@ const Editor: React.FC = () => {
     }
     // Re-render the canvas.
     canvas.renderAll();
+    // Add the previous sign to the history.
+    history.push(sign);
     // Update sign's background and foreground colors.
     setSign((prev) => ({
       ...prev,
@@ -172,6 +179,7 @@ const Editor: React.FC = () => {
   };
   const setApplication = (application: Applications) => {
     // Recalculate the price
+
     setSign((prev) => ({ ...prev, application }));
   };
 
@@ -186,15 +194,85 @@ const Editor: React.FC = () => {
     canvas.add(textObject);
     canvas.centerObject(textObject);
   };
+
+  const addImage = async (image: Image) => {
+    //get the Image
+    const imgUrl = await trpc.color.getColors.useQuery(image.id).data;
+    if (image.type === "image/svg+xml") {
+      //Async load
+      fabric.loadSVGFromURL(imgUrl, function (objects: any, options: any) {
+
+        const svg = fabric.util.groupSVGElements(objects, options);
+        const scale = sign.width / svg.width;
+        svg.set({
+          id: image.id,
+          scaleX: scale,
+          scaleY: scale,
+        });
+
+        if (svg._objects) {
+          for (let i = 0; i < svg._objects.length; i++) {
+            svg._objects[i].set({
+              fill: sign.backgroundColor,
+              stroke: sign.foregroundColor,
+            });
+          }
+        } else {
+          svg.set({
+            fill: color || sign.textColor,
+          });
+        }
+
+        canvas.add(svg);
+        if (image.id) {
+          //IF we have visual props
+          const pos = translateTopLeftOrigin(
+            toPixels(image.x),
+            toPixels(image.y)
+          );
+          svg.set({
+            top: pos.top,
+            left: pos.left,
+            scaleX: toPixels(image.width) / svg.width,
+            scaleY: toPixels(image.height) / svg.height,
+            angle: image.angle,
+          });
+        }
+        //Center it
+        if (!image.id) alignObject("center", svg);
+        canvas.setActiveObject(svg);
+        canvas.renderAll();
+        const pos = translateCenterOrigin(svg.top, svg.left);
+        const state = addObjectToState({
+          ...image,
+          type: "image",
+          id: id,
+          width: toMillimeter(svg.width),
+          height: toMillimeter(svg.height),
+          x: toMillimeter(pos.x),
+          y: toMillimeter(pos.y),
+        });
+        if (updateBackend) {
+          saveSignState(state);
+        }
+  };
   const props: ToolbarProps = {
     sign,
     setShape,
     setSize,
     setColor,
     addText,
+    addImage,
     setApplication,
   };
 
+  const undo = () => {
+    if (history.length > 0) {
+      const prev = history[history.length - 1];
+      if (prev) setSign(prev);
+    }
+  };
+  const redo = () => {};
   // Update the shape when the canvas is ready.
   useMemo(() => {
     if (canvas) setShape(sign.shape);
