@@ -1,12 +1,16 @@
 import { faFileText } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDispatch, useSelector } from "react-redux";
-import { addCommand } from "../../../reducers/editorSlice";
-import { getSignVisual } from "../../../reducers/signSlice";
+import { addCommand } from "../../../../reducers/editorSlice";
+import { getSignVisual } from "../../../../reducers/signSlice";
+import { Sign, Text } from "../../../types/sign.d";
 
-const Textdropdown: React.FC = () => {
-  const textColor = useSelector(getSignVisual).textColor;
+type Props = {
+  sign: Sign;
+  addText: (text: Text) => void;
+};
 
+const Textdropdown: React.FC<Props> = ({ sign, addText }) => {
   const fonts = [
     "Arial",
     "Verdana",
@@ -25,23 +29,21 @@ const Textdropdown: React.FC = () => {
       .value;
     const font = (document.getElementById("font-select") as HTMLInputElement)
       .value;
-    const t = {
-      string: string,
-      font: font,
+    const text: Text = {
+      text: string,
+      fontFamily: font,
       fontSize: 40,
-      color: textColor,
     };
-    dispatch(addCommand({ command: "addText", value: t }));
+    addText(text);
   };
   return (
     <div className="dropdown">
       <label
         onClick={() => dispatch(addCommand({ command: "closeCart" }))}
         tabIndex={0}
-        className="btn-outline btn-primary btn m-1 flex space-x-2"
+        className="btn-outline btn-primary btn m-1 p-4"
       >
-        <p className="text-content-primary">Text</p>
-        <FontAwesomeIcon icon={faFileText} className="scale-110" />
+        <FontAwesomeIcon icon={faFileText} className="scale-150" />
       </label>
       <div
         tabIndex={0}

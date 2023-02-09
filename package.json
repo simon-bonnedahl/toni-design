@@ -37,6 +37,7 @@
     "fabric": "^5.3.0",
     "fabricjs-react": "^1.1.1",
     "jszip": "^3.10.1",
+    "localStorage": "^1.0.4",
     "multer": "^1.4.5-lts.1",
     "next": "^13.1.1",
     "next-auth": "^4.18.7",

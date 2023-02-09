@@ -8,8 +8,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addCommand } from "../../reducers/editorSlice";
-import { getSignVisual } from "../../reducers/signSlice";
+import { ToolbarProps } from "../../types/sign";
 import Applicationdropdown from "./dropdowns/Applicationdropdown";
 import Colordropdown from "./dropdowns/Colordropdown";
 import Imagedropdown from "./dropdowns/Imagedropdown";
@@ -18,10 +17,7 @@ import Shapedropdown from "./dropdowns/Shapedropdown";
 import Sizedropdown from "./dropdowns/Sizedropdown";
 import Textdropdown from "./dropdowns/Textdrowdown";
 
-const Topbar: React.FC = () => {
-  const sign = useSelector(getSignVisual);
-  const dispatch = useDispatch();
-
+const Toolbar: React.FC<ToolbarProps> = (props) => {
   const openSizeDropdown = () => {
     document.getElementById("size-dropdown")?.focus();
   };
@@ -30,9 +26,7 @@ const Topbar: React.FC = () => {
     <div className="flex h-16 w-screen flex-row items-center justify-between bg-base-200 ">
       <div className="flex h-full items-center pl-4">
         <div
-          onClick={() =>
-            dispatch(addCommand({ command: "reset", value: null }))
-          }
+          onClick={() => props.restart()}
           className="btn-ghost btn flex space-x-2"
         >
           <FontAwesomeIcon
@@ -41,45 +35,25 @@ const Topbar: React.FC = () => {
           />
           <span>Börja om</span>
         </div>
-        <div
-          onClick={() =>
-            dispatch(addCommand({ command: "goBack", value: null }))
-          }
-          className="btn-ghost btn"
-        >
+        <div onClick={() => props.undo()} className="btn-ghost btn">
           <FontAwesomeIcon
             className="-rotate-90 scale-150 text-primary"
             icon={faTurnUp}
           />
         </div>
-        <div
-          onClick={() =>
-            dispatch(addCommand({ command: "goForward", value: null }))
-          }
-          className=" btn-ghost btn"
-        >
+        <div onClick={() => props.redo()} className=" btn-ghost btn">
           <FontAwesomeIcon
             className="-rotate-90 scale-150 text-primary"
             icon={faTurnDown}
           />
         </div>
-        <div
-          onClick={() =>
-            dispatch(addCommand({ command: "zoomOut", value: null }))
-          }
-          className="btn-ghost btn"
-        >
+        <div onClick={() => null} className="btn-ghost btn">
           <FontAwesomeIcon
             className="scale-150 text-primary"
             icon={faMagnifyingGlassMinus}
           />
         </div>
-        <div
-          onClick={() =>
-            dispatch(addCommand({ command: "zoomIn", value: null }))
-          }
-          className=" btn-ghost btn"
-        >
+        <div onClick={() => null} className=" btn-ghost btn">
           <FontAwesomeIcon
             className="scale-150 text-primary"
             icon={faMagnifyingGlassPlus}
@@ -89,12 +63,15 @@ const Topbar: React.FC = () => {
       {/*Dropdowns*/}
       <div className="flex space-x-2">
         <Productdropdown />
-        <Applicationdropdown />
-        <Sizedropdown />
-        <Colordropdown />
-        <Shapedropdown />
-        <Textdropdown />
-        <Imagedropdown />
+        <Applicationdropdown
+          sign={props.sign}
+          setApplication={props.setApplication}
+        />
+        <Sizedropdown sign={props.sign} setSize={props.setSize} />
+        <Colordropdown sign={props.sign} setColor={props.setColor} />
+        <Shapedropdown sign={props.sign} setShape={props.setShape} />
+        <Textdropdown sign={props.sign} addText={props.addText} />
+        <Imagedropdown sign={props.sign} addImage={props.addImage} />
       </div>
       {/*Size*/}
       <div
@@ -102,17 +79,17 @@ const Topbar: React.FC = () => {
         className="mr-4 flex h-full items-center space-x-4 text-sm font-light hover:cursor-pointer"
       >
         <div>
-          <span className="font-bold">Bredd:</span> {sign.width} mm
+          <span className="font-bold">Bredd:</span> {props.sign.width} mm
         </div>
         <div>
-          <span className="font-bold"> Höjd:</span> {sign.height} mm
+          <span className="font-bold"> Höjd:</span> {props.sign.height} mm
         </div>
         <div>
-          <span className="font-bold">Djup:</span> 1 mm
+          <span className="font-bold">Djup:</span> {props.sign.depth} mm
         </div>
       </div>
     </div>
   );
 };
 
-export default Topbar;
+export default Toolbar;

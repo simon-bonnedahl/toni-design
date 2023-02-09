@@ -2,8 +2,11 @@ import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addCommand } from "../../../reducers/editorSlice";
-import { getSignMetadata, setSignProduct } from "../../../reducers/signSlice";
+import { addCommand } from "../../../../reducers/editorSlice";
+import {
+  getSignMetadata,
+  setSignProduct,
+} from "../../../../reducers/signSlice";
 
 const Productdropdown: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState(
@@ -31,10 +34,9 @@ const Productdropdown: React.FC = () => {
       <label
         onClick={() => dispatch(addCommand({ command: "closeCart" }))}
         tabIndex={0}
-        className="btn-outline btn-primary btn m-1 flex space-x-2"
+        className="btn-outline btn-primary btn m-1 p-4"
       >
-        <p className="text-content-primary">Produkt</p>
-        <FontAwesomeIcon icon={faChevronDown} className="scale-110" />
+        <FontAwesomeIcon icon={faChevronDown} className="scale-150" />
       </label>
       <div
         tabIndex={0}

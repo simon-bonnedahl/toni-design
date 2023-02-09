@@ -3,18 +3,24 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { addCommand } from "../../../reducers/editorSlice";
-import { getSignVisual } from "../../../reducers/signSlice";
+import { addCommand } from "../../../../reducers/editorSlice";
+import { getSignVisual } from "../../../../reducers/signSlice";
+import { Sign } from "../../../types/sign.d";
 
-const Sizedropdown: React.FC = () => {
-  const [width, setWidth] = useState(useSelector(getSignVisual).width);
-  const [height, setHeight] = useState(useSelector(getSignVisual).height);
+type Props = {
+  sign: Sign;
+  setSize: (width: number, height: number, depth: number) => void;
+};
+
+const Sizedropdown: React.FC<Props> = ({ sign, setSize }) => {
+  const [width, setWidth] = useState(sign.width);
+  const [height, setHeight] = useState(sign.height);
+  const [depth, setDepth] = useState(sign.depth);
+
   const MIN_HEIHGT = 5;
   const MAX_HEIGHT = 200;
   const MIN_WIDTH = 5;
   const MAX_WIDTH = 400;
-
-  const dispatch = useDispatch();
 
   const handleSetSize = () => {
     if (!(MIN_WIDTH <= width && width <= MAX_WIDTH)) {
@@ -39,13 +45,7 @@ const Sizedropdown: React.FC = () => {
       );
       return;
     }
-    console.log("Sending");
-    dispatch(
-      addCommand({
-        command: "setSize",
-        value: { width: width, height: height },
-      })
-    );
+    setSize(width, height, depth);
   };
 
   return (
@@ -53,12 +53,9 @@ const Sizedropdown: React.FC = () => {
       <label
         id="size-dropdown"
         tabIndex={0}
-        onClick={() => dispatch(addCommand({ command: "closeCart" }))}
         className="btn-outline btn-primary btn m-1 flex space-x-2"
       >
-        <p className="text-content-primary">Storlek</p>
-
-        <FontAwesomeIcon icon={faExpand} className="scale-110" />
+        <FontAwesomeIcon icon={faExpand} className="scale-150" />
       </label>
       <div
         tabIndex={0}
@@ -79,7 +76,7 @@ const Sizedropdown: React.FC = () => {
                 type="number"
                 id="widthInput"
                 value={width}
-                onChange={(e) => setWidth(e.target.value)}
+                onChange={(e) => setWidth(parseInt(e.target.value))}
               />
               <span className="bg-primary text-primary-content">mm</span>
             </label>
@@ -94,7 +91,7 @@ const Sizedropdown: React.FC = () => {
                 className="input w-full bg-base-100"
                 type="number"
                 value={height}
-                onChange={(e) => setHeight(e.target.value)}
+                onChange={(e) => setHeight(parseInt(e.target.value))}
               />
               <span className="bg-primary text-primary-content">mm</span>
             </label>

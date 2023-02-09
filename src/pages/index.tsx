@@ -4,9 +4,9 @@ import Head from "next/head";
 import Link from "next/link";
 import Bottombar from "../components/Bottombar";
 import Canvas from "../components/Canvas";
+import Editor from "../components/Editor/Editor";
 import HeaderBar from "../components/HeaderBar";
 import Navbar from "../components/Navbar";
-import Topbar from "../components/Topbar";
 
 const Home: NextPage = () => {
   const { data: session } = useSession();
@@ -20,10 +20,9 @@ const Home: NextPage = () => {
       <main className="flex h-screen w-screen flex-col bg-base-100">
         <HeaderBar />
         <Navbar />
-        <Topbar />
 
         <div className="flex max-h-[75%] flex-1">
-          <Canvas />
+          <Editor />
         </div>
         <Bottombar />
       </main>
