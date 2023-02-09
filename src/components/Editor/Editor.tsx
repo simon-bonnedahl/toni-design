@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import { json } from "stream/consumers";
 const fabric = require("fabric").fabric;
 const { v4: uuidv4 } = require("uuid");
+var localStorage = require("localStorage");
 
 const Editor: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor();
@@ -258,6 +259,7 @@ const Editor: React.FC = () => {
     setHistory([]);
     setFuture([]);
     canvas.clear();
+    localStorage.clear();
     setShape(DEFAULT_SIGN.shape);
     setColor(DEFAULT_SIGN.backgroundColor, DEFAULT_SIGN.foregroundColor);
     setSize(DEFAULT_SIGN.width, DEFAULT_SIGN.height, DEFAULT_SIGN.depth);
@@ -266,11 +268,13 @@ const Editor: React.FC = () => {
 
   const recreateSign = (sign: Sign) => {
     setSign(sign);
+
     // Clear the canvas.
+    if (sign.JSON === "") return;
     canvas.clear();
-    canvas.loadFromJSON(sign.JSON, function () {
-      canvas.renderAll();
-    });
+    canvas.loadFromJSON(sign.JSON, function () {});
+    setShape(sign.shape);
+    setColor(sign.backgroundColor, sign.foregroundColor);
   };
 
   const keyHandler = useCallback(
@@ -333,8 +337,20 @@ const Editor: React.FC = () => {
 
   // Update the shape when the canvas is ready.
   useMemo(() => {
-    if (canvas) setShape(sign.shape);
+    if (canvas) {
+      if (localStorage.getItem("sign")) {
+        const sign = JSON.parse(localStorage.getItem("sign") as string);
+        recreateSign(sign);
+      } else {
+        setShape(sign.shape);
+      }
+    }
   }, [canvas]);
+
+  useEffect(() => {
+    if (sign.JSON === "") return;
+    localStorage.setItem("sign", JSON.stringify(sign));
+  }, [sign]);
 
   const props: ToolbarProps = {
     sign,
