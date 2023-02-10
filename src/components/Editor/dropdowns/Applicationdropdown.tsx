@@ -1,11 +1,7 @@
-import {
-  faChevronDown,
-  faScrewdriverWrench,
-} from "@fortawesome/free-solid-svg-icons";
+import { faScrewdriverWrench } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addCommand } from "../../../../reducers/editorSlice";
 import {
   getSignMetadata,
   setSignApplication,

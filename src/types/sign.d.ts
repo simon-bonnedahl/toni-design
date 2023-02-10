@@ -8,8 +8,11 @@ type Sign = {
   shape: Shapes;
   backgroundColor: string;
   foregroundColor: string;
+  colorCombination: string;
   application: Applications;
   JSON: string;
+  SVG: string;
+  price: number;
 };
 enum Shapes {
   RECTANGLE = 1,
@@ -37,8 +40,11 @@ const DEFAULT_SIGN: Sign = {
   shape: Shapes.ROUNDED_RECTANGLE,
   backgroundColor: "#ffffff",
   foregroundColor: "#000000",
+  colorCombination: "white/black",
   application: Applications.NONE,
   JSON: "",
+  SVG: "",
+  price: 0,
 };
 
 type Text = {

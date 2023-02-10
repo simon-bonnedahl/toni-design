@@ -1,8 +1,6 @@
 import { faFileText } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useDispatch, useSelector } from "react-redux";
-import { addCommand } from "../../../../reducers/editorSlice";
-import { getSignVisual } from "../../../../reducers/signSlice";
+import { useDispatch } from "react-redux";
 import { Sign, Text } from "../../../types/sign.d";
 
 type Props = {
@@ -38,11 +36,7 @@ const Textdropdown: React.FC<Props> = ({ sign, addText }) => {
   };
   return (
     <div className="dropdown">
-      <label
-        onClick={() => dispatch(addCommand({ command: "closeCart" }))}
-        tabIndex={0}
-        className="btn-outline btn-primary btn m-1 p-4"
-      >
+      <label tabIndex={0} className="btn-outline btn-primary btn m-1 p-4">
         <FontAwesomeIcon icon={faFileText} className="scale-150" />
       </label>
       <div

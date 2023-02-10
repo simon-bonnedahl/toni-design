@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import {
   Applications,
   DEFAULT_SIGN,
@@ -13,9 +12,11 @@ import {
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 import { toPixels } from "./utils";
 import Toolbar from "./Toolbar";
-import { trpc } from "../../utils/trpc";
 import { toast } from "react-toastify";
-import { json } from "stream/consumers";
+import Bottombar from "./Bottombar";
+import { AdjustableProduct } from "../../types/product";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../../reducers/cartSlice";
 const fabric = require("fabric").fabric;
 const { v4: uuidv4 } = require("uuid");
 var localStorage = require("localStorage");
@@ -27,6 +28,8 @@ const Editor: React.FC = () => {
   const [sign, setSign] = useState<Sign>(DEFAULT_SIGN);
   const [history, setHistory] = useState<Sign[]>([]);
   const [future, setFuture] = useState<Sign[]>([]);
+
+  const dispatch = useDispatch();
 
   const initCanvas = (canvas: any) => {
     setEditorControls();
@@ -277,10 +280,61 @@ const Editor: React.FC = () => {
     setColor(sign.backgroundColor, sign.foregroundColor);
   };
 
+  const generateSVG = () => {
+    //remove the shadow and set it to the right size
+    getShape().set({
+      shadow: null,
+      width: toPixels(sign.width, zoom),
+      height: toPixels(sign.height, zoom),
+      fill: "#ffffff",
+      stroke: "#ff0000",
+      strokeWidth: 2,
+    });
+
+    //loop through all objects and fill with black
+    for (let i = 1; i < canvas._objects.length; i++) {
+      const object = canvas._objects[i];
+      if (object.type === "i-text") {
+        object.set({ fill: "#000000" });
+      } else if (object.type === "group") {
+        //svg group
+        for (let i = 0; i < object._objects.length; i++) {
+          object._objects[i].set({
+            fill: "#000000",
+            stroke: "#000000",
+          });
+        }
+      } else if (object.type == "path") {
+        //svg path
+        object.set({
+          fill: "#000000",
+        });
+      }
+    }
+    const svg = canvas.toSVG();
+    //Crop it?
+    return svg;
+  };
+
+  const addSignToCart = () => {
+    if (sign.JSON === "") {
+      toast.warning("Sign is empty");
+    }
+    const product: AdjustableProduct = {
+      sign: sign,
+      id: uuidv4(),
+      title: "Skylt-Gravyr",
+      imageUrl: canvas.toDataURL("image/jpeg", 1.0),
+      SVG: generateSVG(),
+    };
+    dispatch(addToCart(product));
+  };
+
   const keyHandler = useCallback(
     (e: { key: string }) => {
       const activeObject = canvas.getActiveObject();
       if (!activeObject) return;
+      console.log(e.key);
       if (e.key === "Delete") canvas.remove(activeObject);
       if (e.key === "ArrowUp") activeObject.top -= 1;
       if (e.key === "ArrowDown") activeObject.top += 1;
@@ -372,6 +426,7 @@ const Editor: React.FC = () => {
         className="sample-canvas h-full w-full bg-base-100"
         onReady={initCanvas}
       />
+      <Bottombar />
     </div>
   );
 };

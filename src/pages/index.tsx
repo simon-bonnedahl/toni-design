@@ -1,16 +1,10 @@
 import type { NextPage } from "next";
-import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
-import Link from "next/link";
-import Bottombar from "../components/Bottombar";
-import Canvas from "../components/Canvas";
 import Editor from "../components/Editor/Editor";
 import HeaderBar from "../components/HeaderBar";
 import Navbar from "../components/Navbar";
 
 const Home: NextPage = () => {
-  const { data: session } = useSession();
-
   return (
     <>
       <Head>
@@ -24,7 +18,6 @@ const Home: NextPage = () => {
         <div className="flex max-h-[75%] flex-1">
           <Editor />
         </div>
-        <Bottombar />
       </main>
     </>
   );

@@ -1,17 +1,33 @@
 import { z } from "zod";
+import Sign from "./sign.d";
 
 const Product = z.object({
   id: z.string(),
-  name: z.string(),
+  title: z.string(),
   price: z.number(),
   description: z.string(),
+  width: z.number(),
+  height: z.number(),
   image: z.string(),
   category: z.string(),
 });
 
-const CollectionItem = z.object({
+const AdjustableProduct = z.object({
+  sign: Sign,
   id: z.string(),
-  name: z.string(),
+  title: z.string(),
   price: z.number(),
   imageUrl: z.string(),
+  JSON: z.string(),
+  SVG: z.string(),
 });
+
+export type AdjustableProduct = {
+  sign: Sign;
+  id: string;
+  title: string;
+  imageUrl: string;
+  SVG: string;
+};
+
+export type Product = z.infer<typeof Product>;

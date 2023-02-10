@@ -9,7 +9,6 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { addToCart, removeFromCart } from "../../reducers/cartSlice";
-import { addCommand } from "../../reducers/editorSlice";
 import { setSign } from "../../reducers/signSlice";
 
 interface Props {
@@ -46,10 +45,13 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
   };
   const handleOpenSign = () => {
     console.log(item);
-    dispatch(setSign({ sign: item }));
+    //dispatch(setSign({ sign: item }));
+    //put the sign in the localStorage
+    localStorage.setItem("sign", JSON.stringify(item));
     router.push("/");
 
-    dispatch(addCommand({ command: "reCreate", value: item.visual }));
+    //dispatch(addCommand({ command: "reCreate", value: item.visual }));
+
     //handleRemoveItem();
   };
 

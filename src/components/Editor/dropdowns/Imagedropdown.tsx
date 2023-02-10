@@ -1,9 +1,6 @@
 /* eslint @typescript-eslint/no-var-requires: "off" */
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { addCommand } from "../../../../reducers/editorSlice";
 
 import client, { urlFor } from "../../../../sanity";
 import { Image, Sign } from "../../../types/sign.d";
