@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   Applications,
   DEFAULT_SIGN,
@@ -10,13 +16,18 @@ import {
 } from "../../types/sign.d";
 
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
-import { toPixels } from "./utils";
+import { calculatePrice, toPixels } from "./utils";
 import Toolbar from "./Toolbar";
 import { toast } from "react-toastify";
 import Bottombar from "./Bottombar";
 import { AdjustableProduct } from "../../types/product";
-import { useDispatch } from "react-redux";
-import { addToCart } from "../../../reducers/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addToCart,
+  getModify,
+  toggleModify,
+} from "../../../reducers/cartSlice";
+import mod from "zod/lib";
 const fabric = require("fabric").fabric;
 const { v4: uuidv4 } = require("uuid");
 var localStorage = require("localStorage");
@@ -30,11 +41,15 @@ const Editor: React.FC = () => {
   const [future, setFuture] = useState<Sign[]>([]);
 
   const dispatch = useDispatch();
+  const modify = useSelector(getModify);
 
   const initCanvas = (canvas: any) => {
     setEditorControls();
     onReady(canvas);
     setCanvas(canvas);
+    window.onstorage = (e) => {
+      console.log("hej");
+    };
   };
   const setEditorControls = () => {
     const s = fabric.Object.prototype.set({
@@ -54,7 +69,7 @@ const Editor: React.FC = () => {
     // The shape's width and height will be the same as the sign's.
     const shapeWidth = toPixels(sign.width, zoom);
     const shapeHeight = toPixels(sign.height, zoom);
-
+    console.log("setShape", shape);
     // Create the shape, setting it's fill color and size.
     let object = null;
     switch (shape) {
@@ -99,12 +114,14 @@ const Editor: React.FC = () => {
 
     // Replace the shape in the canvas.
     canvas._objects[0] = object;
+
+    const price = calculatePrice(sign.width, sign.height, sign.application);
     // Center the shape in the canvas.
     canvas.centerObject(object);
     canvas.renderAll();
     // Add the previous sign to the history.
     // Update the sign's shape.
-    setSign((prev) => ({ ...prev, shape, JSON: canvas.toJSON() }));
+    setSign((prev) => ({ ...prev, shape, price, JSON: canvas.toJSON() }));
   };
 
   const getShape = () => {
@@ -128,6 +145,7 @@ const Editor: React.FC = () => {
         height: heightPx,
       });
     }
+    const price = calculatePrice(width, height, sign.application);
     // Center the shape in the canvas.
     canvas.centerObject(shape);
     // Re-render the canvas.
@@ -140,12 +158,14 @@ const Editor: React.FC = () => {
       width,
       height,
       depth,
+      price,
       JSON: canvas.toJSON(),
     }));
   };
 
   const setColor = (background: string, foreground: string) => {
     // Set the shape's fill color.
+    console.log("Color", canvas);
     const shape = getShape();
     shape.set({
       fill: background,
@@ -185,8 +205,8 @@ const Editor: React.FC = () => {
   };
   const setApplication = (application: Applications) => {
     // Recalculate the price
-
-    setSign((prev) => ({ ...prev, application }));
+    const price = calculatePrice(sign.width, sign.height, application);
+    setSign((prev) => ({ ...prev, application, price }));
   };
 
   const addText = (text: Text) => {
@@ -270,10 +290,14 @@ const Editor: React.FC = () => {
   };
 
   const recreateSign = (sign: Sign) => {
+    console.log(sign);
     setSign(sign);
 
     // Clear the canvas.
-    if (sign.JSON === "") return;
+    if (sign.JSON === "") {
+      toast.warning("No sign to recreate");
+      return;
+    }
     canvas.clear();
     canvas.loadFromJSON(sign.JSON, function () {});
     setShape(sign.shape);
@@ -282,37 +306,41 @@ const Editor: React.FC = () => {
 
   const generateSVG = () => {
     //remove the shadow and set it to the right size
-    getShape().set({
-      shadow: null,
-      width: toPixels(sign.width, zoom),
-      height: toPixels(sign.height, zoom),
-      fill: "#ffffff",
-      stroke: "#ff0000",
-      strokeWidth: 2,
-    });
+    //clone the canvas
+    let svg = "";
+    canvas.clone(function (newCanvas: any) {
+      newCanvas._objects[0].set({
+        shadow: null,
+        width: toPixels(sign.width, zoom),
+        height: toPixels(sign.height, zoom),
+        fill: "#ffffff",
+        stroke: "#ff0000",
+        strokeWidth: 2,
+      });
 
-    //loop through all objects and fill with black
-    for (let i = 1; i < canvas._objects.length; i++) {
-      const object = canvas._objects[i];
-      if (object.type === "i-text") {
-        object.set({ fill: "#000000" });
-      } else if (object.type === "group") {
-        //svg group
-        for (let i = 0; i < object._objects.length; i++) {
-          object._objects[i].set({
+      //loop through all objects and fill with black
+      for (let i = 1; i < newCanvas._objects.length; i++) {
+        const object = newCanvas._objects[i];
+        if (object.type === "i-text") {
+          object.set({ fill: "#000000" });
+        } else if (object.type === "group") {
+          //svg group
+          for (let i = 0; i < object._objects.length; i++) {
+            object._objects[i].set({
+              fill: "#000000",
+              stroke: "#000000",
+            });
+          }
+        } else if (object.type == "path") {
+          //svg path
+          object.set({
             fill: "#000000",
-            stroke: "#000000",
           });
         }
-      } else if (object.type == "path") {
-        //svg path
-        object.set({
-          fill: "#000000",
-        });
       }
-    }
-    const svg = canvas.toSVG();
-    //Crop it?
+      svg = newCanvas.toSVG();
+      //Crop it?
+    });
     return svg;
   };
 
@@ -326,6 +354,7 @@ const Editor: React.FC = () => {
       title: "Skylt-Gravyr",
       imageUrl: canvas.toDataURL("image/jpeg", 1.0),
       SVG: generateSVG(),
+      price: sign.price,
     };
     dispatch(addToCart(product));
   };
@@ -392,6 +421,7 @@ const Editor: React.FC = () => {
   // Update the shape when the canvas is ready.
   useMemo(() => {
     if (canvas) {
+      console.log(canvas);
       if (localStorage.getItem("sign")) {
         const sign = JSON.parse(localStorage.getItem("sign") as string);
         recreateSign(sign);
@@ -405,6 +435,21 @@ const Editor: React.FC = () => {
     if (sign.JSON === "") return;
     localStorage.setItem("sign", JSON.stringify(sign));
   }, [sign]);
+
+  useEffect(() => {
+    if (!modify) return;
+    const sign = JSON.parse(localStorage.getItem("sign") as string);
+    recreateSign(sign);
+    dispatch(toggleModify());
+  }, [modify]);
+
+  // useEffect(() => {
+  //   if (canvas && localStorage.getItem("openSign") === "true") {
+  //     const sign = JSON.parse(localStorage.getItem("sign") as string);
+  //     recreateSign(sign);
+  //     localStorage.setItem("openSign", "false");
+  //   }
+  // }, [localStorage]);
 
   const props: ToolbarProps = {
     sign,
@@ -426,7 +471,11 @@ const Editor: React.FC = () => {
         className="sample-canvas h-full w-full bg-base-100"
         onReady={initCanvas}
       />
-      <Bottombar />
+      <Bottombar
+        sign={sign}
+        addToCart={addSignToCart}
+        generateSVG={generateSVG}
+      />
     </div>
   );
 };

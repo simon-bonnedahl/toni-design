@@ -5,9 +5,9 @@ import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../reducers/cartSlice";
-import { addCommand, clearCommands } from "../../reducers/editorSlice";
 import { setSign } from "../../reducers/signSlice";
 import { urlFor } from "../../sanity";
+const localStorage = require("local-storage");
 interface Props {
   title: string;
   image: string;
@@ -45,9 +45,7 @@ const ProductCard: React.FC<Props> = ({
   }
 
   const handleOpenSign = () => {
-    dispatch(clearCommands());
-    dispatch(setSign({ sign: jsonObj }));
-    dispatch(addCommand({ command: "reCreate", value: jsonObj.visual }));
+    localStorage.setItem("sign", JSON.stringify(jsonObj));
     router.push("/");
   };
 

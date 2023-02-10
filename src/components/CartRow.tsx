@@ -8,8 +8,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { addToCart, removeFromCart } from "../../reducers/cartSlice";
-import { setSign } from "../../reducers/signSlice";
+import {
+  addToCart,
+  removeFromCart,
+  toggleModify,
+} from "../../reducers/cartSlice";
 
 interface Props {
   index: number;
@@ -21,9 +24,7 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
   const router = useRouter();
 
   const [itemQuantity, setItemQuantity] = useState(quantity);
-  const [totalPrice, setTotalPrice] = useState(
-    item.metadata.price * itemQuantity
-  );
+  const [totalPrice, setTotalPrice] = useState(item.price * itemQuantity);
   const dispatch = useDispatch();
 
   const signId = "sign-image-" + index;
@@ -31,12 +32,12 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
   const handleDecreaseItemQuantity = () => {
     dispatch(removeFromCart({ id: item.id }));
     setItemQuantity(itemQuantity - 1);
-    setTotalPrice(totalPrice - item.metadata.price);
+    setTotalPrice(totalPrice - item.price);
   };
   const handleIncreaseItemQuantity = () => {
     dispatch(addToCart(item));
     setItemQuantity(itemQuantity + 1);
-    setTotalPrice(totalPrice + item.metadata.price);
+    setTotalPrice(totalPrice + item.price);
   };
   const handleRemoveItem = () => {
     for (let i = 0; i < itemQuantity; i++) {
@@ -44,15 +45,9 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
     }
   };
   const handleOpenSign = () => {
-    console.log(item);
-    //dispatch(setSign({ sign: item }));
-    //put the sign in the localStorage
-    localStorage.setItem("sign", JSON.stringify(item));
+    localStorage.setItem("sign", JSON.stringify(item.sign));
+    dispatch(toggleModify());
     router.push("/");
-
-    //dispatch(addCommand({ command: "reCreate", value: item.visual }));
-
-    //handleRemoveItem();
   };
 
   let className = "w-full flex rounded items-center text-base-content";
@@ -64,9 +59,9 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
 
   useEffect(() => {
     const image = document.createElement("img");
-    image.src = item.data.pixelData;
+    image.src = item.imageUrl;
     image.addEventListener("load", () => {
-      URL.revokeObjectURL(item.data.pixelData), { once: true };
+      URL.revokeObjectURL(item.imageUrl), { once: true };
       const div = document.getElementById("sign-image-" + index);
       if (div) {
         div.innerHTML = "";
@@ -80,10 +75,10 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
       <div className="flex w-1/12 justify-center font-bold">{index + 1}</div>
       <div className="flex w-2/12 flex-col justify-center">
         <div className="flex justify-center">
-          <span className="font-bold">{item.metadata.product}</span>
+          <span className="font-bold">{item.title}</span>
         </div>
         <div className="flex justify-center text-sm text-gray-600">
-          {item.metadata.material} · {item.metadata.colorCombination}
+          {item.sign.material} · {item.sign.colorCombination}
         </div>
         <div className="flex justify-center"></div>
       </div>
@@ -91,13 +86,11 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
         {/*image will be loaded here*/}
       </div>
       <div className="flex w-2/12 justify-center">
-        <span className="font-bold">{item.visual.width}</span>x
-        <span className="font-bold">{item.visual.height}</span> mm
+        <span className="font-bold">{item.sign.width}</span>x
+        <span className="font-bold">{item.sign.height}</span> mm
       </div>
       <div className="flex w-1/12 justify-center">
-        <span className="font-lg font-bold">
-          {Math.round(item.metadata.price)} kr
-        </span>
+        <span className="font-lg font-bold">{Math.round(item.price)} kr</span>
       </div>
       <div className="flex w-2/12 justify-center">
         <div className="flex items-center rounded-md">

@@ -9,11 +9,17 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { selectCartItems } from "../../../reducers/cartSlice";
-import { addCommand } from "../../../reducers/editorSlice";
 import { getSignJSON, getSignMetadata } from "../../../reducers/signSlice";
+import { Sign } from "../../types/sign.d";
 
-const Bottombar: React.FC = () => {
-  const price = useSelector(getSignMetadata).price;
+interface Props {
+  sign: Sign;
+  addToCart: () => void;
+  generateSVG: () => string;
+}
+
+const Bottombar: React.FC<Props> = ({ sign, addToCart, generateSVG }) => {
+  const price = sign.price;
   const json = useSelector(getSignJSON);
   const dispatch = useDispatch();
   const { data: session } = useSession();
@@ -30,6 +36,15 @@ const Bottombar: React.FC = () => {
     a.download = "download.json";
     a.click();
   };
+  const handleDownloadSVG = () => {
+    const dataStr =
+      "data:text/json;charset=utf-8," + encodeURIComponent(generateSVG());
+    const a = document.createElement("a");
+    console.log(dataStr);
+    a.href = dataStr;
+    a.download = "download.svg";
+    a.click();
+  };
 
   const handleCheckout = async () => {
     if (items.length < 1) {
@@ -42,13 +57,11 @@ const Bottombar: React.FC = () => {
   const handleAddToCart = () => {
     document.getElementById("cart-button")?.focus();
 
-    dispatch(addCommand({ command: "addToCart", value: 1 }));
+    addToCart();
   };
 
   const handleSaveSign = () => {
-    dispatch(
-      addCommand({ command: "saveSignToDatabase", value: session!.user!.email })
-    );
+    //dispatch(addCommand({ command: "saveSignToDatabase", value: session!.user!.email }));
   };
 
   return (
@@ -56,17 +69,13 @@ const Bottombar: React.FC = () => {
       <div className="flex space-x-4">
         <button
           className="primary-content btn-outline btn-primary btn"
-          onClick={() =>
-            dispatch(addCommand({ command: "saveSign", value: "SVG" }))
-          }
+          onClick={handleDownloadSVG}
         >
           <label>SVG</label>
         </button>
         <button
           className="primary-content btn-outline btn-primary btn"
-          onClick={() =>
-            dispatch(addCommand({ command: "saveSign", value: "PDF" }))
-          }
+          onClick={handleDownloadSVG}
         >
           JPEG
         </button>

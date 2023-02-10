@@ -28,6 +28,7 @@ export type AdjustableProduct = {
   title: string;
   imageUrl: string;
   SVG: string;
+  price: number;
 };
 
 export type Product = z.infer<typeof Product>;
