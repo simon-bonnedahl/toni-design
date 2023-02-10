@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../reducers/cartSlice";
-import { setSign } from "../../reducers/signSlice";
 import { urlFor } from "../../sanity";
 const localStorage = require("local-storage");
 interface Props {

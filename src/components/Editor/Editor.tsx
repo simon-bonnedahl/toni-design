@@ -47,9 +47,6 @@ const Editor: React.FC = () => {
     setEditorControls();
     onReady(canvas);
     setCanvas(canvas);
-    window.onstorage = (e) => {
-      console.log("hej");
-    };
   };
   const setEditorControls = () => {
     const s = fabric.Object.prototype.set({
@@ -298,6 +295,7 @@ const Editor: React.FC = () => {
       toast.warning("No sign to recreate");
       return;
     }
+
     canvas.clear();
     canvas.loadFromJSON(sign.JSON, function () {});
     setShape(sign.shape);
@@ -428,6 +426,10 @@ const Editor: React.FC = () => {
       } else {
         setShape(sign.shape);
       }
+      window.onresize = () => {
+        canvas.centerObject(getShape());
+        canvas.renderAll();
+      };
     }
   }, [canvas]);
 

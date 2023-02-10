@@ -46,8 +46,9 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
   };
   const handleOpenSign = () => {
     localStorage.setItem("sign", JSON.stringify(item.sign));
-    dispatch(toggleModify());
-    router.push("/");
+    if (router.pathname === "/") {
+      dispatch(toggleModify());
+    } else router.push("/");
   };
 
   let className = "w-full flex rounded items-center text-base-content";
