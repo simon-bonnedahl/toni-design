@@ -46,11 +46,11 @@ const Sizedropdown: React.FC<Props> = ({ sign, setSize }) => {
   };
 
   return (
-    <div className="dropdown">
+    <div className="dropdown tooltip" data-tip="Storlek">
       <label
         id="size-dropdown"
         tabIndex={0}
-        className="btn-outline btn-primary btn m-1 flex space-x-2"
+        className="btn btn-primary btn-ghost"
       >
         <FontAwesomeIcon icon={faExpand} className="scale-150" />
       </label>
@@ -103,7 +103,7 @@ const Sizedropdown: React.FC<Props> = ({ sign, setSize }) => {
               <span className="bg-primary text-primary-content">mm</span>
             </div>
           </div>
-          <button className="btn-primary btn mt-4" onClick={handleSetSize}>
+          <button className="btn btn-primary mt-4" onClick={handleSetSize}>
             Applicera
           </button>
         </div>

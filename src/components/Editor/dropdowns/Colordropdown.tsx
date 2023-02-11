@@ -13,8 +13,8 @@ const Colordropdown: React.FC<Props> = ({ sign, setColor }) => {
   const colorOptions = trpc.color.getColors.useQuery().data || [];
 
   return (
-    <div className="dropdown">
-      <label tabIndex={0} className="btn-outline btn-primary btn m-1 p-4">
+    <div className="dropdown tooltip" data-tip="Färg">
+      <label tabIndex={0} className="btn-primary btn-ghost btn">
         <FontAwesomeIcon className="scale-150" icon={faDroplet} />
       </label>
       <div

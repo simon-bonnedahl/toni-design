@@ -12,10 +12,6 @@ type Props = {
   setApplication: (application: Applications) => void;
 };
 const Applicationdropdown: React.FC<Props> = ({ sign, setApplication }) => {
-  const [selectedApplication, setSelectedApplication] = useState(
-    useSelector(getSignMetadata).application
-  );
-
   //Hämta från sanity
   const applications = [
     {
@@ -29,19 +25,10 @@ const Applicationdropdown: React.FC<Props> = ({ sign, setApplication }) => {
       desc: "Dubbelhäftande tejp",
     },
   ];
-  const dispatch = useDispatch();
-
-  const handleProductChange = (a: string) => {
-    setSelectedApplication(a);
-    dispatch(setSignApplication({ application: a }));
-  };
 
   return (
-    <div className="dropdown">
-      <label
-        tabIndex={0}
-        className="btn-outline btn-primary btn m-1 flex space-x-2"
-      >
+    <div className="dropdown tooltip" data-tip="Fästmetod">
+      <label tabIndex={0} className="btn btn-primary btn-ghost">
         <FontAwesomeIcon icon={faScrewdriverWrench} className="scale-150" />
       </label>
       <div

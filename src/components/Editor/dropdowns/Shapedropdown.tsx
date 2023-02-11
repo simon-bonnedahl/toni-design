@@ -58,8 +58,8 @@ const Shapedropdown: React.FC<Props> = ({ sign, setShape }) => {
   };
 
   return (
-    <div className="dropdown">
-      <label tabIndex={0} className="p4 btn-outline btn-primary btn m-1">
+    <div className="dropdown tooltip" data-tip="Form">
+      <label tabIndex={0} className="btn btn-primary btn-ghost">
         {getIconSmall(sign.shape)}
       </label>
       <div

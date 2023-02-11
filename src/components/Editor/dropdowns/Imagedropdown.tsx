@@ -50,8 +50,8 @@ const Imagedropdown: React.FC<Props> = ({ sign, addImage }) => {
   };
 
   return (
-    <div className="dropdown">
-      <label tabIndex={0} className="btn-outline btn-primary btn m-1 p-4">
+    <div className="dropdown tooltip" data-tip="Bild">
+      <label tabIndex={0} className="btn btn-primary btn-ghost">
         <FontAwesomeIcon icon={faImage} className="scale-150" />
       </label>
       <div

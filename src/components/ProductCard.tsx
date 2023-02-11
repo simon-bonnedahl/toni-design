@@ -6,7 +6,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../reducers/cartSlice";
 import { urlFor } from "../../sanity";
-const localStorage = require("local-storage");
+//const localStorage = require("local-storage");
 interface Props {
   title: string;
   image: string;

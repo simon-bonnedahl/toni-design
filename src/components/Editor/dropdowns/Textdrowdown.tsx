@@ -35,8 +35,8 @@ const Textdropdown: React.FC<Props> = ({ sign, addText }) => {
     addText(text);
   };
   return (
-    <div className="dropdown">
-      <label tabIndex={0} className="btn-outline btn-primary btn m-1 p-4">
+    <div className="dropdown tooltip" data-tip="Text">
+      <label tabIndex={0} className="btn btn-primary btn-ghost">
         <FontAwesomeIcon icon={faFileText} className="scale-150" />
       </label>
       <div
@@ -62,7 +62,7 @@ const Textdropdown: React.FC<Props> = ({ sign, addText }) => {
           </select>
           <button
             onClick={handleAddText}
-            className="w-fill btn-primary btn mt-4"
+            className="w-fill btn btn-primary mt-4"
           >
             Lägg till
           </button>

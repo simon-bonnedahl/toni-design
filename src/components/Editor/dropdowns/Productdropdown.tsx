@@ -29,8 +29,8 @@ const Productdropdown: React.FC = () => {
   };
 
   return (
-    <div className="dropdown">
-      <label tabIndex={0} className="btn-outline btn-primary btn m-1 p-4">
+    <div className="dropdown tooltip" data-tip="Produkt">
+      <label tabIndex={0} className="btn btn-primary btn-ghost">
         <FontAwesomeIcon icon={faChevronDown} className="scale-150" />
       </label>
       <div

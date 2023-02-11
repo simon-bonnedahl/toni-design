@@ -28,6 +28,7 @@ import {
   toggleModify,
 } from "../../../reducers/cartSlice";
 import mod from "zod/lib";
+import ControlBox from "./ControlBox";
 const fabric = require("fabric").fabric;
 const { v4: uuidv4 } = require("uuid");
 var localStorage = require("localStorage");
@@ -191,7 +192,6 @@ const Editor: React.FC = () => {
     canvas.renderAll();
     // Add the previous sign to the history.
     setHistory((prev) => [...prev, sign]);
-    console.log([...history, sign]);
     // Update sign's background and foreground colors.
     setSign((prev) => ({
       ...prev,
@@ -409,6 +409,36 @@ const Editor: React.FC = () => {
     setSign((prev) => ({ ...prev, JSON: canvas.toJSON() }));
   };
 
+  const handleDeleteObject = () => {
+    const activeObject = canvas.getActiveObject();
+    if (!activeObject) return;
+    canvas.remove(activeObject);
+    setHistory((prev) => [...prev, sign]);
+    setSign((prev) => ({ ...prev, JSON: canvas.toJSON() }));
+  };
+
+  const handleAlignObject = (pos: string) => {
+    const activeObject = canvas.getActiveObject();
+    if (!activeObject) return;
+    switch (pos) {
+      case "left":
+        activeObject.set("left", getShape().left + 2);
+        break;
+      case "center":
+        activeObject.centerH();
+        break;
+      case "right":
+        activeObject.set(
+          "left",
+          getShape().left + getShape().width - activeObject.width - 2
+        );
+        break;
+    }
+    canvas.renderAll();
+    setHistory((prev) => [...prev, sign]);
+    setSign((prev) => ({ ...prev, JSON: canvas.toJSON() }));
+  };
+
   canvas?.on({
     "selection:created": handleSelectObject,
     "selection:cleared": handleUnselectObject,
@@ -445,14 +475,6 @@ const Editor: React.FC = () => {
     dispatch(toggleModify());
   }, [modify]);
 
-  // useEffect(() => {
-  //   if (canvas && localStorage.getItem("openSign") === "true") {
-  //     const sign = JSON.parse(localStorage.getItem("sign") as string);
-  //     recreateSign(sign);
-  //     localStorage.setItem("openSign", "false");
-  //   }
-  // }, [localStorage]);
-
   const props: ToolbarProps = {
     sign,
     setShape,
@@ -473,6 +495,13 @@ const Editor: React.FC = () => {
         className="sample-canvas h-full w-full bg-base-100"
         onReady={initCanvas}
       />
+      {canvas?.getActiveObject() && (
+        <ControlBox
+          handleDelete={handleDeleteObject}
+          handleAlignObject={handleAlignObject}
+        />
+      )}
+
       <Bottombar
         sign={sign}
         addToCart={addSignToCart}

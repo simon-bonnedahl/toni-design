@@ -27,41 +27,45 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
       <div className="flex h-full items-center pl-4">
         <div
           onClick={() => props.restart()}
-          className="btn-ghost btn flex space-x-2"
+          className="too btn btn-ghost tooltip flex"
+          data-tip="Börja om"
+        >
+          <FontAwesomeIcon className="scale-150" icon={faRotateBack} />
+        </div>
+        <div
+          onClick={() => props.undo()}
+          className="btn btn-ghost tooltip flex"
+          data-tip="Gå tillbaka"
+        >
+          <FontAwesomeIcon className="-rotate-90 scale-150" icon={faTurnUp} />
+        </div>
+        <div
+          onClick={() => props.redo()}
+          className=" btn btn-ghost tooltip flex"
+          data-tip="Gå fram"
+        >
+          <FontAwesomeIcon className="-rotate-90 scale-150" icon={faTurnDown} />
+        </div>
+        <div
+          onClick={() => null}
+          className="btn btn-ghost tooltip flex"
+          data-tip="Zooma ut"
         >
           <FontAwesomeIcon
-            className="scale-150 text-primary"
-            icon={faRotateBack}
-          />
-          <span>Börja om</span>
-        </div>
-        <div onClick={() => props.undo()} className="btn-ghost btn">
-          <FontAwesomeIcon
-            className="-rotate-90 scale-150 text-primary"
-            icon={faTurnUp}
-          />
-        </div>
-        <div onClick={() => props.redo()} className=" btn-ghost btn">
-          <FontAwesomeIcon
-            className="-rotate-90 scale-150 text-primary"
-            icon={faTurnDown}
-          />
-        </div>
-        <div onClick={() => null} className="btn-ghost btn">
-          <FontAwesomeIcon
-            className="scale-150 text-primary"
+            className="scale-150 "
             icon={faMagnifyingGlassMinus}
           />
         </div>
-        <div onClick={() => null} className=" btn-ghost btn">
-          <FontAwesomeIcon
-            className="scale-150 text-primary"
-            icon={faMagnifyingGlassPlus}
-          />
+        <div
+          onClick={() => null}
+          className=" btn btn-ghost tooltip flex"
+          data-tip="Zooma in"
+        >
+          <FontAwesomeIcon className="scale-150" icon={faMagnifyingGlassPlus} />
         </div>
       </div>
       {/*Dropdowns*/}
-      <div className="flex space-x-2">
+      <div className="flex">
         <Productdropdown />
         <Applicationdropdown
           sign={props.sign}
