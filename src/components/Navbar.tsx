@@ -18,16 +18,10 @@ const Navbar: React.FC = () => {
     <div className="navbar bg-base-200">
       <div className="navbar-start flex space-x-4 pl-5">
         <Link className="" href="/">
-          <Image
-            className="text-black"
-            src={logolight}
-            alt="logo"
-            height={150}
-            width={150}
-          />
+          <img className="logo" />
         </Link>
         <Link
-          className="btn-ghost btn font-bold text-base-content "
+          className="btn btn-ghost font-bold text-base-content "
           href="/collections"
         >
           <div className="flex space-x-2">
@@ -39,7 +33,7 @@ const Navbar: React.FC = () => {
 
       <div className="navbar-end">
         {session && (
-          <Link href="/account" className="btn-ghost btn">
+          <Link href="/account" className="btn btn-ghost">
             <div className="flex space-x-2">
               <FontAwesomeIcon icon={faUser} />
               <span>Mitt konto</span>
@@ -48,15 +42,15 @@ const Navbar: React.FC = () => {
         )}
         {!session && (
           <div>
-          <Link href="/auth" className="btn-ghost btn">
-            <div className="flex space-x-2">
-              <FontAwesomeIcon icon={faUser} />
-              <span>Logga in</span>
-            </div>
-          </Link>
+            <Link href="/auth" className="btn btn-ghost">
+              <div className="flex space-x-2">
+                <FontAwesomeIcon icon={faUser} />
+                <span>Logga in</span>
+              </div>
+            </Link>
           </div>
         )}
-        
+
         <Searcher />
       </div>
       <Cart />
