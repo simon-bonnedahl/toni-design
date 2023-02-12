@@ -9,7 +9,6 @@ import { useDispatch, useSelector } from "react-redux";
 import HeaderBar from "../../components/HeaderBar";
 import Navbar from "../../components/Navbar";
 import { addToCart } from "../../../reducers/cartSlice";
-import { addCommand, clearCommands } from "../../../reducers/editorSlice";
 import { getSelectedProduct } from "../../../reducers/navigationSlice";
 import { setSign } from "../../../reducers/signSlice";
 import client, { urlFor } from "../../../sanity";
@@ -44,10 +43,6 @@ function Home() {
   }, [selectedProduct]);
 
   const handleOpenSign = () => {
-    console.log(product);
-    dispatch(clearCommands());
-    dispatch(setSign({ sign: product.json }));
-    dispatch(addCommand({ command: "reCreate", value: product.json.visual }));
     router.push("/");
   };
 
@@ -144,7 +139,7 @@ function Home() {
             {product.productType == "adjustable" && (
               <button
                 onClick={handleOpenSign}
-                className="btn-warning btn mt-2 w-96"
+                className="btn btn-warning mt-2 w-96"
               >
                 Anpassa
                 <FontAwesomeIcon
@@ -155,7 +150,7 @@ function Home() {
             )}
 
             {product.productType == "complete" && (
-              <button onClick={handleAddToCart} className="btn-info btn  w-96">
+              <button onClick={handleAddToCart} className="btn btn-info  w-96">
                 Lägg till i varukorg
                 <FontAwesomeIcon
                   className="text-content-info ml-2"

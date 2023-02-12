@@ -6,7 +6,6 @@ import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { addCommand, clearCommands } from "../../../reducers/editorSlice";
 import { setSign } from "../../../reducers/signSlice";
 import sanityDB, { urlFor } from "../../../sanity";
 
@@ -31,9 +30,7 @@ const Saved = () => {
 
   const handleOpenSign = (json: string) => {
     const jsonObj = JSON.parse(json);
-    dispatch(clearCommands());
     dispatch(setSign({ sign: jsonObj }));
-    dispatch(addCommand({ command: "reCreate", value: jsonObj.visual }));
     router.push("/");
   };
 
@@ -69,7 +66,7 @@ const Saved = () => {
               height={200}
             />
             <button
-              className="btn-warning btn mt-2 w-48"
+              className="btn btn-warning mt-2 w-48"
               onClick={() => handleOpenSign(sign.json)}
             >
               Anpassa
@@ -79,7 +76,7 @@ const Saved = () => {
               />
             </button>
             <button
-              className="btn-error btn mt-2 w-48"
+              className="btn btn-error mt-2 w-48"
               onClick={() => handleRemove(sign)}
             >
               Ta bort
