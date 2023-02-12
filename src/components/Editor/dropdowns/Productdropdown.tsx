@@ -44,7 +44,7 @@ const Productdropdown: React.FC = () => {
               let className =
                 "flex justify-between hover:cursor-pointer h-24 relative";
               if (product.name === selectedProduct)
-                className += " border border-primary rounded-md";
+                className += " border border-neutral-content rounded-md";
 
               return (
                 <div
@@ -71,7 +71,7 @@ const Productdropdown: React.FC = () => {
                         type="radio"
                         name="radio-product"
                         checked={product.name === selectedProduct}
-                        className="radio ml-2 checked:border-base-100 checked:bg-primary"
+                        className="radio ml-2 checked:bg-neutral-content"
                       />
                     </label>
                   </div>

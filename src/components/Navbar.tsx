@@ -3,7 +3,6 @@ import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import React from "react";
 import Cart from "./Cart";
 import Searcher from "./Searcher";

@@ -42,7 +42,7 @@ const Applicationdropdown: React.FC<Props> = ({ sign, setApplication }) => {
               let className =
                 "flex justify-between hover:cursor-pointer h-24 relative";
               if (application.application === sign.application)
-                className += " border border-primary rounded-md";
+                className += " border border-neutral-content rounded-md";
 
               return (
                 <div
@@ -69,7 +69,7 @@ const Applicationdropdown: React.FC<Props> = ({ sign, setApplication }) => {
                         type="radio"
                         name="radio-application"
                         checked={application.application === sign.application}
-                        className="radio ml-2 checked:border-base-100 checked:bg-primary"
+                        className="radio ml-2 checked:bg-neutral-content"
                       />
                     </label>
                   </div>

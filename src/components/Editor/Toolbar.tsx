@@ -7,7 +7,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { ToolbarProps } from "../../types/sign";
 import Applicationdropdown from "./dropdowns/Applicationdropdown";
 import Colordropdown from "./dropdowns/Colordropdown";

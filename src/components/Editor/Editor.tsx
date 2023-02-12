@@ -308,7 +308,7 @@ const Editor: React.FC = () => {
         height: toPixels(sign.height, zoom),
         fill: "#ffffff",
         stroke: "#ff0000",
-        strokeWidth: 2,
+        strokeWidth: 1,
       });
 
       //loop through all objects and fill with black
@@ -331,10 +331,28 @@ const Editor: React.FC = () => {
           });
         }
       }
-      svg = newCanvas.toSVG();
+      svg = newCanvas.toSVG({
+        viewBox: {
+          x: getShape().left - 1,
+          y: getShape().top - 1,
+          width: getShape().width + 2,
+          height: getShape().height + 2,
+        },
+      });
       //Crop it?
     });
     return svg;
+  };
+
+  const generateJPEG = () => {
+    return canvas.toDataURL({
+      format: "image/jpeg",
+      quality: 1.0,
+      left: getShape().left,
+      top: getShape().top,
+      width: getShape().width,
+      height: getShape().height,
+    });
   };
 
   const addSignToCart = () => {
@@ -345,7 +363,7 @@ const Editor: React.FC = () => {
       sign: sign,
       id: uuidv4(),
       title: "Skylt-Gravyr",
-      imageUrl: canvas.toDataURL("image/jpeg", 1.0),
+      imageUrl: generateJPEG(),
       SVG: generateSVG(),
       price: sign.price,
     };
@@ -502,6 +520,7 @@ const Editor: React.FC = () => {
         sign={sign}
         addToCart={addSignToCart}
         generateSVG={generateSVG}
+        generateJPEG={generateJPEG}
       />
     </div>
   );

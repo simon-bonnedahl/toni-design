@@ -2,7 +2,6 @@ import { faPen, faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Head from "next/head";
 import NextImage from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,7 +9,6 @@ import HeaderBar from "../../components/HeaderBar";
 import Navbar from "../../components/Navbar";
 import { addToCart } from "../../../reducers/cartSlice";
 import { getSelectedProduct } from "../../../reducers/navigationSlice";
-import { setSign } from "../../../reducers/signSlice";
 import client, { urlFor } from "../../../sanity";
 
 function Home() {

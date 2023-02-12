@@ -16,12 +16,15 @@ interface Props {
   sign: Sign;
   addToCart: () => void;
   generateSVG: () => string;
+  generateJPEG: () => string;
 }
 
-const Bottombar: React.FC<Props> = ({ sign, addToCart, generateSVG }) => {
-  const price = sign.price;
-  const json = useSelector(getSignJSON);
-  const dispatch = useDispatch();
+const Bottombar: React.FC<Props> = ({
+  sign,
+  addToCart,
+  generateSVG,
+  generateJPEG,
+}) => {
   const { data: session } = useSession();
 
   const items = useSelector(selectCartItems);
@@ -30,7 +33,7 @@ const Bottombar: React.FC<Props> = ({ sign, addToCart, generateSVG }) => {
   const handleDownloadJSON = () => {
     const dataStr =
       "data:text/json;charset=utf-8," +
-      encodeURIComponent(JSON.stringify(json));
+      encodeURIComponent(JSON.stringify(sign.JSON));
     const a = document.createElement("a");
     a.href = dataStr;
     a.download = "download.json";
@@ -43,6 +46,13 @@ const Bottombar: React.FC<Props> = ({ sign, addToCart, generateSVG }) => {
     console.log(dataStr);
     a.href = dataStr;
     a.download = "download.svg";
+    a.click();
+  };
+
+  const handleDownloadJPEG = () => {
+    const a = document.createElement("a");
+    a.href = generateJPEG();
+    a.download = "download.jpeg";
     a.click();
   };
 
@@ -75,7 +85,7 @@ const Bottombar: React.FC<Props> = ({ sign, addToCart, generateSVG }) => {
         </button>
         <button
           className="primary-content btn-outline btn btn-primary"
-          onClick={handleDownloadSVG}
+          onClick={handleDownloadJPEG}
         >
           JPEG
         </button>
@@ -97,7 +107,7 @@ const Bottombar: React.FC<Props> = ({ sign, addToCart, generateSVG }) => {
       <div className="flex items-center space-x-2">
         {/*Price*/}
         <div>
-          <span className="text-xl font-bold">{Math.round(price)}</span> kr
+          <span className="text-xl font-bold">{Math.round(sign.price)}</span> kr
         </div>
 
         {/*Add button */}

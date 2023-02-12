@@ -96,7 +96,11 @@ const Sizedropdown: React.FC<Props> = ({ sign, setSize }) => {
           <div className="form-control mt-4">
             <div className="input-group">
               <span className="bg-primary text-primary-content">Djup</span>
-              <select defaultValue={1.0} className="select w-7/12 bg-base-100">
+              <select
+                defaultValue={1.0}
+                className="select w-7/12 bg-base-100"
+                onChange={(e) => setDepth(parseInt(e.target.value))}
+              >
                 <option>1.0</option>
                 <option>0.5</option>
               </select>
