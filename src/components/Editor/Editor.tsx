@@ -283,7 +283,6 @@ const Editor: React.FC = () => {
   };
 
   const recreateSign = (sign: Sign) => {
-    console.log(sign);
     setSign(sign);
 
     // Clear the canvas.
@@ -293,7 +292,7 @@ const Editor: React.FC = () => {
     }
 
     canvas.clear();
-    canvas.loadFromJSON(sign.JSON, function () {});
+    canvas.loadFromJSON(sign.JSON);
     setShape(sign.shape);
     setColor(sign.backgroundColor, sign.foregroundColor);
   };
