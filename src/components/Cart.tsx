@@ -42,7 +42,7 @@ const Cart: React.FC = () => {
 
   return (
     <div className="dropdown">
-      <label id="cart-button" tabIndex={0} className="btn-ghost btn">
+      <label id="cart-button" tabIndex={0} className="btn btn-ghost">
         <div className="flex space-x-2">
           <div className="indicator">
             <FontAwesomeIcon className="scale-110" icon={faCartShopping} />
@@ -57,7 +57,7 @@ const Cart: React.FC = () => {
       </label>
       <div
         tabIndex={0}
-        className="card dropdown-content card-compact -right-0 w-[82vw] border border-neutral bg-base-100 p-2 shadow"
+        className="card-compact card dropdown-content -right-0 w-[82vw] border border-neutral bg-base-100 p-2 shadow"
       >
         <div className=" p-4">
           {/*header*/}
@@ -98,7 +98,7 @@ const Cart: React.FC = () => {
               </div>
             </div>
             <div className="mt-4 flex w-full items-center justify-end space-x-2">
-              <button onClick={handleCheckout} className="btn-success btn">
+              <button onClick={handleCheckout} className="btn btn-info">
                 Gå till kassan
                 <FontAwesomeIcon
                   className="text-content-info ml-2 h-4 w-4"

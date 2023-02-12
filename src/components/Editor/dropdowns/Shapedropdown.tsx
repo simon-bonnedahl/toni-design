@@ -25,15 +25,17 @@ const Shapedropdown: React.FC<Props> = ({ sign, setShape }) => {
     switch (shape) {
       case Shapes.RECTANGLE:
         //return a rectangle div stroke
-        return <div className="h-5 w-5 border border-gray-400 bg-none"></div>;
+        return (
+          <div className="h-5 w-5 border border-neutral-content bg-none"></div>
+        );
 
       case Shapes.ROUNDED_RECTANGLE:
         return (
-          <div className="h-5 w-5 rounded-sm border border-gray-400 bg-none"></div>
+          <div className="h-5 w-5 rounded-sm border border-neutral-content bg-none"></div>
         );
       case Shapes.ELLIPSE:
         return (
-          <div className="h-5 w-5 rounded-full border border-gray-400 bg-none"></div>
+          <div className="h-5 w-5 rounded-full border border-neutral-content bg-none"></div>
         );
     }
   };
@@ -43,16 +45,15 @@ const Shapedropdown: React.FC<Props> = ({ sign, setShape }) => {
       case Shapes.RECTANGLE:
         //return a rectangle div stroke
         return (
-          <div className="h-12 w-12 border-4 border-primary bg-none"></div>
+          <div className="h-12 w-12 border-4 border-neutral-content bg-none"></div>
         );
-
       case Shapes.ROUNDED_RECTANGLE:
         return (
-          <div className="h-12 w-12 rounded-md border-4 border-primary bg-none"></div>
+          <div className="h-12 w-12 rounded-md border-4 border-neutral-content bg-none"></div>
         );
       case Shapes.ELLIPSE:
         return (
-          <div className="h-12 w-12 rounded-full border-4  border-primary bg-none"></div>
+          <div className="h-12 w-12 rounded-full border-4  border-neutral-content bg-none"></div>
         );
     }
   };

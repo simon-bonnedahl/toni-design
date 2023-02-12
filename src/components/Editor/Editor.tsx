@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Applications,
   DEFAULT_SIGN,
@@ -27,11 +21,10 @@ import {
   getModify,
   toggleModify,
 } from "../../../reducers/cartSlice";
-import mod from "zod/lib";
 import ControlBox from "./ControlBox";
 const fabric = require("fabric").fabric;
 const { v4: uuidv4 } = require("uuid");
-var localStorage = require("localStorage");
+const localStorage = require("localStorage");
 
 const Editor: React.FC = () => {
   const { editor, onReady } = useFabricJSEditor();
@@ -67,7 +60,6 @@ const Editor: React.FC = () => {
     // The shape's width and height will be the same as the sign's.
     const shapeWidth = toPixels(sign.width, zoom);
     const shapeHeight = toPixels(sign.height, zoom);
-    console.log("setShape", shape);
     // Create the shape, setting it's fill color and size.
     let object = null;
     switch (shape) {
@@ -283,7 +275,10 @@ const Editor: React.FC = () => {
     setShape(DEFAULT_SIGN.shape);
     setColor(DEFAULT_SIGN.backgroundColor, DEFAULT_SIGN.foregroundColor);
     setSize(DEFAULT_SIGN.width, DEFAULT_SIGN.height, DEFAULT_SIGN.depth);
-    setSign(DEFAULT_SIGN);
+    setSign({
+      ...DEFAULT_SIGN,
+      price: calculatePrice(sign.width, sign.height, sign.application),
+    });
   };
 
   const recreateSign = (sign: Sign) => {
@@ -454,6 +449,7 @@ const Editor: React.FC = () => {
         const sign = JSON.parse(localStorage.getItem("sign") as string);
         recreateSign(sign);
       } else {
+        sign.price = calculatePrice(sign.width, sign.height, sign.application);
         setShape(sign.shape);
       }
       window.onresize = () => {

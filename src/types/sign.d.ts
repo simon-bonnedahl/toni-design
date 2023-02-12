@@ -40,7 +40,7 @@ const DEFAULT_SIGN: Sign = {
   shape: Shapes.ROUNDED_RECTANGLE,
   backgroundColor: "#ffffff",
   foregroundColor: "#000000",
-  colorCombination: "white/black",
+  colorCombination: "Vit/Svart",
   application: Applications.NONE,
   JSON: "",
   SVG: "",

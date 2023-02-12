@@ -79,7 +79,7 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
           <span className="font-bold">{item.title}</span>
         </div>
         <div className="flex justify-center text-sm text-gray-600">
-          {item.sign.material} · {item.sign.colorCombination}
+          Plast · {item.sign.colorCombination}
         </div>
         <div className="flex justify-center"></div>
       </div>

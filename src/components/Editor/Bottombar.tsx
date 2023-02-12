@@ -68,26 +68,26 @@ const Bottombar: React.FC<Props> = ({ sign, addToCart, generateSVG }) => {
     <div className="fixed bottom-0 flex h-20 w-full flex-row items-center justify-between bg-base-200 px-4 ">
       <div className="flex space-x-4">
         <button
-          className="primary-content btn-outline btn-primary btn"
+          className="primary-content btn-outline btn btn-primary"
           onClick={handleDownloadSVG}
         >
           <label>SVG</label>
         </button>
         <button
-          className="primary-content btn-outline btn-primary btn"
+          className="primary-content btn-outline btn btn-primary"
           onClick={handleDownloadSVG}
         >
           JPEG
         </button>
         <button
-          className="primary-content btn-outline btn-primary btn"
+          className="primary-content btn-outline btn btn-primary"
           onClick={handleDownloadJSON}
         >
           JSON
         </button>
 
         {session && (
-          <button className="btn-warning btn" onClick={handleSaveSign}>
+          <button className="btn btn-warning" onClick={handleSaveSign}>
             Spara skylt
           </button>
         )}
@@ -102,13 +102,13 @@ const Bottombar: React.FC<Props> = ({ sign, addToCart, generateSVG }) => {
 
         {/*Add button */}
         <div>
-          <button onClick={handleAddToCart} className="btn-info btn">
+          <button onClick={handleAddToCart} className="btn btn-warning">
             Lägg till i varukorg
             <FontAwesomeIcon className="ml-2 h-4 w-4" icon={faShoppingCart} />
           </button>
         </div>
         <div>
-          <button onClick={handleCheckout} className="btn-success btn">
+          <button onClick={handleCheckout} className="btn btn-info">
             Gå till kassan
             <FontAwesomeIcon className="ml-2 h-4 w-4" icon={faArrowRight} />
           </button>

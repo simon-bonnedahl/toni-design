@@ -40,7 +40,7 @@ body[data-theme="business"] {
   box-sizing: border-box;
   background: var(--logo);
   background-size: 150px;
-  height: 80px;
+  height: 50px;
   padding-left: 160px;
-  margin-top: 36px;
+  margin-top: 10px;
 }
