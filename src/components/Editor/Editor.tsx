@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-var-requires: "off" */
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Applications,
