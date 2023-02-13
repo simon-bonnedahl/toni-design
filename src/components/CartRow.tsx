@@ -65,6 +65,7 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
       URL.revokeObjectURL(item.imageUrl), { once: true };
       const div = document.getElementById("sign-image-" + index);
       if (div) {
+        image.classList.add("w-20", "h-20", "object-contain");
         div.innerHTML = "";
         div.appendChild(image);
       }

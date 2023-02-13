@@ -61,10 +61,16 @@ type ToolbarProps = {
   sign: Sign;
   setShape: (shape: Shapes) => void;
   setSize: (width: number, height: number, depth: number) => void;
-  setColor: (background: string, foreground: string) => void;
+  setColor: (
+    background: string,
+    foreground: string,
+    colorCombination: string
+  ) => void;
   addText: (text: Text) => void;
   addImage: (image: Image) => void;
   setApplication: (application: Applications) => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
   undo: () => void;
   redo: () => void;
   restart: () => void;

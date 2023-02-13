@@ -154,9 +154,12 @@ const Editor: React.FC = () => {
     }));
   };
 
-  const setColor = (background: string, foreground: string) => {
+  const setColor = (
+    background: string,
+    foreground: string,
+    colorCombination: string
+  ) => {
     // Set the shape's fill color.
-    console.log("Color", canvas);
     const shape = getShape();
     shape.set({
       fill: background,
@@ -190,6 +193,7 @@ const Editor: React.FC = () => {
       ...prev,
       backgroundColor: background,
       foregroundColor: foreground,
+      colorCombination: colorCombination,
       JSON: canvas.toJSON(),
     }));
   };
@@ -248,6 +252,20 @@ const Editor: React.FC = () => {
     }
   };
 
+  const zoomIn = () => {
+    if (zoom < 10) {
+      setZoom((prev) => prev + 0.5);
+      setSize(sign.width, sign.height, sign.depth);
+    }
+  };
+
+  const zoomOut = () => {
+    if (zoom > 0.5) {
+      setZoom((prev) => prev - 0.5);
+      setSize(sign.width, sign.height, sign.depth);
+    }
+  };
+
   const undo = () => {
     if (history.length <= 0) {
       toast.error("No more undo's");
@@ -268,13 +286,18 @@ const Editor: React.FC = () => {
     setHistory((prev) => [...prev, sign]);
     if (next) recreateSign(next);
   };
+
   const restart = () => {
     setHistory([]);
     setFuture([]);
     canvas.clear();
     localStorage.clear();
     setShape(DEFAULT_SIGN.shape);
-    setColor(DEFAULT_SIGN.backgroundColor, DEFAULT_SIGN.foregroundColor);
+    setColor(
+      DEFAULT_SIGN.backgroundColor,
+      DEFAULT_SIGN.foregroundColor,
+      DEFAULT_SIGN.colorCombination
+    );
     setSize(DEFAULT_SIGN.width, DEFAULT_SIGN.height, DEFAULT_SIGN.depth);
     setSign({
       ...DEFAULT_SIGN,
@@ -294,7 +317,7 @@ const Editor: React.FC = () => {
     canvas.clear();
     canvas.loadFromJSON(sign.JSON);
     setShape(sign.shape);
-    setColor(sign.backgroundColor, sign.foregroundColor);
+    setColor(sign.backgroundColor, sign.foregroundColor, sign.colorCombination);
   };
 
   const generateSVG = () => {
@@ -497,6 +520,8 @@ const Editor: React.FC = () => {
     addText,
     addImage,
     setApplication,
+    zoomIn,
+    zoomOut,
     undo,
     redo,
     restart,

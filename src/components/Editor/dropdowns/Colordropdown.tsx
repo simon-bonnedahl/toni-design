@@ -6,7 +6,11 @@ import { trpc } from "../../../utils/trpc";
 
 type Props = {
   sign: Sign;
-  setColor: (background: string, foreground: string) => void;
+  setColor: (
+    background: string,
+    foreground: string,
+    colorCombination: string
+  ) => void;
 };
 
 const Colordropdown: React.FC<Props> = ({ sign, setColor }) => {
@@ -14,7 +18,7 @@ const Colordropdown: React.FC<Props> = ({ sign, setColor }) => {
 
   return (
     <div className="dropdown tooltip" data-tip="Färg">
-      <label tabIndex={0} className="btn-primary btn-ghost btn">
+      <label tabIndex={0} className="btn btn-primary btn-ghost">
         <FontAwesomeIcon className="scale-150" icon={faDroplet} />
       </label>
       <div
@@ -32,7 +36,11 @@ const Colordropdown: React.FC<Props> = ({ sign, setColor }) => {
                 >
                   <div
                     onClick={() =>
-                      setColor(option.frontColorValue, option.backColorValue)
+                      setColor(
+                        option.frontColorValue,
+                        option.backColorValue,
+                        option.name
+                      )
                     }
                     className="flex h-12 w-12 items-center justify-center rounded-full hover:cursor-pointer"
                     style={{ backgroundColor: option.frontColorValue }}
@@ -43,7 +51,7 @@ const Colordropdown: React.FC<Props> = ({ sign, setColor }) => {
                       color={option.backColorValue}
                     />
                   </div>
-                  <p className="text-xs font-light  text-neutral-content">
+                  <p className="text-xs font-light text-neutral-content">
                     {option.name.split("/")[0]}
                   </p>
                   <p className="text-xs font-light text-neutral-content">

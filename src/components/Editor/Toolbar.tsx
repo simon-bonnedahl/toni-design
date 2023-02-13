@@ -46,7 +46,7 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
           <FontAwesomeIcon className="-rotate-90 scale-150" icon={faTurnDown} />
         </div>
         <div
-          onClick={() => null}
+          onClick={() => props.zoomOut()}
           className="btn btn-ghost tooltip flex"
           data-tip="Zooma ut"
         >
@@ -56,7 +56,7 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
           />
         </div>
         <div
-          onClick={() => null}
+          onClick={() => props.zoomIn()}
           className=" btn btn-ghost tooltip flex"
           data-tip="Zooma in"
         >
