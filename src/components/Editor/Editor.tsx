@@ -41,6 +41,9 @@ const Editor: React.FC = () => {
   const initCanvas = (canvas: any) => {
     setEditorControls();
     onReady(canvas);
+    canvas.set({
+      imageSmoothingEnabled: false,
+    });
     setCanvas(canvas);
   };
   const setEditorControls = () => {
@@ -59,8 +62,8 @@ const Editor: React.FC = () => {
   const setShape = (shape: Shapes) => {
     // The shape will be a rectangle, rounded rectangle, or ellipse.
     // The shape's width and height will be the same as the sign's.
-    const shapeWidth = toPixels(sign.width, zoom);
-    const shapeHeight = toPixels(sign.height, zoom);
+    const shapeWidth = toPixels(sign.width);
+    const shapeHeight = toPixels(sign.height);
     // Create the shape, setting it's fill color and size.
     let object = null;
     switch (shape) {
@@ -97,11 +100,6 @@ const Editor: React.FC = () => {
     object.lockMovementY = true;
     object.selectable = false;
     object.evented = false;
-    object.shadow = new fabric.Shadow({
-      color: "#555",
-      blur: 30,
-      offsetY: 5,
-    });
 
     // Replace the shape in the canvas.
     canvas._objects[0] = object;
@@ -121,8 +119,8 @@ const Editor: React.FC = () => {
 
   const setSize = (width: number, height: number, depth: number) => {
     // Convert the width and height to pixels.
-    const widthPx = toPixels(width, zoom);
-    const heightPx = toPixels(height, zoom);
+    const widthPx = toPixels(width);
+    const heightPx = toPixels(height);
     // Set the shape's width and height.
     const shape = getShape();
     if (shape.type === "ellipse") {
@@ -255,14 +253,12 @@ const Editor: React.FC = () => {
   const zoomIn = () => {
     if (zoom < 10) {
       setZoom((prev) => prev + 0.5);
-      setSize(sign.width, sign.height, sign.depth);
     }
   };
 
   const zoomOut = () => {
     if (zoom > 0.5) {
       setZoom((prev) => prev - 0.5);
-      setSize(sign.width, sign.height, sign.depth);
     }
   };
 
@@ -317,18 +313,23 @@ const Editor: React.FC = () => {
     canvas.clear();
     canvas.loadFromJSON(sign.JSON);
     setShape(sign.shape);
+    setSize(sign.width, sign.height, sign.depth);
     setColor(sign.backgroundColor, sign.foregroundColor, sign.colorCombination);
   };
 
   const generateSVG = () => {
     //remove the shadow and set it to the right size
     //clone the canvas
+    canvas.zoomToPoint(
+      new fabric.Point(canvas.width / 2, canvas.height / 2),
+      1
+    );
     let svg = "";
     canvas.clone(function (newCanvas: any) {
       newCanvas._objects[0].set({
         shadow: null,
-        width: toPixels(sign.width, zoom),
-        height: toPixels(sign.height, zoom),
+        width: toPixels(sign.width),
+        height: toPixels(sign.height),
         fill: "#ffffff",
         stroke: "#ff0000",
         strokeWidth: 1,
@@ -368,6 +369,10 @@ const Editor: React.FC = () => {
   };
 
   const generateJPEG = () => {
+    canvas.zoomToPoint(
+      new fabric.Point(canvas.width / 2, canvas.height / 2),
+      1
+    );
     return canvas.toDataURL({
       format: "image/jpeg",
       quality: 1.0,
@@ -499,18 +504,27 @@ const Editor: React.FC = () => {
       };
     }
   }, [canvas]);
-
+  //Set the sign in localstorage when it changes.
   useEffect(() => {
     if (sign.JSON === "") return;
     localStorage.setItem("sign", JSON.stringify(sign));
   }, [sign]);
 
+  //When the user wants to modify a sign, recreate it.
   useEffect(() => {
     if (!modify) return;
     const sign = JSON.parse(localStorage.getItem("sign") as string);
     recreateSign(sign);
     dispatch(toggleModify());
   }, [modify]);
+
+  useEffect(() => {
+    if (!canvas) return;
+    canvas.zoomToPoint(
+      new fabric.Point(canvas.width / 2, canvas.height / 2),
+      zoom
+    );
+  }, [zoom]);
 
   const props: ToolbarProps = {
     sign,

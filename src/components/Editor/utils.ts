@@ -1,11 +1,11 @@
 import { Applications } from "../../types/sign.d";
 
-export const toPixels = (value: number, zoom: number) => {
-  return value * 2.8346546 * zoom; //Based on my laptops ppi, might need to be calculated
+export const toPixels = (value: number) => {
+  return value * 2.8346546; //Based on my laptops ppi, might need to be calculated
 };
 
-export const toMM = (value: number, zoom: number) => {
-  return value / 2.8346546 / zoom;
+export const toMM = (value: number) => {
+  return value / 2.8346546;
 };
 
 export const calculatePrice = (
