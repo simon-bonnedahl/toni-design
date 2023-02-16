@@ -55,6 +55,7 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
             icon={faMagnifyingGlassMinus}
           />
         </div>
+        <div>{props.zoom * 100}%</div>
         <div
           onClick={() => props.zoomIn()}
           className=" btn btn-ghost tooltip flex"

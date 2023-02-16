@@ -74,6 +74,7 @@ type ToolbarProps = {
   undo: () => void;
   redo: () => void;
   restart: () => void;
+  zoom: number;
 };
 
 type Sign = z.infer<typeof Sign>;
@@ -88,3 +89,5 @@ export {
   SignTypes,
   Applications,
 };
+
+export const ZOOMSTEP = 0.25;

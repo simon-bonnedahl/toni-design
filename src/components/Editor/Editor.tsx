@@ -8,6 +8,7 @@ import {
   Sign,
   Text,
   ToolbarProps,
+  ZOOMSTEP,
 } from "../../types/sign.d";
 
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
@@ -100,6 +101,11 @@ const Editor: React.FC = () => {
     object.lockMovementY = true;
     object.selectable = false;
     object.evented = false;
+    object.shadow = new fabric.Shadow({
+      color: "#555",
+      blur: 30,
+      offsetY: 5,
+    });
 
     // Replace the shape in the canvas.
     canvas._objects[0] = object;
@@ -252,13 +258,13 @@ const Editor: React.FC = () => {
 
   const zoomIn = () => {
     if (zoom < 10) {
-      setZoom((prev) => prev + 0.5);
+      setZoom((prev) => prev + ZOOMSTEP);
     }
   };
 
   const zoomOut = () => {
-    if (zoom > 0.5) {
-      setZoom((prev) => prev - 0.5);
+    if (zoom > ZOOMSTEP) {
+      setZoom((prev) => prev - ZOOMSTEP);
     }
   };
 
@@ -286,6 +292,7 @@ const Editor: React.FC = () => {
   const restart = () => {
     setHistory([]);
     setFuture([]);
+    setZoom(1);
     canvas.clear();
     localStorage.clear();
     setShape(DEFAULT_SIGN.shape);
@@ -365,6 +372,10 @@ const Editor: React.FC = () => {
       });
       //Crop it?
     });
+    canvas.zoomToPoint(
+      new fabric.Point(canvas.width / 2, canvas.height / 2),
+      zoom
+    );
     return svg;
   };
 
@@ -373,7 +384,7 @@ const Editor: React.FC = () => {
       new fabric.Point(canvas.width / 2, canvas.height / 2),
       1
     );
-    return canvas.toDataURL({
+    const JPEG = canvas.toDataURL({
       format: "image/jpeg",
       quality: 1.0,
       left: getShape().left,
@@ -381,6 +392,11 @@ const Editor: React.FC = () => {
       width: getShape().width,
       height: getShape().height,
     });
+    canvas.zoomToPoint(
+      new fabric.Point(canvas.width / 2, canvas.height / 2),
+      zoom
+    );
+    return JPEG;
   };
 
   const addSignToCart = () => {
@@ -490,7 +506,6 @@ const Editor: React.FC = () => {
   // Update the shape when the canvas is ready.
   useMemo(() => {
     if (canvas) {
-      console.log(canvas);
       if (localStorage.getItem("sign")) {
         const sign = JSON.parse(localStorage.getItem("sign") as string);
         recreateSign(sign);
@@ -536,6 +551,7 @@ const Editor: React.FC = () => {
     setApplication,
     zoomIn,
     zoomOut,
+    zoom,
     undo,
     redo,
     restart,
