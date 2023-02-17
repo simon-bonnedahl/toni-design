@@ -327,6 +327,7 @@ const Editor: React.FC = () => {
   const generateSVG = () => {
     //remove the shadow and set it to the right size
     //clone the canvas
+    const cropMargin = 5;
     canvas.zoomToPoint(
       new fabric.Point(canvas.width / 2, canvas.height / 2),
       1
@@ -364,10 +365,10 @@ const Editor: React.FC = () => {
       }
       svg = newCanvas.toSVG({
         viewBox: {
-          x: getShape().left - 1,
-          y: getShape().top - 1,
-          width: getShape().width + 2,
-          height: getShape().height + 2,
+          x: getShape().left - cropMargin,
+          y: getShape().top - cropMargin,
+          width: getShape().width + cropMargin * 2,
+          height: getShape().height + cropMargin * 2,
         },
       });
       //Crop it?
@@ -380,6 +381,7 @@ const Editor: React.FC = () => {
   };
 
   const generateJPEG = () => {
+    const cropMargin = 50;
     canvas.zoomToPoint(
       new fabric.Point(canvas.width / 2, canvas.height / 2),
       1
@@ -387,10 +389,10 @@ const Editor: React.FC = () => {
     const JPEG = canvas.toDataURL({
       format: "image/jpeg",
       quality: 1.0,
-      left: getShape().left,
-      top: getShape().top,
-      width: getShape().width,
-      height: getShape().height,
+      left: getShape().left - cropMargin,
+      top: getShape().top - cropMargin,
+      width: getShape().width + cropMargin * 2,
+      height: getShape().height + cropMargin * 2,
     });
     canvas.zoomToPoint(
       new fabric.Point(canvas.width / 2, canvas.height / 2),
