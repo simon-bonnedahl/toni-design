@@ -1,6 +1,7 @@
 /* eslint @typescript-eslint/no-var-requires: "off" */
 import { z } from "zod";
 import sanityDB from "../../../../sanity";
+import { AdjustableProduct, Product } from "../../../types/product.d";
 import { router, publicProcedure } from "../trpc";
 const JSZip = require("jszip");
 const fs = require("fs");
@@ -48,7 +49,9 @@ export const orderRouter = router({
   placeOrder: publicProcedure
     .input(
       z.object({
-        items: z.array(z.any()).min(1, { message: "Varukorgen är tom" }),
+        items: z
+          .array(Product || AdjustableProduct)
+          .min(1, { message: "Varukorgen är tom" }),
         orderDetails: OrderDetailsZod,
         customerDetails: CustomerDetailsZod,
       })
@@ -58,7 +61,6 @@ export const orderRouter = router({
       const latestOrder = await sanityDB.fetch(
         `*[_type == "order"] | order(_createdAt desc) [0]{orderId}`
       );
-      console.log(latestOrder);
       const orderId = latestOrder.orderId + 1;
       const { items, orderDetails, customerDetails } = input;
       const compiledItems = compileItems(items);
@@ -83,10 +85,10 @@ export const orderRouter = router({
 
 const writeSvgs = async (products: any) => {
   for (let i = 0; i < products.length; i++) {
-    if (products[i].data.svg.length > 0) {
+    if (products[i].SVG.length > 0) {
       fs.writeFileSync(
         filePath + "file-" + (i + 1) + ".svg",
-        products[i].data.svg,
+        products[i].SVG,
         function (err: any) {
           if (err) {
             return console.log(err);
@@ -113,16 +115,16 @@ const zipSvgs = async (products: any) => {
   return zip;
 };
 
-const compileItems = (items: any) => {
+const compileItems = (items: Product[]) => {
   const compiledItems: any[] = [];
-  const addedIds: number[] = [];
-  for (let i = 0; i < items.length; i++) {
-    if (!addedIds.includes(items[i].id)) {
-      addedIds.push(items[i].id);
-      compiledItems.push({ ...items[i], quantity: 1 });
+  const addedIds: string[] = [];
+  for (let item of items) {
+    if (!addedIds.includes(item.id)) {
+      addedIds.push(item.id);
+      compiledItems.push({ ...item, quantity: 1 });
     } else {
       for (let j = 0; j < compiledItems.length; j++) {
-        if (compiledItems[j].id === items[i].id) {
+        if (compiledItems[j].id === item.id) {
           compiledItems[j].quantity += 1;
         }
       }
@@ -132,26 +134,26 @@ const compileItems = (items: any) => {
   return compiledItems;
 };
 
-const itemsSummary = (items: any) => {
+const itemsSummary = (items: any[]) => {
   let html = "";
-  for (let i = 0; i < items.length; i++) {
+  for (let item of items) {
     let img = "";
-    if (items[i].data.svg) {
-      img = `<img src="${items[i].data.pixelData}" alt="order-image" style="width:125%; height: auto;"/>`;
+    if (item.SVG) {
+      img = `<img src="${item.imageUrl}" alt="order-image" style="width:125%; height: auto;"/>`;
     } else {
-      img = `<img src="${items[i].data.pixelData}" alt="order-image" style="width:auto; height: 50%;"/>`;
+      img = `<img src="${item.imageUrl}" alt="order-image" style="width:auto; height: 50%;"/>`;
     }
     html +=
       `
     <hr style="width: 100%"></hr>
     <div style="display:flex; justify-content: space-evenly;">
       <div>
-          <p><b>Produkt:</b> ${items[i].metadata.product} x ${items[i].quantity} </p>
-          <p><b>Material:</b> ${items[i].metadata.material}</p>      
-          <p><b>Storlek :</b> ${items[i].visual.width} x ${items[i].visual.height} </p>
-          <p><b>Form: </b> ${items[i].visual.shape}</p>
-          <p><b>Färgkombination: </b> ${items[i].metadata.colorCombination}</p>
-          <p><b>Fäst metod:</b> ${items[i].metadata.application}</p>          
+          <p><b>Produkt:</b> ${item.product} x ${item.quantity} </p>
+          <p><b>Material:</b> ${item.material}</p>      
+          <p><b>Storlek :</b> ${item.width} x ${item.height} </p>
+          <p><b>Form: </b> ${item.shape}</p>
+          <p><b>Färgkombination: </b> ${item.colorCombination}</p>
+          <p><b>Fäst metod:</b> ${item.application}</p>          
       </div> 
       <div style="display:flex; justify-content: center; align-items:center; width:250px; height:250px; border: 1px solid white; border-radius: 5px;">` +
       img +

@@ -12,13 +12,20 @@ const Product = z.object({
   category: z.string(),
 });
 
+export interface NonAdjustableProduct extends Product {}
+
+export interface AdjustableProduct2 extends Product {
+  sign: Sign;
+  JSON: string;
+  SVG: string;
+}
+
 const AdjustableProduct = z.object({
   sign: Sign,
   id: z.string(),
   title: z.string(),
   price: z.number(),
   imageUrl: z.string(),
-  JSON: z.string(),
   SVG: z.string(),
 });
 

@@ -318,6 +318,7 @@ function Home() {
       paymentMethod: paymentMethod.name,
       total: total,
     };
+    console.log(items);
 
     const orderToast = toast.loading("Placerar order...");
     placeOrder.mutateAsync(
@@ -581,7 +582,7 @@ function Home() {
                     mer
                   </label>
                 </div>
-                <button className="btn-info btn" onClick={handleCheckFields}>
+                <button className="btn btn-info" onClick={handleCheckFields}>
                   <FontAwesomeIcon className="scale-125" icon={faCheck} />
                   <span className="ml-4 text-info-content">Fortsätt</span>
                 </button>
@@ -759,7 +760,7 @@ function Home() {
           <button
             id="payment-button"
             disabled={loading}
-            className="btn-info btn pointer-events-none w-5/12 opacity-40"
+            className="btn btn-info pointer-events-none w-5/12 opacity-40"
             onClick={handlePlaceOrder}
           >
             <FontAwesomeIcon className="scale-125" icon={faLock} />
