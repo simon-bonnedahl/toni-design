@@ -24,6 +24,7 @@ import {
   toggleModify,
 } from "../../../reducers/cartSlice";
 import ControlBox from "./ControlBox";
+import HistoryManager from "./HistoryManager";
 const fabric = require("fabric").fabric;
 const { v4: uuidv4 } = require("uuid");
 const localStorage = require("localStorage");
@@ -33,8 +34,7 @@ const Editor: React.FC = () => {
   const [canvas, setCanvas] = useState<any>();
   const [zoom, setZoom] = useState(1);
   const [sign, setSign] = useState<Sign>(DEFAULT_SIGN);
-  const [history, setHistory] = useState<Sign[]>([]);
-  const [future, setFuture] = useState<Sign[]>([]);
+  const history: HistoryManager<Sign> = useMemo(() => new HistoryManager(), []);
 
   const dispatch = useDispatch();
   const modify = useSelector(getModify);
@@ -146,7 +146,7 @@ const Editor: React.FC = () => {
     // Re-render the canvas.
     canvas.renderAll();
     // Add the previous sign to the history.
-    setHistory((prev) => [...prev, sign]);
+    history.push(sign);
     // Update sign's width and height.
     setSign((prev) => ({
       ...prev,
@@ -191,7 +191,7 @@ const Editor: React.FC = () => {
     // Re-render the canvas.
     canvas.renderAll();
     // Add the previous sign to the history.
-    setHistory((prev) => [...prev, sign]);
+    history.push(sign);
     // Update sign's background and foreground colors.
     setSign((prev) => ({
       ...prev,
@@ -217,11 +217,12 @@ const Editor: React.FC = () => {
     });
     canvas.add(textObject);
     canvas.centerObject(textObject);
-    setHistory((prev) => [...prev, sign]);
+    history.push(sign);
     setSign((prev) => ({ ...prev, JSON: canvas.toJSON() }));
   };
 
   const addImage = async (image: Image) => {
+    console.log("addImage", image);
     if (image.type === "image/svg+xml") {
       //Async load
       fabric.loadSVGFromURL(image.url, function (objects: any, options: any) {
@@ -250,7 +251,7 @@ const Editor: React.FC = () => {
         canvas.centerObject(svg);
         canvas.setActiveObject(svg);
         canvas.renderAll();
-        setHistory((prev) => [...prev, sign]);
+        history.push(sign);
         setSign((prev) => ({ ...prev, JSON: canvas.toJSON() }));
       });
     }
@@ -269,29 +270,18 @@ const Editor: React.FC = () => {
   };
 
   const undo = () => {
-    if (history.length <= 0) {
-      toast.error("No more undo's");
-      return;
-    }
-    const prev = history[history.length - 1];
-    setHistory((prev) => prev.slice(0, prev.length - 1));
-    setFuture((prev) => [...prev, sign]);
+    const prev = history.undo(sign);
+    console.log("undo", prev);
     if (prev) recreateSign(prev);
   };
   const redo = () => {
-    if (future.length <= 0) {
-      toast.error("No more redo's");
-      return;
-    }
-    const next = future[future.length - 1];
-    setFuture((prev) => prev.slice(0, prev.length - 1));
-    setHistory((prev) => [...prev, sign]);
+    const next = history.redo(sign);
+    console.log("redo", next);
     if (next) recreateSign(next);
   };
 
   const restart = () => {
-    setHistory([]);
-    setFuture([]);
+    history.clear();
     setZoom(1);
     canvas.clear();
     localStorage.clear();
@@ -309,19 +299,16 @@ const Editor: React.FC = () => {
   };
 
   const recreateSign = (sign: Sign) => {
-    setSign(sign);
-
     // Clear the canvas.
     if (sign.JSON === "") {
-      toast.warning("No sign to recreate");
       return;
     }
-
+    setSign(sign);
     canvas.clear();
     canvas.loadFromJSON(sign.JSON);
-    setShape(sign.shape);
-    setSize(sign.width, sign.height, sign.depth);
-    setColor(sign.backgroundColor, sign.foregroundColor, sign.colorCombination);
+    //setShape(sign.shape);
+    //setSize(sign.width, sign.height, sign.depth);
+    //setColor(sign.backgroundColor, sign.foregroundColor, sign.colorCombination);
   };
 
   const generateSVG = () => {
@@ -446,7 +433,7 @@ const Editor: React.FC = () => {
       if (e.key === "ArrowRight") activeObject.left += 1;
 
       canvas.renderAll();
-      setHistory((prev) => [...prev, sign]);
+      history.push(sign);
       setSign((prev) => ({ ...prev, JSON: canvas.toJSON() }));
     },
     [canvas]
@@ -484,7 +471,7 @@ const Editor: React.FC = () => {
   };
 
   const handleModifyObject = (e: any) => {
-    setHistory((prev) => [...prev, sign]);
+    history.push(sign);
     setSign((prev) => ({ ...prev, JSON: canvas.toJSON() }));
   };
 
@@ -492,7 +479,7 @@ const Editor: React.FC = () => {
     const activeObject = canvas.getActiveObject();
     if (!activeObject) return;
     canvas.remove(activeObject);
-    setHistory((prev) => [...prev, sign]);
+    history.push(sign);
     setSign((prev) => ({ ...prev, JSON: canvas.toJSON() }));
   };
 
@@ -514,7 +501,7 @@ const Editor: React.FC = () => {
         break;
     }
     canvas.renderAll();
-    setHistory((prev) => [...prev, sign]);
+    history.push(sign);
     setSign((prev) => ({ ...prev, JSON: canvas.toJSON() }));
   };
 

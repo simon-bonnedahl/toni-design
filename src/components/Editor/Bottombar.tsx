@@ -65,8 +65,6 @@ const Bottombar: React.FC<Props> = ({
   };
 
   const handleAddToCart = () => {
-    document.getElementById("cart-button")?.focus();
-
     addToCart();
   };
 

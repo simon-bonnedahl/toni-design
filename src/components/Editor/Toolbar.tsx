@@ -65,6 +65,7 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
         </div>
       </div>
       {/*Dropdowns*/}
+
       <div className="flex">
         <Productdropdown />
         <Applicationdropdown
