@@ -13,39 +13,37 @@ import {
   removeFromCart,
   toggleModify,
 } from "../../reducers/cartSlice";
+import { AdjustableProduct } from "../types/product";
 
 interface Props {
   index: number;
-  item: any;
+  item: AdjustableProduct;
   quantity: number;
 }
 
 const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
   const router = useRouter();
 
-  const [itemQuantity, setItemQuantity] = useState(quantity);
-  const [totalPrice, setTotalPrice] = useState(item.price * itemQuantity);
+  const [totalPrice, setTotalPrice] = useState(item.price * quantity);
   const dispatch = useDispatch();
 
   const signId = "sign-image-" + index;
 
   const handleDecreaseItemQuantity = () => {
     dispatch(removeFromCart({ id: item.id }));
-    setItemQuantity(itemQuantity - 1);
-    setTotalPrice(totalPrice - item.price);
   };
   const handleIncreaseItemQuantity = () => {
     dispatch(addToCart(item));
-    setItemQuantity(itemQuantity + 1);
-    setTotalPrice(totalPrice + item.price);
   };
   const handleRemoveItem = () => {
-    for (let i = 0; i < itemQuantity; i++) {
+    for (let i = 0; i < quantity; i++) {
       dispatch(removeFromCart({ id: item.id }));
     }
   };
   const handleOpenSign = () => {
-    localStorage.setItem("sign", JSON.stringify(item.sign));
+    const i = item as AdjustableProduct;
+
+    localStorage.setItem("sign", JSON.stringify(i.sign));
     if (router.pathname === "/") {
       dispatch(toggleModify());
     } else router.push("/");
@@ -72,6 +70,10 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
     });
   });
 
+  useEffect(() => {
+    setTotalPrice(item.price * quantity);
+  }, [quantity]);
+
   return (
     <div className={className}>
       <div className="flex w-1/12 justify-center font-bold">{index + 1}</div>
@@ -88,8 +90,8 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
         {/*image will be loaded here*/}
       </div>
       <div className="flex w-2/12 justify-center">
-        <span className="font-bold">{item.sign.width}</span>x
-        <span className="font-bold">{item.sign.height}</span> mm
+        <span className="font-bold">{item.width}</span>x
+        <span className="font-bold">{item.height}</span> mm
       </div>
       <div className="flex w-1/12 justify-center">
         <span className="font-lg font-bold">{Math.round(item.price)} kr</span>
@@ -97,13 +99,12 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
       <div className="flex w-2/12 justify-center">
         <div className="flex items-center rounded-md">
           <button
-            disabled={itemQuantity === 1}
             onClick={handleDecreaseItemQuantity}
             className="btn-neutral btn"
           >
             <FontAwesomeIcon className="h-3 w-3" icon={faMinus} />
           </button>
-          <div className="p-4 font-bold">{itemQuantity}</div>
+          <div className="p-4 font-bold">{quantity}</div>
           <button
             onClick={handleIncreaseItemQuantity}
             className="btn-neutral btn"

@@ -8,34 +8,15 @@ const Product = z.object({
   description: z.string(),
   width: z.number(),
   height: z.number(),
-  image: z.string(),
+  imageUrl: z.string(),
   category: z.string(),
 });
 
-export interface NonAdjustableProduct extends Product {}
+export type Product = z.infer<typeof Product>;
 
-export interface AdjustableProduct2 extends Product {
+export type AdjustableProduct = Product & {
   sign: Sign;
-  JSON: string;
   SVG: string;
-}
-
-const AdjustableProduct = z.object({
-  sign: Sign,
-  id: z.string(),
-  title: z.string(),
-  price: z.number(),
-  imageUrl: z.string(),
-  SVG: z.string(),
-});
-
-export type AdjustableProduct = {
-  sign: Sign;
-  id: string;
-  title: string;
-  imageUrl: string;
-  SVG: string;
-  price: number;
 };
 
-export type Product = z.infer<typeof Product>;
+export type NonAdjustableProduct = Product;

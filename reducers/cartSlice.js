@@ -58,4 +58,7 @@ export const selectCartTotal = (state) =>
 
 export const getModify = (state) => state.cart.modify;
 
+export const getItemQuantity = (state, id) =>
+  state.cart.items.filter((item) => item.id === id).length;
+
 export default cartSlice.reducer;

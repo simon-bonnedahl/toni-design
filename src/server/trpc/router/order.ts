@@ -49,9 +49,7 @@ export const orderRouter = router({
   placeOrder: publicProcedure
     .input(
       z.object({
-        items: z
-          .array(Product || AdjustableProduct)
-          .min(1, { message: "Varukorgen är tom" }),
+        items: z.array(z.any()).min(1, { message: "Varukorgen är tom" }),
         orderDetails: OrderDetailsZod,
         customerDetails: CustomerDetailsZod,
       })
@@ -104,7 +102,7 @@ const zipSvgs = async (products: any) => {
   const zip = new JSZip();
   const svg = zip.folder("svg");
   for (let i = 0; i < products.length; i++) {
-    if (products[i].data.svg.length > 0) {
+    if (products[i].SVG.length > 0) {
       svg.file(
         "file-" + (i + 1) + ".svg",
         fs.readFileSync(filePath + "file-" + (i + 1) + ".svg")
@@ -139,7 +137,7 @@ const itemsSummary = (items: any[]) => {
   for (let item of items) {
     let img = "";
     if (item.SVG) {
-      img = `<img src="${item.imageUrl}" alt="order-image" style="width:125%; height: auto;"/>`;
+      img = `<img src="${item.imageUrl}" alt="order-image" style="width:75%; height: auto;"/>`;
     } else {
       img = `<img src="${item.imageUrl}" alt="order-image" style="width:auto; height: 50%;"/>`;
     }
@@ -148,12 +146,12 @@ const itemsSummary = (items: any[]) => {
     <hr style="width: 100%"></hr>
     <div style="display:flex; justify-content: space-evenly;">
       <div>
-          <p><b>Produkt:</b> ${item.product} x ${item.quantity} </p>
-          <p><b>Material:</b> ${item.material}</p>      
-          <p><b>Storlek :</b> ${item.width} x ${item.height} </p>
-          <p><b>Form: </b> ${item.shape}</p>
-          <p><b>Färgkombination: </b> ${item.colorCombination}</p>
-          <p><b>Fäst metod:</b> ${item.application}</p>          
+          <p><b>Produkt:</b> ${item.title} x ${item.quantity} </p>
+          <p><b>Material:</b> ${item.sign.material}</p>      
+          <p><b>Storlek :</b> ${item.sign.width} x ${item.sign.height} </p>
+          <p><b>Form: </b> ${item.sign.shape}</p>
+          <p><b>Färgkombination: </b> ${item.sign.colorCombination}</p>
+          <p><b>Fäst metod:</b> ${item.sign.application}</p>          
       </div> 
       <div style="display:flex; justify-content: center; align-items:center; width:250px; height:250px; border: 1px solid white; border-radius: 5px;">` +
       img +

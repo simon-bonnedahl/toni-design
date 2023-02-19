@@ -7,7 +7,11 @@ import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { selectCartItems, selectCartTotal } from "../../reducers/cartSlice";
+import {
+  getItemQuantity,
+  selectCartItems,
+  selectCartTotal,
+} from "../../reducers/cartSlice";
 import CartRow from "./CartRow";
 
 const Cart: React.FC = () => {
@@ -76,8 +80,8 @@ const Cart: React.FC = () => {
               <CartRow
                 key={key}
                 index={index}
-                quantity={items.length}
                 item={items[0]}
+                quantity={items.length}
               />
             ))}
           </div>

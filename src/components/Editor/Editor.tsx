@@ -40,24 +40,24 @@ const Editor: React.FC = () => {
   const modify = useSelector(getModify);
 
   const initCanvas = (canvas: any) => {
-    setEditorControls();
     onReady(canvas);
     canvas.set({
       imageSmoothingEnabled: false,
     });
     setCanvas(canvas);
   };
-  const setEditorControls = () => {
-    const s = fabric.Object.prototype.set({
+  const setEditorControls = (object: any) => {
+    object.set({
       cornerSize: 16,
       cornerStyle: "circle",
       borderWidth: 2,
       borderColor: "#60a5fa",
     });
-    s.controls.mt.visible = false;
-    s.controls.mr.visible = false;
-    s.controls.ml.visible = false;
-    s.controls.mb.visible = false;
+
+    object.controls.mt.visible = false;
+    object.controls.mr.visible = false;
+    object.controls.ml.visible = false;
+    object.controls.mb.visible = false;
   };
 
   const setShape = (shape: Shapes) => {
@@ -401,17 +401,35 @@ const Editor: React.FC = () => {
     return JPEG;
   };
 
+  const generateId = () => {
+    //Generate an id based on the visual
+    let id = "";
+    const dataUrl = canvas.toDataURL();
+    const length = 20;
+    const step = Math.floor(dataUrl.length / length);
+    for (let i = 0; i < length; i++) {
+      id += dataUrl[i * step];
+    }
+
+    return id;
+  };
+
   const addSignToCart = () => {
     if (sign.JSON === "") {
       toast.warning("Sign is empty");
     }
+    //How do i generate an id that is based on the visual?
     const product: AdjustableProduct = {
       sign: sign,
-      id: uuidv4(),
+      id: generateId(),
       title: "Skylt-Gravyr",
       imageUrl: generateJPEG(),
       SVG: generateSVG(),
       price: sign.price,
+      description: "En vacker skylt",
+      width: sign.width,
+      height: sign.height,
+      category: "Gravyr",
     };
     dispatch(addToCart(product));
   };
@@ -434,7 +452,8 @@ const Editor: React.FC = () => {
     [canvas]
   );
 
-  const handleSelectObject = () => {
+  const handleSelectObject = (e: any) => {
+    setEditorControls(e.target);
     document.addEventListener("keydown", keyHandler, false);
   };
   const handleUnselectObject = () => {
@@ -442,6 +461,7 @@ const Editor: React.FC = () => {
   };
 
   const handleMoveObject = (e: any) => {
+    //Make sure the object is inside the shape
     const obj = e.target;
     const shape = getShape();
     const padding = 2;

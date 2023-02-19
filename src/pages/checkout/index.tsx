@@ -318,7 +318,6 @@ function Home() {
       paymentMethod: paymentMethod.name,
       total: total,
     };
-    console.log(items);
 
     const orderToast = toast.loading("Placerar order...");
     placeOrder.mutateAsync(
