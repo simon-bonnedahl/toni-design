@@ -116,7 +116,7 @@ const zipSvgs = async (products: any) => {
 const compileItems = (items: Product[]) => {
   const compiledItems: any[] = [];
   const addedIds: string[] = [];
-  for (let item of items) {
+  for (const item of items) {
     if (!addedIds.includes(item.id)) {
       addedIds.push(item.id);
       compiledItems.push({ ...item, quantity: 1 });
@@ -134,7 +134,7 @@ const compileItems = (items: Product[]) => {
 
 const itemsSummary = (items: any[]) => {
   let html = "";
-  for (let item of items) {
+  for (const item of items) {
     let img = "";
     if (item.SVG) {
       img = `<img src="${item.imageUrl}" alt="order-image" style="width:75%; height: auto;"/>`;

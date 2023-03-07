@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-var-requires: "off" */
 import { z } from "zod";
 import { router, publicProcedure } from "../trpc";
 import bcrypt from "bcryptjs";
