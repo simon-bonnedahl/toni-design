@@ -50,20 +50,14 @@ export default defineType({
       title: 'Land',
       type: 'string',
     }),
+    //two options: customer or admin
     defineField({
-      name: 'createdSigns',
-      title: 'Skapade skyltar',
-      type: 'array',
-      of: [
-        {
-          type: 'reference',
-          to: [
-            {
-              type: 'createdSign',
-            },
-          ],
-        },
-      ],
+      name: 'role',
+      title: 'Roll',
+      type: 'string',
+      options: {
+        list: ['customer', 'admin'],
+      },
     }),
   ],
 })

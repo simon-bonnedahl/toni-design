@@ -26,6 +26,7 @@ const Bottombar: React.FC<Props> = ({
   generateJPEG,
 }) => {
   const { data: session } = useSession();
+  console.log(session);
 
   const items = useSelector(selectCartItems);
   const router = useRouter();
@@ -97,6 +98,11 @@ const Bottombar: React.FC<Props> = ({
         {session && (
           <button className="btn btn-warning" onClick={handleSaveSign}>
             Spara skylt
+          </button>
+        )}
+        {session?.account?.role === "admin" && (
+          <button className="btn btn-warning" onClick={handleSaveSign}>
+            test
           </button>
         )}
       </div>

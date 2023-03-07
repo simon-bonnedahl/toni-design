@@ -4,6 +4,7 @@ import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import sanityDB from "../../../../sanity";
+import { PrismaClient } from "@prisma/client";
 
 export const authOptions: NextAuthOptions = {
   jwt: {
@@ -24,12 +25,12 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (token && session.user) {
-        session.user = {
-          id: session.user.id,
-          name: session.user.name,
-          email: session.user.email,
-          image: session.user.image,
+      if (token && session.account) {
+        session.account = {
+          id: session.account.id,
+          firstname: session.account.firstname,
+          email: session.account.email,
+          role: session.account.role,
         };
       }
       return session;
@@ -45,9 +46,13 @@ export const authOptions: NextAuthOptions = {
         password: { type: "password" },
       },
       async authorize(credentials) {
-        //check if user exists with sanity
-        const query = `*[_type == "account" && email == '${credentials?.email}'][0]`;
-        const account = await sanityDB.fetch(query);
+        //check if user exists with prisma
+        const prisma = new PrismaClient();
+        const account = await prisma.account.findUnique({
+          where: {
+            email: credentials?.email,
+          },
+        });
         if (!account) {
           throw new Error("Användaren finns inte");
         } else {
@@ -57,9 +62,10 @@ export const authOptions: NextAuthOptions = {
           );
           if (isValid) {
             return {
-              name: account.firstname,
+              firstname: account.firstname,
               email: account.email,
-              id: account._id,
+              id: account.id,
+              role: account.role,
             };
           } else {
             throw new Error("Fel lösenord");

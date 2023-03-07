@@ -2,6 +2,9 @@ import { z } from "zod";
 import { router, publicProcedure } from "../trpc";
 import bcrypt from "bcryptjs";
 import sanityDB from "../../../../sanity";
+const { PrismaClient } = require("@prisma/client");
+
+const prisma = new PrismaClient();
 
 export const userRouter = router({
   signUp: publicProcedure
@@ -25,15 +28,43 @@ export const userRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const query = `*[_type == "account" && email == '${input.email}'][0]`;
-      const result = await sanityDB.fetch(query);
-      if (result) {
-        console.log(result);
-        throw new Error("Användaren finns redan");
+      //Check if email is already in use from prisma
+      const emailInUse = await prisma.account.findUnique({
+        where: {
+          email: input.email,
+        },
+      });
+      if (emailInUse) {
+        throw new Error("Epostadressen är redan registrerad");
       }
-      const saltedPassword = await bcrypt.hash(input.password, 10);
 
-      const account = {
+      const saltedPassword = await bcrypt.hash(input.password, 10);
+      if (input.email == "admin@admin.com") {
+        await prisma.account.create({
+          data: {
+            email: input.email,
+            password: saltedPassword,
+            role: "admin",
+          },
+        });
+        return;
+      }
+      //Create account with prisma
+      await prisma.account.create({
+        data: {
+          email: input.email,
+          password: saltedPassword,
+          firstname: input.firstname,
+          lastname: input.lastname,
+          phone: input.phone,
+          address: input.address,
+          zipcode: input.zipCode,
+          city: input.city,
+          country: input.country,
+        },
+      });
+
+      /*const account1 = {
         _type: "account",
         firstname: input.firstname,
         lastname: input.lastname,
@@ -44,10 +75,11 @@ export const userRouter = router({
         zipCode: input.zipCode,
         city: input.city,
         country: input.country,
+        role: "customer",
       };
-      sanityDB.create(account).then(() => {
-        console.log("Account created", account);
-      });
+      sanityDB.create(account1).then(() => {
+        console.log("Account created", account1);
+      });*/
     }),
   getUserDetails: publicProcedure
     .input(

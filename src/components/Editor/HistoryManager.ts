@@ -1,4 +1,4 @@
-//whats wrong with this code?
+
 
 class HistoryManager<Sign> {
   history: Sign[];

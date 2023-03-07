@@ -13,7 +13,8 @@ import {
   removeFromCart,
   toggleModify,
 } from "../../reducers/cartSlice";
-import { AdjustableProduct } from "../types/product";
+import type { AdjustableProduct } from "../types/product";
+import { Sign } from "../types/sign";
 
 interface Props {
   index: number;
@@ -40,10 +41,8 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
       dispatch(removeFromCart({ id: item.id }));
     }
   };
-  const handleOpenSign = () => {
-    const i = item as AdjustableProduct;
-
-    localStorage.setItem("sign", JSON.stringify(i.sign));
+  const handleOpenSign = (sign: Sign) => {
+    localStorage.setItem("sign", JSON.stringify(sign));
     if (router.pathname === "/") {
       dispatch(toggleModify());
     } else router.push("/");
@@ -81,9 +80,12 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
         <div className="flex justify-center">
           <span className="font-bold">{item.title}</span>
         </div>
-        <div className="flex justify-center text-sm text-gray-600">
-          Plast · {item.sign.colorCombination}
-        </div>
+        {item.sign && (
+          <div className="flex justify-center text-sm text-gray-600">
+            Plast · {item.sign.colorCombination}
+          </div>
+        )}
+
         <div className="flex justify-center"></div>
       </div>
       <div className="flex w-2/12 justify-center" id={signId}>
@@ -118,7 +120,7 @@ const CartRow: React.FC<Props> = ({ index, item, quantity }) => {
       </div>
       <div className="flex  w-1/12 justify-around">
         <div
-          onClick={handleOpenSign}
+          onClick={() => handleOpenSign(item.sign)}
           className="duration-300 ease-in-out hover:scale-125 hover:cursor-pointer"
         >
           <FontAwesomeIcon className="scale-150" icon={faEdit} color="gray" />

@@ -17,6 +17,7 @@ export const serverSchema = z.object({
   SANITY_PROJECT_ID: z.string(),
   SANITY_TOKEN: z.string(),
   SENDGRID_API_KEY: z.string(),
+  DATABASE_URL: z.string(),
 });
 
 /**
