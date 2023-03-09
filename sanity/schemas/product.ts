@@ -83,13 +83,10 @@ export default defineType({
     }),
 
     defineField({
-      name: 'json',
-      title: 'JSON fil',
-      type: 'file',
-      hidden: (adjustable) => adjustable?.value === true,
-      options: {
-        accept: '.json',
-      },
+      name: 'JSON',
+      title: 'JSON',
+      type: 'string',
+      hidden: ({parent}) => parent.productType !== 'adjustable',
     }),
   ],
 })
