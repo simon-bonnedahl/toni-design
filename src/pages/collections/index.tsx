@@ -20,13 +20,11 @@ function Home() {
     //const query = '*[_type == "bike" && seats >= $minSeats] {name, seats}'
     let query = `*[_type == 'product' && '${selectedCategory}' in categories[]->title] {
                                 ...,
-            "jsonURL": json.asset->url
       }`;
 
     if (selectedCategory === null) {
       query = `*[_type == 'product'] {
           ...,
-              "jsonURL": json.asset->url
         }
         `;
     }

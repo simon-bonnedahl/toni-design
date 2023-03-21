@@ -6,6 +6,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../reducers/cartSlice";
 import { urlFor } from "../../sanity";
+import { Applications, Shapes, Sign } from "../types/sign.d";
 //const localStorage = require("local-storage");
 interface Props {
   title: string;
@@ -28,23 +29,29 @@ const ProductCard: React.FC<Props> = ({
   json,
   id,
 }) => {
-  const [jsonObj, setJsonObj] = React.useState<any>({});
   const router = useRouter();
   const dispatch = useDispatch();
 
   const cardImage = urlFor(image).height(200).width(300).url();
   const cartImage = urlFor(image).height(100).url();
 
-  if (json) {
-    fetch(json).then((res) => {
-      res.json().then((data) => {
-        setJsonObj(data);
-      });
-    });
-  }
-
   const handleOpenSign = () => {
-    localStorage.setItem("sign", JSON.stringify(jsonObj));
+    const sign: Sign = {
+      width: width,
+      height: height,
+      price: price,
+      type: 0,
+      JSON: json,
+      depth: 0,
+      shape: Shapes.RECTANGLE,
+      backgroundColor: "",
+      foregroundColor: "",
+      colorCombination: "",
+      application: Applications.NONE,
+      SVG: "",
+    };
+
+    localStorage.setItem("sign", JSON.stringify(sign));
     router.push("/");
   };
 
@@ -61,6 +68,7 @@ const ProductCard: React.FC<Props> = ({
 
       const dataURL = canvas.toDataURL("image/jpeg");
       let item = null;
+      const jsonObj = JSON.parse(json);
       if (jsonObj.visual) {
         item = {
           id: id,
