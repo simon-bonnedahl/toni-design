@@ -2,7 +2,7 @@
 
 Early production build at: https://toni-design.simonbonnedahl.dev/
 
-This is a full stack web application developed for a [Toni-Reklam](https://www.tonireklam.se/), a Swedish Signage company. 
+This is a full stack web application developed for [Toni-Reklam](https://www.tonireklam.se/), a Swedish Signage company. 
 The app has a design tool to create customizable signs. It also has a webstore connected to Sanity CMS with a collection of common signs.
 The first version is only focusing on Laser-engraved signs. 
 At checkout the backend compiles and sends a the production files to the laser-machine.
